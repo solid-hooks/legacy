@@ -1,36 +1,122 @@
-<p>
-  <img width="100%" src="https://assets.solidjs.com/banner?type={{name_of_lib}}&background=tiles&project=%20" alt="{{name_of_lib}}">
-</p>
+# solid-dollar
 
-# {{name_of_lib}}
+hooks for solid.js
 
-[![pnpm](https://img.shields.io/badge/maintained%20with-pnpm-cc00ff.svg?style=for-the-badge&logo=pnpm)](https://pnpm.io/)
+## `$`/`$signal`
 
-{{desc_of_lib}}
+`createSignal` wrapper
 
-> **Note** After using this template, you have to search and replace all `{{name_of_lib}}` and similar strings
-> with appropriate texts.
->
-> `{{name_of_lib}}` should be a **kebab-case** string representing the name of you monorepo.
->
-> `{{desc_of_lib}}` should be a **Normal case** string with the description of the repository.
->
-> `{{me}}` should be a **kebab-case** string from your profile URL.
+```ts
+const data = $(0)
 
-## Quick start
+console.log(data()) // 0
 
-Install it:
+console.log(data.set(1)) // 1
 
-```bash
-npm i {{name_of_lib}}
-# or
-yarn add {{name_of_lib}}
-# or
-pnpm add {{name_of_lib}}
+console.log(data()) // 1
+
+console.log(data.signal) // original signal
 ```
 
-Use it:
+## `$store`
+
+`createStore` wrapper, return `$()` like object
+
+## `$state`
+
+store support for persist, inspired by pinia & zustand
 
 ```tsx
-import {{name_of_lib}} from '{{name_of_lib}}'
+const useStore = $state('test', {
+  state: { test: 1 },
+  getter: state => ({
+    doubleValue() {
+      return state.test * 2
+    },
+  }),
+  action: set => ({
+    double() {
+      set('test', test => test * 2)
+    },
+    plus(num: number) {
+      set('test', test => test + num)
+    },
+  }),
+  persist: {
+    enable: true,
+    storage: localStorage,
+    debug: true,
+    path: ['test'] // type safe!
+  },
+})
+const { store, double, plus, $patch, $reset, $subscribe } = useStore()
+render(() => (
+  <div>
+    <p>{store.count}</p>
+    <button onClick={double}>double</button>
+    <button onClick={() => plus(2)}>plus 2</button>
+  </div>
+))
 ```
+
+## `$watch`
+
+pausable and filterable `createEffect`
+
+```ts
+const str = $('old')
+const callback = console.log
+const filter = (newValue: string, times: number) => {
+  return newValue !== 'new'
+}
+const { isWatching, pause, resume } = $watch(str, callback, {
+  callFn: throttle,
+  filterFn: filter,
+  defer: true,
+})
+```
+
+## `$i18n`
+
+simple i18n, support async load message file
+
+### normal load
+
+see in [`test/i18n.test.ts`](test/i18n.test.ts)
+
+### async load
+
+```ts
+const { $t, availableLocales, locale } = $i18n({
+  // message: import.meta.glob('./locales/*.json'),
+  message: import.meta.glob('./locales/*.yml'),
+  parseKey: path => path.slice(10, -4),
+  defaultLocale: 'en',
+})
+$t('deep.t')
+locale.set('zh-CN')
+```
+
+add plugin in vite.config.ts if the translation files are not `.json`
+```ts
+import { defineConfig } from 'vite'
+import { parse } from 'yaml'
+import { I18nPlugin } from 'solid-dollar/plugin'
+
+export default defineConfig({
+  /* ... */
+  plugins: [
+    /* ... */
+    I18nPlugin({
+      include: 'i18n/locales/*.yml',
+      transformMessage: content => parse(content),
+    }),
+  ],
+})
+```
+
+## `$idle`
+
+`window.requestIdleCallback` wrapper
+
+fallback to `window.requestAnimationFrame` or execute it directly

@@ -1,7 +1,20 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "types": ["vite/client"]
+    "types": [
+      "vite/client"
+    ],
+    "plugins": [
+      {
+        "name": "importable",
+        "plugins": [
+          "@importable/yaml"
+        ]
+      }
+    ]
   },
-  "exclude": ["node_modules", "dist"]
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }

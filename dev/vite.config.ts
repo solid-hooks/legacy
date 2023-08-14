@@ -1,5 +1,8 @@
 import { defineConfig } from 'vite'
-import solidPlugin from 'vite-plugin-solid'
+import solid from 'vite-plugin-solid'
+
+// import { parse } from 'yaml'
+import { I18nPlugin } from '../src/plugin'
 
 export default defineConfig({
   resolve: {
@@ -7,30 +10,15 @@ export default defineConfig({
       src: '/src',
     },
   },
+  clearScreen: false,
   plugins: [
-    solidPlugin(),
-    {
-      name: 'Reaplace env variables',
-      transform(code, id) {
-        if (id.includes('node_modules')) {
-          return code
-        }
-        return code
-          .replace(/process\.env\.SSR/g, 'false')
-          .replace(/process\.env\.DEV/g, 'true')
-          .replace(/process\.env\.PROD/g, 'false')
-          .replace(/process\.env\.NODE_ENV/g, '"development"')
-          .replace(/import\.meta\.env\.SSR/g, 'false')
-          .replace(/import\.meta\.env\.DEV/g, 'true')
-          .replace(/import\.meta\.env\.PROD/g, 'false')
-          .replace(/import\.meta\.env\.NODE_ENV/g, '"development"')
-      },
-    },
+    solid(),
+    // useful when using yml as locale message
+    I18nPlugin({
+      // include: 'dev/i18n/locales/*.yml',
+      // transformMessage: content => parse(content),
+      include: 'dev/i18n/locales/*.tr',
+      transformMessage: content => JSON.parse(content),
+    }),
   ],
-  server: {
-    port: 3000,
-  },
-  build: {
-    target: 'esnext',
-  },
 })
