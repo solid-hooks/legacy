@@ -1,6 +1,6 @@
 {
   "name": "solid-dollar",
-  "version": "0.1.7",
+  "version": "0.2.0",
   "description": "solid js hooks",
   "license": "MIT",
   "author": "subframe7536",
@@ -75,8 +75,9 @@
     "dev": "vite serve dev",
     "build": "tsup",
     "test": "vitest --run",
-    "prepublishOnly": "pnpm test && pnpm build && pnpm lint:code && pnpm lint:types",
-    "lint:code": "eslint --ignore-path .gitignore --max-warnings 0 src/**/*.{js,ts,tsx,jsx} --fix --cache",
+    "release": "pnpm test && pnpm build && pnpm lint && bumpp --all && npm publish",
+    "lint": "pnpm lint:code && pnpm lint:types",
+    "lint:code": "eslint --ignore-path .gitignore --max-warnings 0 src/**/*.{js,ts,tsx,jsx} --fix",
     "lint:types": "tsc --noEmit"
   },
   "peerDependencies": {
