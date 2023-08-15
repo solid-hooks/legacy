@@ -5,10 +5,10 @@ import { $i18n } from '../src/i18n'
 
 describe('i18n', () => {
   const testDict = {
-    t: 1,
-    tt: 2,
+    t: '11',
+    tt: '22',
     deep: {
-      t: 1,
+      t: '1',
     },
   }
   const testDict1 = {
@@ -18,7 +18,7 @@ describe('i18n', () => {
       t: 'deep',
     },
   }
-  const { $t, availiableLocales, locale } = $i18n<'testDict' | 'testDict1'>({
+  const { $t, availiableLocales, locale } = $i18n<'testDict' | 'testDict1', typeof testDict>({
     message: { testDict, testDict1 },
     defaultLocale: 'testDict',
   })
@@ -31,7 +31,7 @@ describe('i18n', () => {
       }, { defer: true }))
     })
     const dest = $t('deep.t')
-    expect(dest).toBe(1)
+    expect(dest).toBe('11')
     locale.set('testDict1')
     await Promise.resolve()
     expect($t('deep.t')).toBe('deep')

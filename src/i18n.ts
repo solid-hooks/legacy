@@ -1,4 +1,5 @@
 import { pathGet } from 'object-standard-path'
+import type { Path } from 'object-standard-path'
 import { createContext, createResource, useContext } from 'solid-js'
 import { $ } from './signal'
 
@@ -98,7 +99,7 @@ function assertImportType(value: any, fn: I18nOption['parseKey']) {
  */
 export function $i18n<
   Locale extends string = string,
-  T extends Record<string, any> = any,
+  T extends Record<string, any> = {},
 >(option: I18nOption<Locale, T>) {
   const { message, parseKey, defaultLocale } = option
   assertImportType(Object.values(message)[0], parseKey)
@@ -116,7 +117,7 @@ export function $i18n<
       : msg
   })
 
-  const $t = (path: string) => {
+  const $t = (path: Path<T> extends '' ? string : Path<T>) => {
     return pathGet(currentMessage(), path as any)
   }
 
