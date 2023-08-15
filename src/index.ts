@@ -12,3 +12,4 @@ export { $i18n } from './i18n'
 export { $idle } from './idle'
 
 export { model } from './model'
+export type { ModelParam, ModelElement } from './model'
