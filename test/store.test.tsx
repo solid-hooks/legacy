@@ -80,6 +80,9 @@ describe('test state', () => {
         doubleValue() {
           return state.test * 2
         },
+        getByValue(num: number) {
+          return state.test + num * num
+        },
       }),
       action: set => ({
         double() {
@@ -90,61 +93,32 @@ describe('test state', () => {
         },
       }),
     })
+
     const callback = vi.fn()
-    const { state: store, double, plus, doubleValue, $patch, $reset, $subscribe } = useTestStore()
-    $subscribe(callback)
+    const store = useTestStore()
+
+    store.$subscribe(callback)
     expect(store().test).toBe(1)
-    expect(doubleValue()).toBe(2)
-    double()
+    expect(store.doubleValue()).toBe(2)
+    expect(store.getByValue(3)).toBe(10)
+
+    store.double()
     expect(store().test).toBe(2)
-    expect(doubleValue()).toBe(4)
-    plus(200)
+    expect(store.doubleValue()).toBe(4)
+
+    store.plus(200)
     expect(store().test).toBe(202)
-    expect(doubleValue()).toBe(404)
-    $patch({ foo: 'baz' })
+    expect(store.doubleValue()).toBe(404)
+
+    store.$patch({ foo: 'baz' })
     expect(store().foo).toBe('baz')
-    $reset()
+
+    store.$reset()
     expect(store().test).toBe(1)
     expect(store().foo).toBe('bar')
-    expect(doubleValue()).toBe(2)
-    expect(callback).toHaveBeenCalledTimes(4)
-  })
-  test('states outside provider should be undefined', () => {
-    const initialState = { count: 0 }
-    const [Provider, useStore] = $state('test', {
-      state: initialState,
-      action: set => ({
-        increment: () => set('count', n => n + 1),
-        decrement: () => set('count', n => n - 1),
-      }),
-    }, true)
-    const storeObject = useStore()
-    expect(storeObject).toBeUndefined()
-    const Inner = () => {
-      const { state: store, decrement, increment } = useStore()!
-      return (
-        <div>
-          <p data-testid="value">{store().count}</p>
-          <button data-testid="increment" onClick={increment}>Increment</button>
-          <button data-testid="decrement" onClick={decrement}>Decrement</button>
-        </div>
-      )
-    }
-    const { unmount, getByTestId } = render(() => (
-      <Provider>
-        <Inner />
-      </Provider>
-    ))
+    expect(store.doubleValue()).toBe(2)
 
-    const p = getByTestId('value')
-    const incrementBtn = getByTestId('increment')
-    const decrementBtn = getByTestId('decrement')
-    expect(p.innerHTML).toBe('0')
-    fireEvent.click(incrementBtn)
-    expect(p.innerHTML).toBe('1')
-    fireEvent.click(decrementBtn)
-    expect(p.innerHTML).toBe('0')
-    unmount()
+    expect(callback).toHaveBeenCalledTimes(4)
   })
   test('should successfully use nest $state()', () => {
     const initialState = { count: 0 }
@@ -160,22 +134,22 @@ describe('test state', () => {
         decrement: () => set('count', n => n - 1),
       }),
     })
-    const { state: store, fresh, decrement, increment } = useStore()
+    const store = useStore()
     const useTempStore = $state('temp', {
       state: initialState,
       action: set => ({
         generate: () => {
-          increment()
-          set('count', fresh())
+          store.increment()
+          set('count', store.fresh())
         },
       }),
     })
-    const { state: tempStore, generate } = useTempStore()
+    const tempStore = useTempStore()
     const { unmount, getByTestId } = render(() => (
       <div>
         <p data-testid="value">{store().count}</p>
-        <button data-testid="increment" onClick={increment}>Increment</button>
-        <button data-testid="decrement" onClick={decrement}>Decrement</button>
+        <button data-testid="increment" onClick={store.increment}>Increment</button>
+        <button data-testid="decrement" onClick={store.decrement}>Decrement</button>
       </div>
     ))
 
@@ -187,7 +161,7 @@ describe('test state', () => {
     expect(p.innerHTML).toBe('1')
     fireEvent.click(decrementBtn)
     expect(p.innerHTML).toBe('0')
-    generate()
+    tempStore.generate()
     expect(tempStore().count).toBe(22)
     unmount()
   })
@@ -214,12 +188,12 @@ describe('test state', () => {
         debug: true,
       },
     })
-    const { state, decrement, increment } = useState()
+    const store = useState()
     const { unmount, getByTestId } = render(() => (
       <div>
-        <p data-testid="value">{state().count}</p>
-        <button data-testid="increment" onClick={increment}>Increment</button>
-        <button data-testid="decrement" onClick={decrement}>Decrement</button>
+        <p data-testid="value">{store().count}</p>
+        <button data-testid="increment" onClick={store.increment}>Increment</button>
+        <button data-testid="decrement" onClick={store.decrement}>Decrement</button>
       </div>
     ))
 
@@ -238,7 +212,7 @@ describe('test state', () => {
     fireEvent.click(incrementBtn)
     unmount()
     const { container: newContainer } = render(() => (
-      <p>{useState().state().count}</p>
+      <p>{useState()().count}</p>
     ))
     const newP = newContainer.querySelector('p')!
     expect(kv.get('test')).toBe('{"count":2}')
@@ -274,12 +248,12 @@ describe('test state', () => {
         paths: ['persist.count'],
       },
     })
-    const { state: store, decrement, increment } = useStore()
+    const store = useStore()
     const { unmount, getByTestId } = render(() => (
       <div>
         <p data-testid="value">{store().persist.count}</p>
-        <button data-testid="increment" onClick={increment}>Increment</button>
-        <button data-testid="decrement" onClick={decrement}>Decrement</button>
+        <button data-testid="increment" onClick={store.increment}>Increment</button>
+        <button data-testid="decrement" onClick={store.decrement}>Decrement</button>
       </div>
     ))
 

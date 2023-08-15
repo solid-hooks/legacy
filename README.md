@@ -11,11 +11,11 @@ const data = $(0)
 
 console.log(data()) // 0
 
-console.log(data.set(1)) // 1
+console.log(data.$set(1)) // 1
 
 console.log(data()) // 1
 
-console.log(data.signal) // original signal
+console.log(data.$signal) // original signal
 ```
 
 ## `$store`
@@ -27,7 +27,7 @@ console.log(data.signal) // original signal
 store support for persist, inspired by pinia & zustand
 
 ```tsx
-const useStore = $state('test', {
+const useState = $state('test', {
   state: { test: 1 },
   getter: state => ({
     doubleValue() {
@@ -35,8 +35,8 @@ const useStore = $state('test', {
     },
   }),
   action: set => ({
-    double() {
-      set('test', test => test * 2)
+    double(num: number) {
+      set('test', test => test * 2 * number)
     },
     plus(num: number) {
       set('test', test => test + num)
@@ -49,14 +49,27 @@ const useStore = $state('test', {
     path: ['test'] // type safe!
   },
 })
-const { state, double, plus, $patch, $reset, $subscribe } = useStore()
+const state = useState()
 render(() => (
   <div>
-    <p>{state().count}</p>
-    <button onClick={double}>double</button>
-    <button onClick={() => plus(2)}>plus 2</button>
+    <p>{state().test}</p>
+    <p>{state.doubleValue(2)}</p>
+    <button onClick={state.double}>double</button>
+    <button onClick={() => state.plus(2)}>plus 2</button>
   </div>
 ))
+// use produce()
+state.$patch((state) => {
+  state.test = 3
+})
+// use reconcile()
+state.$patch({
+  test: 2
+})
+state.$subscribe((state) => {
+  console.log(state)
+})
+state.$reset()
 ```
 
 ## `$watch`
@@ -94,7 +107,7 @@ const { $t, availableLocales, locale } = $i18n({
   defaultLocale: 'en',
 })
 $t('deep.t')
-locale.set('zh-CN')
+locale.$set('zh-CN')
 ```
 
 add plugin in vite.config.ts if the translation files are not `.json`
