@@ -5,8 +5,8 @@ export type SignalParam<T> = Parameters<typeof createSignal<T>>
 
 export type SignalObject<T> = {
   (): T
-  readonly set: Setter<T>
-  readonly signal: Signal<T>
+  readonly $set: Setter<T>
+  readonly $signal: Signal<T>
 }
 
 export function isSignal<T>(val: unknown): val is Signal<T> {
@@ -21,10 +21,10 @@ export function isSignal<T>(val: unknown): val is Signal<T> {
 export function isSignalObject<T>(val: unknown): val is SignalObject<T> {
   return (
     typeof val === 'function'
-    && 'set' in val
-    && typeof val.set === 'function'
-    && 'signal' in val
-    && isSignal(val.signal)
+    && '$set' in val
+    && typeof val.$set === 'function'
+    && '$signal' in val
+    && isSignal(val.$signal)
   )
 }
 
@@ -39,8 +39,8 @@ export function $<T>(...args: [] | [Signal<T>] | SignalParam<T>) {
       : createSignal(...args as SignalParam<T>)
 
   const obj = () => val()
-  obj.set = set
-  obj.signal = [val, set]
+  obj.$set = set
+  obj.$signal = [val, set]
 
   return obj
 }

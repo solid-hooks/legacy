@@ -29,7 +29,7 @@ export function model(el: ModelElement, value: () => ModelParam) {
   createRenderEffect(() => (el[property] = val()))
   const handleValue = (e: Event) => {
     // @ts-expect-error set value
-    val.set(e.target[property])
+    val.$set(e.target[property])
   }
   el.addEventListener(eventName, handleValue)
   onCleanup(() => el.removeEventListener(eventName, handleValue))

@@ -11,7 +11,7 @@ const App: Component = () => {
   }, { defer: true })
 
   function changeLocale(target: string) {
-    locale.set(target)
+    locale.$set(target)
   }
 
   // eslint-disable-next-line no-unused-expressions
@@ -27,7 +27,7 @@ const App: Component = () => {
           {l => <option selected={l === locale()}>{l}</option>}
         </For>
       </select>
-      <button onClick={() => count.set(c => c + 1)}>increase</button>
+      <button onClick={() => count.$set(c => c + 1)}>increase</button>
     </>
   )
 }
