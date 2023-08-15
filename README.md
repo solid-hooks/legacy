@@ -49,10 +49,10 @@ const useStore = $state('test', {
     path: ['test'] // type safe!
   },
 })
-const { store, double, plus, $patch, $reset, $subscribe } = useStore()
+const { state, double, plus, $patch, $reset, $subscribe } = useStore()
 render(() => (
   <div>
-    <p>{store.count}</p>
+    <p>{state().count}</p>
     <button onClick={double}>double</button>
     <button onClick={() => plus(2)}>plus 2</button>
   </div>
@@ -117,6 +117,45 @@ export default defineConfig({
 
 ## `$idle`
 
-`window.requestIdleCallback` wrapper
+`window.requestIdleCallback` wrapper with cleanup
 
 fallback to `window.requestAnimationFrame` or execute it directly
+
+## `model`
+
+simple two-way binding for `<input>`, `<textare>`, `<select>`
+
+```tsx
+const msg = $('')
+
+<input type="text" use:model={[msg]}>
+```
+
+use with [`unplugin-solid-directive`](https://github.com/subframe7536/unplugin-solid-directive)
+
+tsconfig.json:
+```json
+{
+  "compilerOptions": {
+    // ...
+    "types": [
+      "solid-dollar/directive"
+    ],
+  }
+}
+```
+
+vite.config.ts
+```ts
+import { defineConfig } from 'vite'
+import Directive from 'unplugin-solid-directive/vite'
+
+export default defineConfig({
+  plugins: [
+    // ...
+    Directive({
+      directives: [{ directive: 'model', module: 'solid-dollar' }],
+    }),
+  ],
+})
+```
