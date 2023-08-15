@@ -1,25 +1,18 @@
 import { createRenderEffect, onCleanup } from 'solid-js'
 import type { SignalObject } from './signal'
 
-type ModalParam = [signal: SignalObject<any>, event?: string]
+export type ModelParam = [
+  signal: SignalObject<any>,
+  config?: {
+    event?: string
+    value?: string
+  },
+]
 
-declare module 'solid-js' {
-  namespace JSX {
-    interface Directives {
-      model: ModalParam
-    }
-  }
-}
+export type ModelElement = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
 
-type ModalElement = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-
-// https://github.com/kajetansw/solar-forms/blob/master/src/core/form-group-directive/form-group-directive.tsx
-export function createModel() {
-  return { model }
-}
-
-export function model(el: ModalElement, value: () => ModalParam) {
-  const [val, event] = value()
+export function model(el: ModelElement, value: () => ModelParam) {
+  const [val, config] = value()
   let eventName = 'input'
   let property = 'value'
   if (el instanceof HTMLInputElement && ['checkbox', 'radio'].includes(el.type)) {
@@ -29,7 +22,8 @@ export function model(el: ModalElement, value: () => ModalParam) {
     eventName = 'change'
     property = 'value'
   }
-  eventName = event ?? eventName
+  eventName = config?.event ?? eventName
+  property = config?.value ?? property
 
   // @ts-expect-error set value
   createRenderEffect(() => (el[property] = val()))

@@ -11,4 +11,4 @@ export { $i18n } from './i18n'
 
 export { $idle } from './idle'
 
-export { model, createModel } from './model'
+export { model } from './model'
