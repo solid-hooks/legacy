@@ -28,7 +28,7 @@ describe('$effect', () => {
       return newValue !== 'new'
     }
 
-    $watch(str, callback, { filterFn: filter, defer: true })
+    createRoot(() => $watch(str, callback, { filterFn: filter, defer: true }))
 
     await Promise.resolve()
     str.$set('new')
@@ -44,29 +44,31 @@ describe('$effect', () => {
   })
 
   test('pause & resume', async () => {
-    const value = $(0)
-    const callback = vi.fn()
+    createRoot(async () => {
+      const value = $(0)
+      const callback = vi.fn()
 
-    const { pause, resume, isWatching } = $watch(value, callback, { defer: true })
+      const { pause, resume, isWatching } = $watch(value, callback, { defer: true })
 
-    await Promise.resolve()
-    value.$set(100)
-    await Promise.resolve()
-    expect(callback).toHaveBeenCalledTimes(1)
-    expect(callback).toHaveBeenCalledWith(100, undefined, undefined)
+      await Promise.resolve()
+      value.$set(100)
+      await Promise.resolve()
+      expect(callback).toHaveBeenCalledTimes(1)
+      expect(callback).toHaveBeenCalledWith(100, undefined, undefined)
 
-    pause()
-    expect(isWatching()).toBe(false)
-    value.$set(200)
-    await Promise.resolve()
-    expect(callback).toHaveBeenCalledTimes(1)
+      pause()
+      expect(isWatching()).toBe(false)
+      value.$set(200)
+      await Promise.resolve()
+      expect(callback).toHaveBeenCalledTimes(1)
 
-    resume()
-    value.$set(300)
-    await Promise.resolve()
-    expect(callback).toHaveBeenCalledTimes(2)
+      resume()
+      value.$set(300)
+      await Promise.resolve()
+      expect(callback).toHaveBeenCalledTimes(2)
 
-    // cannot filter old value
-    expect(callback).toHaveBeenCalledWith(300, 200, undefined)
+      // cannot filter old value
+      expect(callback).toHaveBeenCalledWith(300, 200, undefined)
+    })
   })
 })

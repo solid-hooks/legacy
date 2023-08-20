@@ -1,10 +1,11 @@
 import { type Component, For } from 'solid-js'
-import { $, $watch, model } from '../src'
-import { $t, availiableLocales, locale } from './i18n'
+import { $, $cx, $model, $watch } from '../src'
+import { useI18n } from './i18n'
 
 const App: Component = () => {
   const count = $(1)
   const val = $('test1')
+  const { $t, availiableLocales, locale } = useI18n()
 
   $watch(count, () => {
     console.log(count() + 1)
@@ -13,12 +14,11 @@ const App: Component = () => {
   function changeLocale(target: string) {
     locale.$set(target)
   }
-
   // eslint-disable-next-line no-unused-expressions
-  model
+  $model
   return (
     <>
-      <input type="text" use:model={[val]} />
+      <input type="text" use:$model={[val]} />
       {val()}
       <div>{count()}</div>
       <div>{$t('test')}</div>
@@ -27,7 +27,16 @@ const App: Component = () => {
           {l => <option selected={l === locale()}>{l}</option>}
         </For>
       </select>
-      <button onClick={() => count.$set(c => c + 1)}>increase</button>
+      <button
+        class={$cx(
+          'bg-rose-400',
+          { 'hover:bg-slate-400': true },
+          count() === 2 && 'm-1',
+        )}
+        onClick={() => count.$set(c => c + 1)}
+      >
+        increase
+      </button>
     </>
   )
 }

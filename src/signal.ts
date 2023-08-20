@@ -9,7 +9,7 @@ export type SignalObject<T> = {
   readonly $signal: Signal<T>
 }
 
-export function isSignal<T>(val: unknown): val is Signal<T> {
+function isSignal<T>(val: unknown): val is Signal<T> {
   return (
     Array.isArray(val)
     && val.length === 2
@@ -18,32 +18,27 @@ export function isSignal<T>(val: unknown): val is Signal<T> {
   )
 }
 
-export function isSignalObject<T>(val: unknown): val is SignalObject<T> {
-  return (
-    typeof val === 'function'
-    && '$set' in val
-    && typeof val.$set === 'function'
-    && '$signal' in val
-    && isSignal(val.$signal)
-  )
-}
-
+/**
+ * object wrapper for `createSignal`
+ * @param args original signal options or signal
+ */
 export function $<T>(...args: []): SignalObject<T | undefined>
 export function $<T>(...args: [Signal<T>]): SignalObject<T>
 export function $<T>(...args: SignalParam<T>): SignalObject<T>
 export function $<T>(...args: [] | [Signal<T>] | SignalParam<T>) {
-  const [val, set] = args.length === 0
-    ? createSignal<T>()
-    : isSignal<T>(args[0])
-      ? args[0]
-      : createSignal(...args as SignalParam<T>)
+  const [val, set] = (args.length && isSignal<T>(args[0]))
+    ? args[0]
+    // eslint-disable-next-line solid/reactivity
+    : createSignal(...args as SignalParam<T>)
 
-  const obj = () => val()
-  obj.$set = set
-  obj.$signal = [val, set]
-
-  return obj
+  return Object.assign(
+    () => val(),
+    { $set: set, $signal: [val, set] },
+  )
 }
+/**
+ * wrapper for `untrack`
+ */
 export function $$<T>(signal: Accessor<T> | SignalObject<T>): T {
   return untrack(signal)
 }

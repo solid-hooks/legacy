@@ -24,9 +24,22 @@ export type WatchOption<T> = OnOptions & {
 }
 
 type WatchReturn = {
-  pause: () => false
-  resume: () => true
+  /**
+   * pause watch
+   */
+  pause: () => void
+  /**
+   * resume watch
+   */
+  resume: () => void
+  /**
+   * watch status
+   */
   isWatching: () => boolean
+  /**
+   * run function without effects
+   * @param updater update function
+   */
   runWithoutEffect: (updater: () => void) => void
 }
 
@@ -44,7 +57,7 @@ export function $watch<T, Next extends Prev, Prev = Next>(
 ): WatchReturn {
   const [isWatch, setIsWatch] = createSignal(true)
   const [callTimes, setCallTimes] = createSignal(0)
-  const { callFn, defer, filterFn: filter } = options
+  const { callFn, defer = false, filterFn: filter } = options
 
   const needToTriggerEffect = (newValue: T) => {
     return isWatch()
@@ -72,9 +85,9 @@ export function $watch<T, Next extends Prev, Prev = Next>(
     pause: () => setIsWatch(false),
     resume: () => setIsWatch(true),
     isWatching: () => isWatch(),
-    runWithoutEffect: (updater: () => void) => {
+    runWithoutEffect: (update: () => void) => {
       setIsWatch(false)
-      updater()
+      update()
       setIsWatch(true)
     },
   }

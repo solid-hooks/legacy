@@ -11,7 +11,25 @@ export type ModelParam = [
 
 export type ModelElement = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
 
-export function model(el: ModelElement, value: () => ModelParam) {
+/**
+ * type support for $model
+ *
+ * @example
+ * ```ts
+ * import type { ModelDirective } from "solid-dollar";
+ * declare module 'solid-js' {
+ *   namespace JSX {
+ *     interface Directives extends ModelDirective {}
+ *   }
+ * }
+ * export { }
+ * ```
+ */
+export interface ModelDirective {
+  $model: ModelParam
+}
+
+export function $model(el: ModelElement, value: () => ModelParam) {
   const [val, config] = value()
   let eventName = 'input'
   let property = 'value'

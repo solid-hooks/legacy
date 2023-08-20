@@ -74,8 +74,9 @@
   },
   "scripts": {
     "dev": "vite serve dev",
-    "build": "tsup",
+    "build": "node scripts/update-auto-import.js && eslint src/plugin/auto-import.ts --fix && tsup",
     "test": "vitest --run",
+    "test:bench": "vitest bench --run",
     "release": "pnpm test && pnpm lint && pnpm build && bumpp --all && npm publish",
     "lint": "pnpm lint:code && pnpm lint:types",
     "lint:code": "eslint --ignore-path .gitignore --max-warnings 0 src/**/*.{js,ts,tsx,jsx} --fix",
@@ -86,14 +87,13 @@
   },
   "dependencies": {
     "@solid-primitives/deep": "^0.2.3",
-    "@solid-primitives/map": "^0.4.7",
     "object-standard-path": "^0.3.0"
   },
   "devDependencies": {
     "@solidjs/testing-library": "^0.8.4",
-    "@subframe7536/eslint-config": "^0.2.3",
+    "@subframe7536/eslint-config": "^0.2.5",
+    "@vitest/ui": "^0.34.1",
     "bumpp": "^9.1.1",
-    "changelogithub": "^0.12.12",
     "eslint": "^8.47.0",
     "jsdom": "^22.1.0",
     "tsup": "^7.2.0",
@@ -101,7 +101,7 @@
     "typescript": "^5.1.6",
     "vite": "^4.4.9",
     "vite-plugin-solid": "^2.7.0",
-    "vitest": "^0.34.1",
+    "vitest": "^0.34.2",
     "yaml": "^2.3.1"
   },
   "keywords": [

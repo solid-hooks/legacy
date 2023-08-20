@@ -8,7 +8,8 @@ const preset_options: preset.PresetOptions = {
       dev_entry: true,
     },
     {
-      entry: 'src/plugin.ts',
+      entry: 'src/plugin/index.ts',
+      name: 'plugin',
       dev_entry: true,
     },
   ],
@@ -36,7 +37,6 @@ export default defineConfig((config) => {
     const package_fields = preset.generatePackageExports(parsed_options)
     console.log(`package.json: \n\n${JSON.stringify(package_fields, null, 2)}\n\n`)
 
-    // will update ./package.json with the correct export fields
     preset.writePackageJson(package_fields)
   }
 

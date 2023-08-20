@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
 import { type FilterPattern, type Plugin, createFilter } from 'vite'
 
-interface I18nPluginOptions {
+export interface I18nPluginOptions {
   /**
    * message files path include pattern
    * @example 'locales/*.yml'
@@ -12,15 +12,15 @@ interface I18nPluginOptions {
    */
   exclude?: FilterPattern
   /**
-   * whether to generate yml for {@link https://github.com/lokalise/i18n-ally/wiki/Custom-Framework i18n-ally plugin}
-   */
-  generateConfigYml?: boolean
-  /**
    * raw message transform functions
    * @param content matched message file content
    * @param id matched message file path
    */
   transformMessage: (content: string, id: string) => any
+  /**
+   * whether to generate yml for {@link https://github.com/lokalise/i18n-ally/wiki/Custom-Framework i18n-ally plugin}
+   */
+  generateConfigYml?: boolean
 }
 
 function generateYml() {

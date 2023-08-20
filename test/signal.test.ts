@@ -1,12 +1,12 @@
 import { createSignal } from 'solid-js'
 import { describe, expect, expectTypeOf, test } from 'vitest'
-import { $, isSignalObject } from '../src'
+import { $ } from '../src'
 
 describe('test signal', () => {
   test('$()', () => {
     const foo = $()
     expect(foo()).toBe(undefined)
-    expect(isSignalObject(foo)).toBe(true)
+    expect(foo.$signal).toBeInstanceOf(Array)
   })
   test('$(number)', () => {
     const bar = $(1)

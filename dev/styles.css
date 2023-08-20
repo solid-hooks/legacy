@@ -6,6 +6,19 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+code,
+.font-mono {
+  font-family: monospace;
+}
+
+.m-1 {
+  margin: 0.25rem;
+}
+
+.bg-rose-400 {
+  background-color: #f56565;
+}
+
+.hover\:bg-slate-400:hover {
+  background-color: #64748b;
 }

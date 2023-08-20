@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest'
 import { testEffect } from '@solidjs/testing-library'
 import { createEffect, on } from 'solid-js'
-import { $i18n } from '../src/i18n'
+import { $i18n } from '../src'
 
 describe('i18n', () => {
   const testDict = {
@@ -18,10 +18,11 @@ describe('i18n', () => {
       t: 'deep',
     },
   }
-  const { $t, availiableLocales, locale } = $i18n<'testDict' | 'testDict1', typeof testDict>({
+  const useI18n = $i18n<'testDict' | 'testDict1', typeof testDict>({
     message: { testDict, testDict1 },
     defaultLocale: 'testDict',
   })
+  const { $t, availiableLocales, locale } = useI18n()
   test('default', async () => {
     expect(availiableLocales).toStrictEqual(['testDict', 'testDict1'])
     testEffect((done) => {

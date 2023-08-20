@@ -1,11 +1,11 @@
 import { createEffect, createSignal, onCleanup, untrack } from 'solid-js'
 
 /**
- * Executes a callback using the `requestIdleCallback` API, fallback to `requestAnimationFrame`.
- * otherwise execute the callback directly* Auto cleanup
+ * executes a callback using the `requestIdleCallback` API, fallback to `requestAnimationFrame`.
+ * otherwise execute the callback directly, auto cleanup
  *
- * @param callback - The function to execute when the browser is idle.
- * @param options - Optional configuration options for the idle callback.
+ * @param callback callback function.
+ * @param options original IdleRequestOptions.
  */
 export function $idle(
   callback: () => void,
