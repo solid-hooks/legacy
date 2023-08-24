@@ -3,6 +3,9 @@ import { createSignal, untrack } from 'solid-js'
 
 export type SignalParam<T> = Parameters<typeof createSignal<T>>
 
+/**
+ * type of `$()`
+ */
 export type SignalObject<T> = {
   (): T
   readonly $set: Setter<T>

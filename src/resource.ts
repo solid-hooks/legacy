@@ -6,14 +6,20 @@ import type { SignalObject } from './signal'
 type AddPrefix$ToKeys<T extends Record<string, any>> = {
   [K in keyof T as `$${string & K}`]: T[K];
 }
-type ResObject<T, R, Is, Actions = ResourceActions<Is extends true ? T : (T | undefined), R>> =
+type BaseResourceObject<T, R, Is, Actions = ResourceActions<Is extends true ? T : (T | undefined), R>> =
   (Is extends true ? InitializedResource<T> : Resource<T>) & AddPrefix$ToKeys<
      {
        [k in keyof Actions]: Actions[k]
      }
   >
-export type InitializedResourceObject<T, R> = ResObject<T, R, true>
-export type ResourceObject<T, R> = ResObject<T, R, false>
+/**
+ * type of `$res()` with initalized value
+ */
+export type InitializedResourceObject<T, R> = BaseResourceObject<T, R, true>
+/**
+ * type of `$res()`
+ */
+export type ResourceObject<T, R> = BaseResourceObject<T, R, false>
 
 type SourceOption<S> = {
   /**

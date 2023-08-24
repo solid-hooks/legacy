@@ -1,9 +1,10 @@
 import type { EffectFunction, MemoOptions } from 'solid-js'
 import { createMemo } from 'solid-js'
 
-export type MemoObject<T> = {
-  (): T
-}
+/**
+ * type of `$memo()`
+ */
+export type MemoObject<T> = () => T
 
 /**
  * object wrapper for `createMemo`
