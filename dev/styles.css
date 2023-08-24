@@ -6,6 +6,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+#root {
+  height: 100vh;
+  width: 100vw;
+}
+
 code,
 .font-mono {
   font-family: monospace;
@@ -20,5 +25,9 @@ code,
 }
 
 .hover\:bg-slate-400:hover {
-  background-color: #64748b;
+  background-color: #6f7b8c;
+}
+
+.text-black {
+  color: #000;
 }

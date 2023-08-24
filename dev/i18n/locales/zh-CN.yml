@@ -1,2 +1,3 @@
 test: 测试
 asd: 阿松大
+plural: '欢迎 {name}，上次登陆: {num} 天前'

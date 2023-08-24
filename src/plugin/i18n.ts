@@ -1,5 +1,6 @@
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
-import { type FilterPattern, type Plugin, createFilter } from 'vite'
+import { createFilter } from 'vite'
+import type { FilterPattern, Plugin } from 'vite'
 
 export interface I18nPluginOptions {
   /**
@@ -32,7 +33,7 @@ languageIds:
 - javascriptreact
 - typescriptreact
 usageMatchRegex:
-- "[^\\w\\d]t\\(['\"\`]({key})['\"\`]"
+- "[^\\\\w\\\\d]t\\(['\\\\"\`]({key})['\\\\"\`]"
 monopoly: true`.replace(/\r\n?/g, '\n')
   if (!existsSync('.vscode')) {
     mkdirSync('.vscode')

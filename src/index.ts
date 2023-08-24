@@ -14,7 +14,7 @@ export { $watch } from './watch'
 export type { WatchCallback, WatchOption } from './watch'
 
 export { $i18n } from './i18n'
-export type { I18nOption } from './i18n'
+export type { I18nOption, I18nContext, NumberFormats, DateTimeFormats } from './i18n/types'
 
 export { $idle } from './idle'
 
