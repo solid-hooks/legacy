@@ -1,10 +1,10 @@
 import { trackStore } from '@solid-primitives/deep'
-import { pathGet, pathSet } from 'object-standard-path'
-import type { Path } from 'object-standard-path'
+import { type Path, pathGet, pathSet } from 'object-standard-path'
 import { batch, createContext, createEffect, on, onCleanup, onMount, useContext } from 'solid-js'
 import type { Store } from 'solid-js/store'
 import { createStore, produce, reconcile, unwrap } from 'solid-js/store'
 import type { ActionObject, StateObject, StateSetup, StoreObject, SubscribeCallback } from './types'
+
 import { deepClone } from './utils'
 
 /**
@@ -22,13 +22,36 @@ export function $state<
   setup: StateSetup<State, Action, Paths>,
 ): () => StateObject<State, Action> {
   const { $init, $action, $persist } = setup
+  const {
+    key = name,
+    serializer: { write: writeFn, read: readFn } = { write: JSON.stringify, read: JSON.parse },
+    storage = localStorage,
+    paths,
+  } = $persist || {}
+
   const initalState = typeof $init === 'function' ? $init() : $init
   const [store, setStore] = createStore<State>(deepClone(initalState), { name: `$state_${name}` })
+
   const callbackList = new Set<SubscribeCallback<State>>()
   const effectList = new Set<(state: State) => void>()
 
   effectList.add(state => callbackList.size && batch(() => callbackList.forEach(cb => cb(state))))
-
+  const persistItems = (state: State, isInital = false) => {
+    const old = storage.getItem(key)
+    let serializedState: string
+    if (!paths || paths.length === 0) {
+      serializedState = writeFn(state)
+    } else {
+      const obj = {}
+      for (const path of paths) {
+        pathSet(obj, path as any, pathGet(state, path))
+      }
+      serializedState = writeFn(obj)
+    }
+    if (isInital || old !== serializedState) {
+      storage.setItem(key, serializedState)
+    }
+  }
   const utilFn = {
     $patch: (state: Partial<State> | ((oldState: State) => void)) => {
       setStore(
@@ -40,71 +63,38 @@ export function $state<
           ),
       )
     },
-    $reset: () => setStore(
-      reconcile(initalState, { key: name, merge: true }),
-    ),
+    $reset: (resetPersist?: boolean) => {
+      setStore(
+        reconcile(initalState, { key: name, merge: true }),
+      )
+      if (resetPersist && $persist && $persist.enable) {
+        storage.removeItem(key)
+        persistItems(initalState, true)
+      }
+    },
     $subscribe: (callback: (state: State) => void) => {
       callbackList.add(callback)
       return () => callbackList.delete(callback)
     },
   }
 
-  createEffect(on(
-    $trackStore(store),
-    (state: State) => effectList.forEach(cb => cb(state)),
-    { defer: true },
-  ))
-
   const initState = () => {
     if ($persist && $persist.enable) {
-      const {
-        debug = false,
-        key = name,
-        serializer: { serialize, deserialize } = { serialize: JSON.stringify, deserialize: JSON.parse },
-        storage = localStorage,
-        paths,
-      } = $persist
-
-      let obj = {} as any
-      function persistItems(state: State, isInital = false) {
-        if (!paths || paths.length === 0) {
-          const serializedState = serialize(state)
-          debug && console.log(`[$state - ${key}]: update to ${serializedState}`)
-          storage.setItem(key, serializedState)
-          return
-        }
-        let isSame = true
-        for (const path of paths) {
-          const oldValue = pathGet(obj, path)
-          const newValue = pathGet(state, path)
-          if (oldValue !== newValue) {
-            isSame = false
-          }
-          pathSet(obj, path as any, newValue)
-        }
-        if (isSame && !isInital) {
-          return
-        }
-        const serializedObject = serialize(obj)
-        debug && console.log(`[$state - ${key}]: update to ${serializedObject}`)
-        storage.setItem(key, serializedObject)
-      }
+      effectList.add(state => persistItems(state))
       onMount(() => {
         const stored = storage.getItem(key)
-        try {
-          if (stored) {
-            utilFn.$patch(deserialize(stored))
-            debug && console.log(`[$state - ${key}]: read from persisted, value: ${stored}`)
-          } else {
-            persistItems(unwrap(store), true)
-            debug && console.log(`[$state - ${key}]: no persisted data, initialize`)
-          }
-        } catch (e) {
-          debug && console.error(`[$state - ${key}]: ${e}`)
+        if (stored) {
+          utilFn.$patch(readFn(stored))
+        } else {
+          persistItems(unwrap(store), true)
         }
       })
-      effectList.add(state => persistItems(state))
     }
+    createEffect(on(
+      $trackStore(store),
+      (state: State) => effectList.forEach(cb => cb(state)),
+      { defer: true },
+    ))
     onCleanup(() => {
       callbackList.clear()
       effectList.clear()

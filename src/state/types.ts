@@ -20,8 +20,9 @@ type StateUtils<State> = {
   readonly $patch: (state: Partial<State> | ((state: State) => void)) => void
   /**
    * reset state
+   * @param resetPersist whether to also reset persist
    */
-  readonly $reset: () => void
+  readonly $reset: (resetPersist?: boolean) => void
   /**
    * subscribe to state
    */
@@ -68,10 +69,6 @@ export type PersistOption<State extends object, Paths extends Path<State>[] = []
    */
   serializer?: Serializer<FlattenType<PartialObject<State, Paths>>>
   /**
-   * whether to enable debug log
-   */
-  debug?: boolean
-  /**
    * object paths to persist, using {@link https://github.com/react-earth/object-standard-path object-standard-path}
    * @example ['test.ts','idList[0]']
    */
@@ -96,17 +93,18 @@ type ConvertType<T> = {
     [P in B]: T[K];
   }> : T[K];
 }
-export type StorageLike = Pick<Storage, 'getItem' | 'setItem'>
+export type StorageLike = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>
+
 interface Serializer<State> {
   /**
    * Serializes state into string before storing
    * @default JSON.stringify
    */
-  serialize: (value: State) => string
+  write: (value: State) => string
 
   /**
    * Deserializes string into state before hydrating
    * @default JSON.parse
    */
-  deserialize: (value: string) => State
+  read: (value: string) => State
 }

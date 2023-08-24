@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test } from 'vitest'
-import { $i18n } from '../src'
+import { $i18n, $tick } from '../src'
 
 describe('i18n', () => {
   const en = {
@@ -46,7 +46,7 @@ describe('i18n', () => {
 
   async function changeLocale() {
     locale.$set('zh')
-    await Promise.resolve()
+    await $tick()
   }
 
   test('translation', async () => {

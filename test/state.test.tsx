@@ -133,8 +133,10 @@ describe('test state', () => {
           setItem(key, value) {
             kv.set(key, value)
           },
+          removeItem(key) {
+            kv.delete(key)
+          },
         },
-        debug: true,
       },
     })
     const test = useState()
@@ -196,8 +198,10 @@ describe('test state', () => {
           setItem(key, value) {
             kv.set(key, value)
           },
+          removeItem(key) {
+            kv.delete(key)
+          },
         },
-        debug: true,
         paths: ['persist.count', 'nonePersist[0]'],
       },
     })
