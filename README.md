@@ -104,7 +104,6 @@ const useState = $state('test', {
   $persist: {
     enable: true,
     storage: localStorage,
-    debug: true,
     path: ['test'] // type safe, support `[]`
   },
 })
@@ -162,34 +161,91 @@ const {
 
 simple i18n, support async load message file
 
-#### normal load
+to get typesafe i18n:
+1. add first type param `Locale` of `$i18n`,
+2. set `datetimeFormats`/`numberFormats` keys,
+3. remove useless `Locale`, the `$i18n()` is typesafe
 
-see in [`test/i18n.test.ts`](test/i18n.test.ts)
+or separately define `datetimeFormats`/`numberFormats`
+with manually type declartion using type `DatetimeFormats`/`NumberFormats`
 
-#### async load
 
-```tsx
-const useI18n = $i18n({
-  // message: import.meta.glob('./locales/*.json'),
-  message: import.meta.glob('./locales/*.yml'),
-  parseKey: path => path.slice(10, -4),
-  defaultLocale: 'en',
-})
-const { $t, availableLocales, locale } = useI18n()
-locale.$set('zh-CN')
-<div>$t('deep.t')</div>
+#### variable syntax
+
+`{variable}`
+
+e.g.
+```ts
+const en = { var: 'show {variable}' }
+$t('var', { variable: 'text' }) // show text
 ```
 
-add plugin in vite.config.ts if the translation files are not `.json`
+#### plural syntax
+
+`{variable}(case=text|case=text)`
+
+- case: support number(seprated by ',') / range(seprated by `-`) / '*'(fallback cases)
+- text: plural text, use `$` to show matched variable
+
+e.g.
+```ts
+const en = { plural: 'at {var}(1=one day|2-3,5=a few days|*=$ days) ago' }
+$t('plural', { var: 1 }) // at one day ago
+$t('plural', { var: 2 }) // at a few days ago
+$t('plural', { var: 4 }) // at 4 days ago
+$t('plural', { var: 5 }) // at a few days ago
+```
+
+#### example
+
+```ts
+const en = { t: 1, deep: { t: 1 } }
+const zh = { t: 2, deep: { t: 2 } }
+export const useI18n = $i18n({
+  message: { 'en': en, 'zh-CN': zh },
+  defaultLocale: 'en',
+  datetimeFormats: {
+    'en': {
+      short: { dateStyle: 'short' },
+      long: { dateStyle: 'long' },
+    },
+    'zh-CN': {
+      short: { dateStyle: 'short' },
+      long: { dateStyle: 'long' },
+    },
+  },
+  numberFormats: {
+    'en': {
+      currency: { style: 'currency', currency: 'USD' },
+    },
+    'zh-CN': {
+      currency: { style: 'currency', currency: 'CNY' },
+    },
+  },
+})
+// usage
+const { $t, $d, $n, availiableLocales, locale } = useI18n()
+```
+
+load on demand:
+```ts
+export const useI18n = $i18n({
+  message: import.meta.glob('./locales/*.yml'),
+  parseKey: path => path.slice(10, -5),
+})
+```
+to convert yml, setup built-in vite plugin
+
+vite.config.ts
 ```ts
 import { defineConfig } from 'vite'
 import { parse } from 'yaml'
 import { I18nPlugin } from 'solid-dollar/plugin'
 
 export default defineConfig({
-  /* ... */
+  // ...
   plugins: [
-    /* ... */
+    // ...
     I18nPlugin({
       include: 'i18n/locales/*.yml',
       transformMessage: content => parse(content),
@@ -197,6 +253,7 @@ export default defineConfig({
   ],
 })
 ```
+see more at [`dev/`](/dev) and [`test`](/test/i18n.test.ts)
 
 ### `$idle`
 
@@ -277,3 +334,7 @@ classes generator, [clsx](https://github.com/lukeed/clsx) like but smaller(178B 
   { 'enabled': true, 'disabled': false, 'm-1': 0, 'm-2': null },
 )}/>
 ```
+
+### `$tick`
+
+vue-like next tick, [reference](https://github.com/solidjs-use/solidjs-use/blob/main/packages/solid-to-vue/src/scheduler.ts)
