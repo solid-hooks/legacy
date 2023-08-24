@@ -13,12 +13,11 @@ import { deepClone } from './utils'
  * @param setup state setup object
 */
 export function $state<
-  Name extends string,
   State extends object = Record<string, any>,
   Action extends ActionObject = {},
   Paths extends Path<State>[] = [],
 >(
-  name: Name,
+  name: string,
   setup: StateSetup<State, Action, Paths>,
 ): () => StateObject<State, Action> {
   const { $init, $action, $persist } = setup

@@ -20,14 +20,22 @@ code,
   margin: 0.25rem;
 }
 
-.bg-rose-400 {
+.bg-rose-300 {
   background-color: #f56565;
 }
 
-.hover\:bg-slate-400:hover {
+.hover\:bg-slate-300:hover {
   background-color: #6f7b8c;
 }
 
-.text-black {
-  color: #000;
+.text-white {
+  color: #fff;
+}
+
+.flex {
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
+  margin: 0 auto;
+  gap: .5rem;
 }
