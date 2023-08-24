@@ -1,19 +1,33 @@
 import { readFileSync, writeFileSync } from 'node:fs'
+import ts from 'typescript'
 
 const file = readFileSync('src/index.ts', 'utf-8')
 
-const vars = []
-const types = []
+function getExports(code) {
+  const sourceFile = ts.createSourceFile('temp.ts', code, ts.ScriptTarget.Latest, true)
 
-const varArray = file.matchAll(/export {(.*)} .*/g)
-for (const e of varArray) {
-  vars.push(...e[1].trim().split(',').map(v => v.trim()))
-}
-const typeArray = file.matchAll(/export type {(.*)} .*/g)
-for (const e of typeArray) {
-  types.push(...e[1].trim().split(',').map(v => v.trim()))
-}
+  const list = {
+    types: [],
+    vars: [],
+  }
 
+  ts.forEachChild(sourceFile, (node) => {
+    if (ts.isExportDeclaration(node)) {
+      const exported = node.exportClause.elements
+
+      exported.forEach((exp) => {
+        if (ts.isTypeOnlyExportDeclaration(exp)) {
+          list.types.push(exp.name.text)
+        } else {
+          list.vars.push(exp.name.text)
+        }
+      })
+    }
+  })
+
+  return list
+}
+const { vars, types } = getExports(file)
 const result = [
   {
     from: 'solid-dollar',
@@ -32,4 +46,4 @@ const replacedCode = code.replace(/export const \$autoImport: ImportMap = \[[\S\
 
 writeFileSync('src/plugin/auto-import.ts', `${replacedCode}export const \$autoImport: ImportMap = ${imports}`)
 
-console.log('finish update $autoImport')
+console.log('update $autoImport')
