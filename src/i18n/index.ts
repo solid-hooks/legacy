@@ -83,7 +83,7 @@ function assertImportType(value: any, fn: I18nOption['parseKey']) {
  *   },
  * })
  * // usage
- * const { $t, availiableLocales, locale } = useI18n()
+ * const { $t, $d, $n, availiableLocales, locale } = useI18n()
  * ```
  * @example
  * load on demand

@@ -34,11 +34,13 @@ export const $autoImport: ImportMap = [
       '$state',
       '$store',
       '$trackStore',
+      'deepClone',
       '$watch',
       '$i18n',
       '$idle',
       '$model',
       '$cx',
+      '$tick',
     ],
   },
   {
