@@ -1,6 +1,6 @@
 import { fireEvent, render } from '@solidjs/testing-library'
 import { describe, expect, test, vi } from 'vitest'
-import { $memo, $state } from '../src'
+import { $memo, $state, $tick } from '../src'
 
 describe('test state', () => {
   test('$state()', async () => {
@@ -32,7 +32,7 @@ describe('test state', () => {
 
     const state = useState()
 
-    await Promise.resolve()
+    await $tick()
     state.$subscribe(callback)
     expect(state().test).toBe(1)
     expect(state.doubleValue()).toBe(2)
@@ -63,7 +63,7 @@ describe('test state', () => {
     expect(state().foo).toBe('bar')
     expect(state.doubleValue()).toBe(2)
 
-    await Promise.resolve()
+    await $tick()
     expect(callback).toHaveBeenCalledTimes(4)
   })
   test('should successfully use nest $state()', async () => {
@@ -103,11 +103,11 @@ describe('test state', () => {
     expect(p.innerHTML).toBe('0')
 
     fireEvent.click(incrementBtn)
-    await Promise.resolve()
+    await $tick()
     expect(p.innerHTML).toBe('1')
 
     fireEvent.click(decrementBtn)
-    await Promise.resolve()
+    await $tick()
     expect(p.innerHTML).toBe('0')
 
     tempState.generate()
@@ -152,7 +152,7 @@ describe('test state', () => {
     const incrementBtn = getByTestId('increment')
     const decrementBtn = getByTestId('decrement')
 
-    await Promise.resolve()
+    await $tick()
     expect(p.innerHTML).toBe('0')
     expect(kv.get('test')).toBe('{"count":0}')
 
@@ -218,17 +218,17 @@ describe('test state', () => {
     const incrementBtn = getByTestId('increment')
     const decrementBtn = getByTestId('decrement')
 
-    await Promise.resolve()
+    await $tick()
     expect(p.innerHTML).toBe('0')
     expect(kv.get('test')).toBe('{"persist":{"count":0},"nonePersist":["test"]}')
 
     fireEvent.click(incrementBtn)
-    await Promise.resolve()
+    await $tick()
     expect(p.innerHTML).toBe('1')
     expect(kv.get('test')).toBe('{"persist":{"count":1},"nonePersist":["increment"]}')
 
     fireEvent.click(decrementBtn)
-    await Promise.resolve()
+    await $tick()
     expect(p.innerHTML).toBe('0')
     expect(kv.get('test')).toBe('{"persist":{"count":0},"nonePersist":["decrement"]}')
 
