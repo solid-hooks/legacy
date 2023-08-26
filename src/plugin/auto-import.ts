@@ -41,6 +41,7 @@ export const $autoImport: ImportMap = [
       '$model',
       '$cx',
       '$tick',
+      '$runWithOwner',
     ],
   },
   {

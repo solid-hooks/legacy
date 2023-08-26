@@ -338,3 +338,19 @@ classes generator, [clsx](https://github.com/lukeed/clsx) like but smaller(178B 
 ### `$tick`
 
 vue-like next tick, [reference](https://github.com/solidjs-use/solidjs-use/blob/main/packages/solid-to-vue/src/scheduler.ts)
+
+### `$runWithOwner`
+
+wrapper for `runWithOwner` + `getOwner`
+
+the [official use case](https://www.solidjs.com/docs/latest/api#runwithowner) can transfer to:
+
+```ts
+const run = $runWithOwn(() => {
+  const foo = useContext(FooContext);
+  createEffect(() => {
+    console.log(foo);
+  });
+});
+setTimeout(() => run, 1000);
+```

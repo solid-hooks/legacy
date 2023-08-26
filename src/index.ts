@@ -37,3 +37,5 @@ export type { ModelParam, ModelElement, ModelDirective } from './model'
 export { $cx } from './cx'
 
 export { $tick } from './tick'
+
+export { $runWithOwner } from './runWithOwner'
