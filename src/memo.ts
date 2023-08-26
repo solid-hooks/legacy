@@ -4,7 +4,7 @@ import { createMemo } from 'solid-js'
 /**
  * type of `$memo()`
  */
-export type MemoObject<T> = () => T
+export type MemoObject<T> = () => (T extends (...args: any) => infer R ? R : T)
 
 /**
  * object wrapper for `createMemo`
@@ -28,5 +28,5 @@ export function $memo<T>(
     value,
     option,
   )
-  return memo
+  return memo as MemoObject<T>
 }
