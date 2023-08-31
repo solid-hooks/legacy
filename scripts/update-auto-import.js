@@ -39,11 +39,14 @@ const result = [
     type: true,
   },
 ]
-
 const code = readFileSync('src/plugin/auto-import.ts', 'utf-8')
 const imports = JSON.stringify(result, null, 2)
-const replacedCode = code.replace(/export const \$autoImport: ImportMap = \[[\S\s]*\]/gm, '')
+const directiveOnly = JSON.stringify([{ from: 'solid-dollar', imports: ['$model'] }], null, 2)
+const replacedCode = code.replace(/export const \$autoImport: ImportFn = [\s\S]*/gm, '')
 
-writeFileSync('src/plugin/auto-import.ts', `${replacedCode}export const \$autoImport: ImportMap = ${imports}`)
+writeFileSync(
+  'src/plugin/auto-import.ts',
+  `${replacedCode}export const \$autoImport: ImportFn = d => d ? ${directiveOnly} : ${imports}`,
+)
 
 console.log('update $autoImport')
