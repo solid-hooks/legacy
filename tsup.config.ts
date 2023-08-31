@@ -12,6 +12,11 @@ const preset_options: preset.PresetOptions = {
       name: 'plugin',
       dev_entry: true,
     },
+    {
+      entry: 'src/i18n/util.ts',
+      name: 'i18n-util',
+      dev_entry: true,
+    },
   ],
   drop_console: true,
   cjs: true,

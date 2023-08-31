@@ -1,22 +1,7 @@
-import { pathGet } from 'object-standard-path'
 import { createContext, createResource, useContext } from 'solid-js'
 import { $ } from '../signal'
-import { convertPlural } from './plural'
 import type { I18nContext, I18nOption, MessageType } from './types'
-
-function parseMessage<Locale extends string>(
-  imports: I18nOption<Locale>['message'],
-  parseKey: Required<I18nOption<Locale>>['parseKey'],
-) {
-  const messageMap = new Map<string, any>()
-  const availiableLocales: Locale[] = []
-  for (const [key, value] of Object.entries(imports)) {
-    const k = typeof value == 'function' ? parseKey(key) : key
-    availiableLocales.push(k as Locale)
-    messageMap.set(k, value)
-  }
-  return { messageMap, availiableLocales }
-}
+import { parseMessage, translate } from './util'
 
 function assertImportType(value: any, fn: I18nOption['parseKey']) {
   if (typeof value === 'function' && fn === undefined) {
@@ -129,7 +114,10 @@ export function $i18n<
     numberFormats,
   } = option
   assertImportType(Object.values(message)[0], parseKey)
-  const { availiableLocales, messageMap } = parseMessage<Locale>(message, parseKey!)
+  const {
+    availiableLocales,
+    messageMap,
+  } = parseMessage<Locale, Message>(message, parseKey)
 
   const datetimeFormatMap = new Map<string, Record<string, Intl.DateTimeFormat>>()
   const numberFormatMap = new Map<string, Record<string, Intl.NumberFormat>>()
@@ -166,20 +154,8 @@ export function $i18n<
       : msg
   })
 
-  // {name}
-  const varRegex = /\{([^{}]+)\}(?!\()/g
-  // {num}(1=one test|2-3,5=$ tests|*=$ testss)
-  const pluralRegex = /{([\w\d]+)}\(([^()]+)\)/g
-
   const $t: I18nContext<Locale, Message>['$t'] = (path, variable) => {
-    return `${pathGet(currentMessage(), path as any)}`
-      .replace(varRegex, (_, key) => pathGet(variable, key))
-      .replace(pluralRegex, (originalStr, key, configs) => {
-        const num = +pathGet(variable, key)
-        return Number.isNaN(num)
-          ? originalStr
-          : convertPlural(originalStr, configs, num)
-      })
+    return translate(currentMessage(), path, variable)
   }
 
   const $n: I18nContext<Locale, Message>['$n'] = (num, type, l) =>
