@@ -3,10 +3,10 @@ type ImportMap = {
   imports: string[]
   type?: boolean
 }[]
-
+type ImportFn = (directiveOnly: boolean) => ImportMap
 /**
  * adapter for unplugin-auto-import
- *
+ * @param directiveOnly whether to only import directive
  * @example
  * ```ts
  * import AutoImport from 'unplugin-auto-import/vite'
@@ -17,56 +17,67 @@ type ImportMap = {
  *     // ...
  *     AutoImport({
  *       // ...
- *       import: ['solid-js', ...$autoImport],
+ *       import: ['solid-js', ...$autoImport(false)],
  *     }),
  *   ],
  * })
  * ```
  */
-export const $autoImport: ImportMap = [
-  {
-    from: 'solid-dollar',
-    imports: [
-      '$',
-      '$$',
-      '$memo',
-      '$res',
-      '$state',
-      '$store',
-      '$trackStore',
-      'deepClone',
-      '$watch',
-      '$i18n',
-      '$idle',
-      '$model',
-      '$cx',
-      '$tick',
-      '$runWithOwner',
-    ],
-  },
-  {
-    from: 'solid-dollar',
-    imports: [
-      'SignalObject',
-      'MemoObject',
-      'ResourceObject',
-      'InitializedResourceObject',
-      'PersistOption',
-      'StateSetup',
-      'StateObject',
-      'StoreObject',
-      'StorageLike',
-      'SubscribeCallback',
-      'WatchCallback',
-      'WatchOption',
-      'I18nOption',
-      'I18nContext',
-      'NumberFormats',
-      'DateTimeFormats',
-      'ModelParam',
-      'ModelElement',
-      'ModelDirective',
-    ],
-    type: true,
-  },
-]
+export const $autoImport: ImportFn = d => d
+  ? [
+      {
+        from: 'solid-dollar',
+        imports: [
+          '$model',
+        ],
+      },
+    ]
+  : [
+      {
+        from: 'solid-dollar',
+        imports: [
+          '$',
+          '$$',
+          '$memo',
+          '$res',
+          '$state',
+          '$store',
+          '$trackStore',
+          'deepClone',
+          '$watch',
+          '$i18n',
+          '$idle',
+          '$model',
+          '$cx',
+          '$tick',
+          '$runWithOwner',
+          '$idb',
+          '$app',
+        ],
+      },
+      {
+        from: 'solid-dollar',
+        imports: [
+          'SignalObject',
+          'MemoObject',
+          'ResourceObject',
+          'InitializedResourceObject',
+          'PersistOption',
+          'StateSetup',
+          'StateObject',
+          'StoreObject',
+          'StorageLike',
+          'SubscribeCallback',
+          'WatchCallback',
+          'WatchOption',
+          'I18nOption',
+          'I18nContext',
+          'NumberFormats',
+          'DateTimeFormats',
+          'ModelParam',
+          'ModelElement',
+          'ModelDirective',
+        ],
+        type: true,
+      },
+    ]

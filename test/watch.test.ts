@@ -1,46 +1,46 @@
 import { describe, expect, test, vi } from 'vitest'
 import { createRoot } from 'solid-js'
-import { $, $watch } from '../src'
+import { $, $tick, $watch } from '../src'
 
-describe('$effect', () => {
+describe('$watch', () => {
   test('basic', async () => {
     const value = $(0)
     const callback = vi.fn()
 
     createRoot(() => $watch(value, callback, { defer: true }))
 
-    await Promise.resolve()
+    await $tick()
     value.$set(1)
-    await Promise.resolve()
+    await $tick()
     expect(callback).toHaveBeenCalledTimes(1)
-    expect(callback).toHaveBeenCalledWith(1, undefined, undefined)
+    expect(callback).toHaveBeenCalledWith(1, undefined)
 
     value.$set(2)
-    await Promise.resolve()
+    await $tick()
     expect(callback).toHaveBeenCalledTimes(2)
-    expect(callback).toHaveBeenCalledWith(2, 1, undefined)
+    expect(callback).toHaveBeenCalledWith(2, 1)
   })
 
   test('filter', async () => {
     const str = $('old')
     const callback = vi.fn()
-    const filter = (newValue: string) => {
+    const filterFn = (newValue: string) => {
       return newValue !== 'new'
     }
 
-    createRoot(() => $watch(str, callback, { filterFn: filter, defer: true }))
+    createRoot(() => $watch(str, callback, { filterFn, defer: true }))
 
-    await Promise.resolve()
+    await $tick()
     str.$set('new')
-    await Promise.resolve()
+    await $tick()
     expect(callback).toHaveBeenCalledTimes(0)
 
     str.$set('new new')
-    await Promise.resolve()
+    await $tick()
     expect(callback).toHaveBeenCalledTimes(1)
 
     // cannot filter old value
-    expect(callback).toHaveBeenCalledWith('new new', 'new', undefined)
+    expect(callback).toHaveBeenCalledWith('new new', 'new')
   })
 
   test('pause & resume', async () => {
@@ -50,25 +50,25 @@ describe('$effect', () => {
 
       const { pause, resume, isWatching } = $watch(value, callback, { defer: true })
 
-      await Promise.resolve()
+      await $tick()
       value.$set(100)
-      await Promise.resolve()
+      await $tick()
       expect(callback).toHaveBeenCalledTimes(1)
-      expect(callback).toHaveBeenCalledWith(100, undefined, undefined)
+      expect(callback).toHaveBeenCalledWith(100, undefined)
 
       pause()
       expect(isWatching()).toBe(false)
       value.$set(200)
-      await Promise.resolve()
+      await $tick()
       expect(callback).toHaveBeenCalledTimes(1)
 
       resume()
       value.$set(300)
-      await Promise.resolve()
+      await $tick()
       expect(callback).toHaveBeenCalledTimes(2)
 
       // cannot filter old value
-      expect(callback).toHaveBeenCalledWith(300, 200, undefined)
+      expect(callback).toHaveBeenCalledWith(300, 200)
     })
   })
 })

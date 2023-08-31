@@ -39,3 +39,7 @@ export { $cx } from './cx'
 export { $tick } from './tick'
 
 export { $runWithOwner } from './runWithOwner'
+
+export { $idb } from './idb'
+
+export { $app } from './app'
