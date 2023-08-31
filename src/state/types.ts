@@ -1,5 +1,5 @@
 import type { Path, PathValue } from 'object-standard-path'
-import type { SetStoreFunction, Store } from 'solid-js/store/types/store'
+import type { SetStoreFunction, Store } from 'solid-js/store'
 
 /**
  * type of `$store()`
@@ -39,8 +39,20 @@ export type StateSetup<
   Action extends ActionObject,
   Paths extends Path<State>[],
 > = {
-  $init: State | (() => State)
+  /**
+   * initial state, support object or Store (return of `createStore`)
+   *
+   * if is Store, maybe built-in `$patch` and `$reset`
+   * will not work as expect
+   */
+  $init: State | (() => State | [Store<State>, SetStoreFunction<State>])
+  /**
+   * actions for the state
+   */
   $action?: ActionFunction<State, Action>
+  /**
+   * persist options for state
+   */
   $persist?: PersistOption<State, Paths>
 }
 

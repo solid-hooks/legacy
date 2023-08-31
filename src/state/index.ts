@@ -1,6 +1,6 @@
 import { trackStore } from '@solid-primitives/deep'
 import { type Path, pathGet, pathSet } from 'object-standard-path'
-import { batch, createContext, createEffect, on, onCleanup, onMount, useContext } from 'solid-js'
+import { DEV, batch, createComputed, createContext, on, onCleanup, onMount, useContext } from 'solid-js'
 import type { Store } from 'solid-js/store'
 import { createStore, produce, reconcile, unwrap } from 'solid-js/store'
 import type { ActionObject, StateObject, StateSetup, StoreObject, SubscribeCallback } from './types'
@@ -11,6 +11,7 @@ import { deepClone } from './utils'
  * initialize global state
  * @param name state name
  * @param setup state setup object
+ * @param _log whether to enable log when dev, default is `false`
 */
 export function $state<
   State extends object = Record<string, any>,
@@ -19,6 +20,7 @@ export function $state<
 >(
   name: string,
   setup: StateSetup<State, Action, Paths>,
+  _log?: boolean,
 ): () => StateObject<State, Action> {
   const { $init, $action, $persist } = setup
   const {
@@ -28,11 +30,16 @@ export function $state<
     paths,
   } = $persist || {}
 
-  const initalState = typeof $init === 'function' ? $init() : $init
-  const [store, setStore] = createStore<State>(deepClone(initalState), { name: `$state_${name}` })
+  const initialState = typeof $init === 'function' ? $init() : $init
+  const stateName = `$state::${name}`
+  const [store, setStore] = Array.isArray(initialState)
+    ? initialState
+    // eslint-disable-next-line solid/reactivity
+    : createStore<State>(deepClone(initialState), { name: stateName })
 
   const callbackList = new Set<SubscribeCallback<State>>()
   const effectList = new Set<(state: State) => void>()
+  const log = (...args: any[]) => DEV && _log && console.log(`[${stateName}]`, ...args)
 
   effectList.add(state => callbackList.size && batch(() => callbackList.forEach(cb => cb(state))))
   const persistItems = (state: State, isInital = false) => {
@@ -49,6 +56,7 @@ export function $state<
     }
     if (isInital || old !== serializedState) {
       storage.setItem(key, serializedState)
+      log('persist state:', serializedState)
     }
   }
   const utilFn = {
@@ -63,12 +71,16 @@ export function $state<
       )
     },
     $reset: (resetPersist?: boolean) => {
+      if (Array.isArray(initialState)) {
+        log('Fail to reset: type of initial value is Store')
+        return
+      }
       setStore(
-        reconcile(initalState, { key: name, merge: true }),
+        reconcile(initialState, { key: name, merge: true }),
       )
       if (resetPersist && $persist && $persist.enable) {
         storage.removeItem(key)
-        persistItems(initalState, true)
+        persistItems(initialState, true)
       }
     },
     $subscribe: (callback: (state: State) => void) => {
@@ -77,24 +89,28 @@ export function $state<
     },
   }
 
-  const initState = () => {
+  const init = () => {
+    log('initial state:', unwrap(store))
     if ($persist && $persist.enable) {
       effectList.add(state => persistItems(state))
       onMount(() => {
         const stored = storage.getItem(key)
         if (stored) {
+          log('load from storage:', stored)
           utilFn.$patch(readFn(stored))
         } else {
+          log('no previous store, persist')
           persistItems(unwrap(store), true)
         }
       })
     }
-    createEffect(on(
+    createComputed(on(
       $trackStore(store),
       (state: State) => effectList.forEach(cb => cb(state)),
       { defer: true },
     ))
     onCleanup(() => {
+      log('cleanup')
       callbackList.clear()
       effectList.clear()
     })
@@ -105,7 +121,7 @@ export function $state<
     )
   }
 
-  const ctx = createContext(initState())
+  const ctx = createContext(init())
   return () => useContext(ctx)
 }
 
