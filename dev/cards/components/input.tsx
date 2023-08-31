@@ -1,4 +1,4 @@
-import { useInfoState } from '../state'
+import { useInfoState } from '../../state'
 
 export default function Input() {
   const info = useInfoState()

@@ -1,6 +1,6 @@
 # solid-dollar
 
-hooks for solid.js
+object style hooks / i18n / global state management for solid.js
 
 ## install
 
@@ -142,7 +142,7 @@ pausable and filterable `createEffect`
 ```ts
 const str = $('old')
 const callback = console.log
-const filter = (newValue: string, times: number) => {
+function filter(newValue: string, times: number) {
   return newValue !== 'new'
 }
 const {
@@ -151,9 +151,12 @@ const {
   resume,
   runWithoutEffect,
 } = $watch(str, callback, {
-  callFn: throttle, // function for trigger callback, like `debounce()` or `throttle()` in `@solid-primitives/scheduled`
-  filterFn: filter, // function for filter value
-  defer: true, // createEffect defer
+  // function for trigger callback, like `debounce()` or `throttle()` in `@solid-primitives/scheduled`
+  triggerFn: fn => throttle(fn, 500),
+  // function for filter value
+  filterFn: filter,
+  // createEffect `onOptions.defer`
+  defer: true,
 })
 ```
 
@@ -311,7 +314,7 @@ export default defineConfig({
   plugins: [
     // ...
     AutoImport({
-      import: [...$autoImport],
+      import: [...$autoImport(true)],
     }),
   ],
 })
@@ -332,7 +335,8 @@ classes generator, [clsx](https://github.com/lukeed/clsx) like but smaller(178B 
   count() === 2 && 'm-1',
   null,
   { 'enabled': true, 'disabled': false, 'm-1': 0, 'm-2': null },
-)}/>
+)}
+/>
 ```
 
 ### `$tick`
@@ -347,10 +351,42 @@ the [official use case](https://www.solidjs.com/docs/latest/api#runwithowner) ca
 
 ```ts
 const run = $runWithOwn(() => {
-  const foo = useContext(FooContext);
+  const foo = useContext(FooContext)
   createEffect(() => {
-    console.log(foo);
-  });
-});
-setTimeout(() => run, 1000);
+    console.log(foo)
+  })
+})
+setTimeout(() => run, 1000)
 ```
+
+### `$app`
+
+Vue's `createApp` like initialization, works in both `.ts` and `.tsx`
+@example
+
+```ts
+import App from './App'
+
+createApp(App)
+  .use(RouterProvider)
+  .use(I18nProvider, { dict })
+  .use(GlobalStoreProvider)
+  .mount('#app')
+```
+
+is equal to:
+
+```tsx
+render(
+  <RouterProvider>
+    <I18nProvider dict={dict}>
+      <GlobalStoreProvider>
+        <App />
+      </GlobalStoreProvider>
+    </I18nProvider>
+  </RouterProvider>,
+  document.querySelector('#app')
+)
+```
+
+reference from [solid-utls](https://github.com/amoutonbrady/solid-utils#createapp)

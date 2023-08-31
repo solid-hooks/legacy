@@ -19,7 +19,6 @@
     "noUncheckedIndexedAccess": true,
     "jsx": "preserve",
     "jsxImportSource": "solid-js",
-    "baseUrl": "."
   },
   "exclude": [
     "node_modules",

@@ -12,4 +12,4 @@ export const useInfoState = $state('info', {
       setState('test', test)
     },
   }),
-})
+}, true)

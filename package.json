@@ -1,7 +1,7 @@
 {
   "name": "solid-dollar",
   "version": "0.3.3",
-  "description": "solid js hooks",
+  "description": "object style hooks / i18n / global state management for solid.js",
   "license": "MIT",
   "author": "subframe7536",
   "repository": {
@@ -44,6 +44,26 @@
         "default": "./dist/index/index.cjs"
       }
     },
+    "./i18n-util": {
+      "development": {
+        "import": {
+          "types": "./dist/i18n-util/index.d.ts",
+          "default": "./dist/i18n-util/dev.js"
+        },
+        "require": {
+          "types": "./dist/i18n-util/index.d.cts",
+          "default": "./dist/i18n-util/dev.cjs"
+        }
+      },
+      "import": {
+        "types": "./dist/i18n-util/index.d.ts",
+        "default": "./dist/i18n-util/index.js"
+      },
+      "require": {
+        "types": "./dist/i18n-util/index.d.cts",
+        "default": "./dist/i18n-util/index.cjs"
+      }
+    },
     "./plugin": {
       "development": {
         "import": {
@@ -67,6 +87,9 @@
   },
   "typesVersions": {
     "*": {
+      "i18n-util": [
+        "./dist/i18n-util/index.d.ts"
+      ],
       "plugin": [
         "./dist/plugin/index.d.ts"
       ]
@@ -83,6 +106,7 @@
     "lint:types": "tsc --noEmit"
   },
   "peerDependencies": {
+    "idb-keyval": "^6.2.1",
     "solid-js": "^1.6.0"
   },
   "dependencies": {
@@ -91,17 +115,19 @@
   },
   "devDependencies": {
     "@solidjs/testing-library": "^0.8.4",
-    "@subframe7536/eslint-config": "^0.2.5",
+    "@subframe7536/eslint-config": "^0.2.6",
     "bumpp": "^9.2.0",
     "eslint": "^8.48.0",
+    "idb-keyval": "^6.2.1",
     "jsdom": "^22.1.0",
     "tsup": "^7.2.0",
-    "tsup-preset-solid": "^2.0.2",
+    "tsup-preset-solid": "^2.1.0",
     "typescript": "^5.2.2",
     "vite": "^4.4.9",
     "vite-plugin-solid": "^2.7.0",
     "vitest": "0.34.2",
-    "yaml": "^2.3.1"
+    "vitest-indexeddb": "^0.0.0",
+    "yaml": "^2.3.2"
   },
   "keywords": [
     "solid",
