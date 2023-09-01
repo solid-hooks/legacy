@@ -1,8 +1,11 @@
-import type { Accessor, Setter, Signal } from 'solid-js'
+import type { Accessor, Setter, Signal, SignalOptions } from 'solid-js'
 import { createSignal, untrack } from 'solid-js'
 
-export type SignalParam<T> = Parameters<typeof createSignal<T>>
-
+export type SignalParam<T> = [value: T, options?: SignalObjectOptions<T>]
+type SignalObjectOptions<T> = SignalOptions<T> & {
+  onGet?: (value: T) => void
+  onSet?: (newValue: T) => void
+}
 /**
  * type of `$()`
  */
@@ -22,7 +25,7 @@ function isSignal<T>(val: unknown): val is Signal<T> {
 }
 
 /**
- * object wrapper for `createSignal`
+ * object wrapper for `createSignal`, allow to setup get/set hooks
  * @param args original signal options or signal
  */
 export function $<T>(...args: []): SignalObject<T | undefined>
@@ -34,9 +37,19 @@ export function $<T>(...args: [] | [Signal<T>] | SignalParam<T>) {
     // eslint-disable-next-line solid/reactivity
     : createSignal(...args as SignalParam<T>)
 
+  const _get = () => {
+    const ret = val()
+    args?.[1]?.onGet?.(ret)
+    return ret
+  }
+  const _set: Setter<T> = (...v) => {
+    const ret = set(...v as any)
+    args?.[1]?.onSet?.(ret)
+    return ret
+  }
   return Object.assign(
-    () => val(),
-    { $set: set, $signal: [val, set] },
+    _get,
+    { $set: _set, $signal: [_get, _set] },
   )
 }
 /**

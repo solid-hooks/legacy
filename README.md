@@ -30,6 +30,11 @@ console.log(data.$set(1)) // 1
 console.log(data()) // 1
 
 console.log(data.$signal) // original signal
+
+const hooks = $('hooks', {
+  onGet: v => console.log(v),
+  onSet: newV => console.log(newV)
+})
 ```
 
 #### `$$`
