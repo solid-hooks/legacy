@@ -1,6 +1,6 @@
 import { trackStore } from '@solid-primitives/deep'
 import { type Path, pathGet, pathSet } from 'object-standard-path'
-import { DEV, batch, createComputed, createContext, on, onCleanup, onMount, useContext } from 'solid-js'
+import { DEV, batch, createComputed, createContext, createEffect, on, onCleanup, onMount, useContext } from 'solid-js'
 import type { Store } from 'solid-js/store'
 import { createStore, produce, reconcile, unwrap } from 'solid-js/store'
 import type { ActionObject, StateObject, StateSetup, StoreObject, SubscribeCallback } from './types'
@@ -41,7 +41,6 @@ export function $state<
   const effectList = new Set<(state: State) => void>()
   const log = (...args: any[]) => DEV && _log && console.log(`[${stateName}]`, ...args)
 
-  effectList.add(state => callbackList.size && batch(() => callbackList.forEach(cb => cb(state))))
   const persistItems = (state: State, isInital = false) => {
     const old = storage.getItem(key)
     let serializedState: string
@@ -91,8 +90,11 @@ export function $state<
 
   const init = () => {
     log('initial state:', unwrap(store))
+    createEffect(on(
+      $trackStore(store),
+      state => callbackList.size && batch(() => callbackList.forEach(cb => cb(state))),
+    ))
     if ($persist && $persist.enable) {
-      effectList.add(state => persistItems(state))
       onMount(() => {
         const stored = storage.getItem(key)
         if (stored) {
@@ -103,12 +105,12 @@ export function $state<
           persistItems(unwrap(store), true)
         }
       })
+      createComputed(on(
+        $trackStore(store),
+        (state: State) => persistItems(state),
+        { defer: true },
+      ))
     }
-    createComputed(on(
-      $trackStore(store),
-      (state: State) => effectList.forEach(cb => cb(state)),
-      { defer: true },
-    ))
     onCleanup(() => {
       log('cleanup')
       callbackList.clear()
