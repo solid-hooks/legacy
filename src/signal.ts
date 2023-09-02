@@ -1,14 +1,20 @@
 import type { Accessor, Setter, Signal, SignalOptions } from 'solid-js'
 import { createSignal, untrack } from 'solid-js'
+import { deepClone } from './state/utils'
 
 export type SignalParam<T> = [value: T, options?: SignalObjectOptions<T>]
+type PostSet<T> = (newValue: T) => void
+
 type SignalObjectOptions<T> = SignalOptions<T> & {
-  onGet?: (value: T) => void
-  onSet?: (newValue: T) => void
+  /**
+   * trigger post setter
+   */
+  postSet?: PostSet<T>
+  /**
+   * deepclone previous value when $set
+   */
+  deep?: boolean
 }
-/**
- * type of `$()`
- */
 export type SignalObject<T> = {
   (): T
   readonly $set: Setter<T>
@@ -32,24 +38,24 @@ export function $<T>(...args: []): SignalObject<T | undefined>
 export function $<T>(...args: [Signal<T>]): SignalObject<T>
 export function $<T>(...args: SignalParam<T>): SignalObject<T>
 export function $<T>(...args: [] | [Signal<T>] | SignalParam<T>) {
+  const { postSet, deep, ...options } = args?.[1] || {}
+
   const [val, set] = (args.length && isSignal<T>(args[0]))
     ? args[0]
     // eslint-disable-next-line solid/reactivity
-    : createSignal(...args as SignalParam<T>)
+    : createSignal(args[0] as T, options)
 
-  const _get = () => {
-    const ret = val()
-    args?.[1]?.onGet?.(ret)
-    return ret
-  }
-  const _set: Setter<T> = (...v) => {
-    const ret = set(...v as any)
-    args?.[1]?.onSet?.(ret)
+  const _set: Setter<T> = (v?: T | ((prev: T) => T)) => {
+    const value = deep && typeof v === 'function'
+      ? (v as any)(deepClone(untrack(val)))
+      : v
+    const ret = set(value)
+    postSet?.(ret)
     return ret
   }
   return Object.assign(
-    _get,
-    { $set: _set, $signal: [_get, _set] },
+    val,
+    { $set: _set, $signal: [val, _set] },
   )
 }
 /**
@@ -57,4 +63,8 @@ export function $<T>(...args: [] | [Signal<T>] | SignalParam<T>) {
  */
 export function $$<T>(signal: Accessor<T> | SignalObject<T>): T {
   return untrack(signal)
+}
+
+export function $array<T extends any[]>(array: T, postSet?: PostSet<T>): SignalObject<T> {
+  return $(array, { deep: true, postSet })
 }

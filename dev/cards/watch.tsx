@@ -1,7 +1,9 @@
 import { $, $cx, $watch } from '../../src'
 
-export default function ShowWatch() {
-  const count = $(1)
+export default function ShowSignalAndWatch() {
+  const count = $<number>(1, {
+    postSet: console.log,
+  })
   $watch(count, (currentCount, oldCount) => {
     console.log('watch current value:', currentCount)
     console.log('watch old value:', oldCount)
