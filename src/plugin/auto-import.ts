@@ -38,6 +38,7 @@ export const $autoImport: ImportFn = d => d
         imports: [
           '$',
           '$$',
+          '$array',
           '$memo',
           '$res',
           '$state',

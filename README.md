@@ -41,6 +41,19 @@ const hooks = $('hooks', {
 
 `untrack` alias
 
+#### `$array`
+
+reactive array, built-in with deep clone
+
+```ts
+const list = $array([])
+list.$set((l) => {
+  l.push(1)
+  return l
+})
+console.log(list()) // [1]
+```
+
 ### `$memo`
 
 object wrapper for `createMemo`

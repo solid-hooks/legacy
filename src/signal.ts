@@ -65,6 +65,19 @@ export function $$<T>(signal: Accessor<T> | SignalObject<T>): T {
   return untrack(signal)
 }
 
+/**
+ * reactive array, built-in with deep clone
+ *
+ * @example
+ * ```ts
+ * const list = $array([])
+ * list.$set((l) => {
+ *   l.push(1)
+ *   return l
+ * })
+ * console.log(list()) // [1]
+ * ```
+ */
 export function $array<T extends any[]>(array: T, postSet?: PostSet<T>): SignalObject<T> {
   return $(array, { deep: true, postSet })
 }

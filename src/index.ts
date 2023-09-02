@@ -1,4 +1,4 @@
-export { $, $$ } from './signal'
+export { $, $$, $array } from './signal'
 export type { SignalObject } from './signal'
 
 export { $memo } from './memo'
