@@ -44,24 +44,24 @@
         "default": "./dist/index/index.cjs"
       }
     },
-    "./i18n-util": {
+    "./i18n": {
       "development": {
         "import": {
-          "types": "./dist/i18n-util/index.d.ts",
-          "default": "./dist/i18n-util/dev.js"
+          "types": "./dist/i18n/index.d.ts",
+          "default": "./dist/i18n/dev.js"
         },
         "require": {
-          "types": "./dist/i18n-util/index.d.cts",
-          "default": "./dist/i18n-util/dev.cjs"
+          "types": "./dist/i18n/index.d.cts",
+          "default": "./dist/i18n/dev.cjs"
         }
       },
       "import": {
-        "types": "./dist/i18n-util/index.d.ts",
-        "default": "./dist/i18n-util/index.js"
+        "types": "./dist/i18n/index.d.ts",
+        "default": "./dist/i18n/index.js"
       },
       "require": {
-        "types": "./dist/i18n-util/index.d.cts",
-        "default": "./dist/i18n-util/index.cjs"
+        "types": "./dist/i18n/index.d.cts",
+        "default": "./dist/i18n/index.cjs"
       }
     },
     "./plugin": {
@@ -83,15 +83,74 @@
         "types": "./dist/plugin/index.d.cts",
         "default": "./dist/plugin/index.cjs"
       }
+    },
+    "./state": {
+      "development": {
+        "import": {
+          "types": "./dist/state/index.d.ts",
+          "default": "./dist/state/dev.js"
+        },
+        "require": {
+          "types": "./dist/state/index.d.cts",
+          "default": "./dist/state/dev.cjs"
+        }
+      },
+      "import": {
+        "types": "./dist/state/index.d.ts",
+        "default": "./dist/state/index.js"
+      },
+      "require": {
+        "types": "./dist/state/index.d.cts",
+        "default": "./dist/state/index.cjs"
+      }
+    },
+    "./utils": {
+      "development": {
+        "import": {
+          "types": "./dist/utils/index.d.ts",
+          "default": "./dist/utils/dev.js"
+        },
+        "require": {
+          "types": "./dist/utils/index.d.cts",
+          "default": "./dist/utils/dev.cjs"
+        }
+      },
+      "import": {
+        "types": "./dist/utils/index.d.ts",
+        "default": "./dist/utils/index.js"
+      },
+      "require": {
+        "types": "./dist/utils/index.d.cts",
+        "default": "./dist/utils/index.cjs"
+      }
+    },
+    "./i18n/utils": {
+      "import": {
+        "types": "./dist/i18n/utils.d.ts",
+        "default": "./dist/i18n/utils.js"
+      },
+      "require": {
+        "types": "./dist/i18n/utils.d.cts",
+        "default": "./dist/i18n/utils.cjs"
+      }
     }
   },
   "typesVersions": {
     "*": {
-      "i18n-util": [
-        "./dist/i18n-util/index.d.ts"
+      "i18n": [
+        "./dist/i18n/index.d.ts"
       ],
       "plugin": [
         "./dist/plugin/index.d.ts"
+      ],
+      "state": [
+        "./dist/state/index.d.ts"
+      ],
+      "utils": [
+        "./dist/utils/index.d.ts"
+      ],
+      "i18n/utils": [
+        "./dist/i18n/utils.d.ts"
       ]
     }
   },

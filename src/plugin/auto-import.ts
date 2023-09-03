@@ -26,7 +26,7 @@ type ImportFn = (directiveOnly: boolean) => ImportMap
 export const $autoImport: ImportFn = d => d
   ? [
       {
-        from: 'solid-dollar',
+        from: 'solid-dollar/utils',
         imports: [
           '$model',
         ],
@@ -38,15 +38,65 @@ export const $autoImport: ImportFn = d => d
         imports: [
           '$',
           '$$',
-          '$array',
+          'NORETURN',
+          'noReturn',
           '$memo',
           '$res',
-          '$state',
           '$store',
           '$trackStore',
-          'deepClone',
           '$watch',
+        ],
+      },
+      {
+        from: 'solid-dollar',
+        imports: [
+          'SignalObject',
+          'MemoObject',
+          'ResourceObject',
+          'InitializedResourceObject',
+          'StoreObject',
+          'WatchCallback',
+          'WatchOption',
+        ],
+        type: true,
+      },
+      {
+        from: 'solid-dollar/i18n',
+        imports: [
           '$i18n',
+        ],
+      },
+      {
+        from: 'solid-dollar/i18n',
+        imports: [
+          'I18nOption',
+          'I18nContext',
+          'NumberFormats',
+          'DateTimeFormats',
+        ],
+        type: true,
+      },
+      {
+        from: 'solid-dollar/state',
+        imports: [
+          '$state',
+          'deepClone',
+        ],
+      },
+      {
+        from: 'solid-dollar/state',
+        imports: [
+          'PersistOption',
+          'StateSetup',
+          'StateObject',
+          'StorageLike',
+          'SubscribeCallback',
+        ],
+        type: true,
+      },
+      {
+        from: 'solid-dollar/utils',
+        imports: [
           '$idle',
           '$model',
           '$cx',
@@ -57,24 +107,8 @@ export const $autoImport: ImportFn = d => d
         ],
       },
       {
-        from: 'solid-dollar',
+        from: 'solid-dollar/utils',
         imports: [
-          'SignalObject',
-          'MemoObject',
-          'ResourceObject',
-          'InitializedResourceObject',
-          'PersistOption',
-          'StateSetup',
-          'StateObject',
-          'StoreObject',
-          'StorageLike',
-          'SubscribeCallback',
-          'WatchCallback',
-          'WatchOption',
-          'I18nOption',
-          'I18nContext',
-          'NumberFormats',
-          'DateTimeFormats',
           'ModelParam',
           'ModelElement',
           'ModelDirective',

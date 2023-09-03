@@ -2,7 +2,7 @@
 
 object style hooks / i18n / global state management for solid.js
 
-## install
+# install
 
 ```shell
 npm i solid-dollar
@@ -14,7 +14,9 @@ yarn add solid-dollar
 pnpm add solid-dollar
 ```
 
-## usage
+# usage
+
+## `solid-dollar`
 
 ### `$`
 
@@ -31,28 +33,16 @@ console.log(data()) // 1
 
 console.log(data.$signal) // original signal
 
-const hooks = $('hooks', {
-  onGet: v => console.log(v),
-  onSet: newV => console.log(newV)
+const hooks = $('hello', {
+  preSet: v => v + ' hooks',
+  postSet: newV => console.log(newV)
 })
+// log: 'hello hooks'
 ```
 
 #### `$$`
 
 `untrack` alias
-
-#### `$array`
-
-reactive array, built-in with deep clone
-
-```ts
-const list = $array([])
-list.$set((l) => {
-  l.push(1)
-  return l
-})
-console.log(list()) // [1]
-```
 
 ### `$memo`
 
@@ -95,9 +85,42 @@ data.$mutate()
 data.$refetch()
 ```
 
+### `$watch`
+
+pausable and filterable `createEffect`
+
+```ts
+const str = $('old')
+const callback = console.log
+function filter(newValue: string, times: number) {
+  return newValue !== 'new'
+}
+const {
+  isWatching,
+  pause,
+  resume,
+  runWithoutEffect,
+} = $watch(str, callback, {
+  // function for trigger callback, like `debounce()` or `throttle()` in `@solid-primitives/scheduled`
+  triggerFn: fn => throttle(fn, 500),
+  // function for filter value
+  filterFn: filter,
+  // createEffect `onOptions.defer`
+  defer: true,
+})
+```
+
 ### `$store`
 
 object wrapper for `createStore`, return `$()` like object
+
+#### `$trackStore`
+
+Accessor wrapper for [`trackStore`](https://github.com/solidjs-community/solid-primitives/tree/main/packages/deep#trackstore)
+
+---
+
+## `solid-dollar/state`
 
 ### `$state`
 
@@ -149,34 +172,9 @@ unsubscribe()
 state.$reset()
 ```
 
-#### `$trackStore`
+---
 
-Accessor wrapper for [`trackStore`](https://github.com/solidjs-community/solid-primitives/tree/main/packages/deep#trackstore)
-
-### `$watch`
-
-pausable and filterable `createEffect`
-
-```ts
-const str = $('old')
-const callback = console.log
-function filter(newValue: string, times: number) {
-  return newValue !== 'new'
-}
-const {
-  isWatching,
-  pause,
-  resume,
-  runWithoutEffect,
-} = $watch(str, callback, {
-  // function for trigger callback, like `debounce()` or `throttle()` in `@solid-primitives/scheduled`
-  triggerFn: fn => throttle(fn, 500),
-  // function for filter value
-  filterFn: filter,
-  // createEffect `onOptions.defer`
-  defer: true,
-})
-```
+## `solid-dollar/i18n`
 
 ### `$i18n`
 
@@ -275,6 +273,10 @@ export default defineConfig({
 })
 ```
 see more at [`dev/`](/dev) and [`test`](/test/i18n.test.ts)
+
+---
+
+## `solid-dollar/utils`
 
 ### `$idle`
 
@@ -380,7 +382,6 @@ setTimeout(() => run, 1000)
 ### `$app`
 
 Vue's `createApp` like initialization, works in both `.ts` and `.tsx`
-@example
 
 ```ts
 import App from './App'
@@ -408,3 +409,20 @@ render(
 ```
 
 reference from [solid-utls](https://github.com/amoutonbrady/solid-utils#createapp)
+
+### `$idb`
+
+create function to generate `$()` like IndexedDB wrapper, using [idb-keyval](https://github.com/jakearchibald/idb-keyval)
+
+no serializer, be caution when store `Proxy`
+
+```ts
+const { useIDB, idb, clearAll } = $idb({ name: 'dbName' })
+
+const foo = useIDB('foo', 'initial value')
+
+foo.$set('test')
+
+await foo.$del()
+await clearAll()
+```

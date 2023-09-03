@@ -48,7 +48,8 @@ type IDBObjectGenerator<T extends Record<string, any>> = {
 
 /**
  * create function to generate `$()` like IndexedDB wrapper
- * using `idb-keyval`
+ *
+ * using {@link https://github.com/jakearchibald/idb-keyval idb-keyval}
  *
  * no serializer, be caution when store `Proxy`
  */
@@ -85,8 +86,6 @@ export function $idb<T extends Record<string, any>>(
       : get(key, idb).then(v => !val() && setVal(v))
 
     const [data, { mutate }] = createResource(val, async (value) => {
-      console.log(value)
-
       try {
         if (value !== undefined) {
           await set(key, value, idb)
@@ -109,14 +108,7 @@ export function $idb<T extends Record<string, any>>(
       () => data(),
       {
         $set: setVal as Setter<T[K]>,
-        $del: async () => {
-          try {
-            await del(key, idb)
-            _del()
-          } catch (err) {
-            onError?.(err)
-          }
-        },
+        $del: () => del(key, idb).then(_del).catch(e => onError?.(e)),
       },
     )
   }

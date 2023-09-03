@@ -1,9 +1,8 @@
 import { readFileSync, writeFileSync } from 'node:fs'
 import ts from 'typescript'
 
-const file = readFileSync('src/index.ts', 'utf-8')
-
-function getExports(code) {
+function getExports(filePath) {
+  const code = readFileSync(filePath, 'utf-8')
   const sourceFile = ts.createSourceFile('temp.ts', code, ts.ScriptTarget.Latest, true)
 
   const list = {
@@ -27,21 +26,51 @@ function getExports(code) {
 
   return list
 }
-const { vars, types } = getExports(file)
+const index = getExports('src/index.ts')
+const i18n = getExports('src/i18n/index.ts')
+const state = getExports('src/state/index.ts')
+const utils = getExports('src/utils/index.ts')
 const result = [
   {
     from: 'solid-dollar',
-    imports: vars,
+    imports: index.vars,
   },
   {
     from: 'solid-dollar',
-    imports: types,
+    imports: index.types,
+    type: true,
+  },
+  {
+    from: 'solid-dollar/i18n',
+    imports: i18n.vars,
+  },
+  {
+    from: 'solid-dollar/i18n',
+    imports: i18n.types,
+    type: true,
+  },
+  {
+    from: 'solid-dollar/state',
+    imports: state.vars,
+  },
+  {
+    from: 'solid-dollar/state',
+    imports: state.types,
+    type: true,
+  },
+  {
+    from: 'solid-dollar/utils',
+    imports: utils.vars,
+  },
+  {
+    from: 'solid-dollar/utils',
+    imports: utils.types,
     type: true,
   },
 ]
 const code = readFileSync('src/plugin/auto-import.ts', 'utf-8')
 const imports = JSON.stringify(result, null, 2)
-const directiveOnly = JSON.stringify([{ from: 'solid-dollar', imports: ['$model'] }], null, 2)
+const directiveOnly = JSON.stringify([{ from: 'solid-dollar/utils', imports: ['$model'] }], null, 2)
 const replacedCode = code.replace(/export const \$autoImport: ImportFn = [\s\S]*/gm, '')
 
 writeFileSync(
