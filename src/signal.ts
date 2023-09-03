@@ -1,17 +1,55 @@
 import type { Accessor, Setter, Signal, SignalOptions } from 'solid-js'
-import { createSignal, untrack } from 'solid-js'
+import { batch, createSignal, untrack } from 'solid-js'
 import { deepClone } from './state/utils'
 
+/**
+ * a symbol to prevent setting value in `SignalObject` preSet option
+ */
+export const NORETURN = Symbol('do not use return in preSet')
+/**
+ * a util function to for {@link $} to prevent setting value when `preSet`
+ */
+export function noReturn(cb: () => any): typeof NORETURN {
+  cb()
+  return NORETURN
+}
 export type SignalParam<T> = [value: T, options?: SignalObjectOptions<T>]
-type PostSet<T> = (newValue: T) => void
 
-type SignalObjectOptions<T> = SignalOptions<T> & {
+type SetterHooks<T> = {
   /**
-   * trigger post setter
+   * trigger before initialize and setter
+   *
+   * the original value will be replaced by the return value
+   *
+   * to prevent replacement, return {@link NORETURN}
+   *
+   * @example
+   * ```ts
+   * import { $, noReturn } from 'solid-dollar'
+   * const count = $<number>(1, {
+   *   preSet: v => noReturn(() => console.log(v)),
+   * })
+   * ```
    */
-  postSet?: PostSet<T>
+  preSet?: (oldValue: T) => T | typeof NORETURN
+  /**
+   * trigger post initialize and setter
+   */
+  postSet?: (newValue: T) => void
+}
+
+type SignalObjectOptions<T> = SignalOptions<T> & SetterHooks<T> & {
   /**
    * deepclone previous value when $set
+   * @example
+   * ```ts
+   * const list = $([], { deep: true })
+   * list.$set((l) => {
+   *   l.push(1)
+   *   return l
+   * })
+   * console.log(list()) // [1]
+   * ```
    */
   deep?: boolean
 }
@@ -31,28 +69,38 @@ function isSignal<T>(val: unknown): val is Signal<T> {
 }
 
 /**
- * object wrapper for `createSignal`, allow to setup get/set hooks
+ * object wrapper with setter hooks for `createSignal`
  * @param args original signal options or signal
  */
 export function $<T>(...args: []): SignalObject<T | undefined>
 export function $<T>(...args: [Signal<T>]): SignalObject<T>
 export function $<T>(...args: SignalParam<T>): SignalObject<T>
 export function $<T>(...args: [] | [Signal<T>] | SignalParam<T>) {
-  const { postSet, deep, ...options } = args?.[1] || {}
+  const { preSet, postSet, deep, ...options } = args?.[1] || {}
+
+  const _pre = (value: T) => {
+    const ret = preSet?.(value)
+    return (!preSet || ret === NORETURN) ? value : ret as T
+  }
+
+  const _post = (value: T) => {
+    postSet?.(value)
+    return value
+  }
 
   const [val, set] = (args.length && isSignal<T>(args[0]))
     ? args[0]
     // eslint-disable-next-line solid/reactivity
-    : createSignal(args[0] as T, options)
+    : createSignal(_pre(args[0] as T), options)
 
-  const _set: Setter<T> = (v?: T | ((prev: T) => T)) => {
-    const value = deep && typeof v === 'function'
-      ? (v as any)(deepClone(untrack(val)))
-      : v
-    const ret = set(value)
-    postSet?.(ret)
-    return ret
-  }
+  _post(untrack(val))
+
+  const _set = (v: any) => _post(set(_pre(
+    typeof v === 'function'
+      ? batch(() => (v as any)(deep ? deepClone(untrack(val)) : untrack(val)))
+      : v,
+  ) as any))
+
   return Object.assign(
     val,
     { $set: _set, $signal: [val, _set] },
@@ -63,21 +111,4 @@ export function $<T>(...args: [] | [Signal<T>] | SignalParam<T>) {
  */
 export function $$<T>(signal: Accessor<T> | SignalObject<T>): T {
   return untrack(signal)
-}
-
-/**
- * reactive array, built-in with deep clone
- *
- * @example
- * ```ts
- * const list = $array([])
- * list.$set((l) => {
- *   l.push(1)
- *   return l
- * })
- * console.log(list()) // [1]
- * ```
- */
-export function $array<T extends any[]>(array: T, postSet?: PostSet<T>): SignalObject<T> {
-  return $(array, { deep: true, postSet })
 }

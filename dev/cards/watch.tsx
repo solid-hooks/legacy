@@ -1,7 +1,9 @@
-import { $, $cx, $watch } from '../../src'
+import { $, $watch, noReturn } from '../../src'
+import { $cx } from '../../src/utils'
 
 export default function ShowSignalAndWatch() {
   const count = $<number>(1, {
+    preSet: v => noReturn(() => console.log(v)),
     postSet: console.log,
   })
   $watch(count, (currentCount, oldCount) => {
