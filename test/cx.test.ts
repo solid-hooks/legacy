@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { $cx } from '../src/cx'
+import { $cx } from '../src/utils'
 
 // subset of https://github.com/lukeed/clsx/blob/master/test/classnames.js
 describe('$cx', () => {

@@ -1,4 +1,4 @@
-import { $idb } from '../../src'
+import { $idb } from '../../src/utils'
 
 const { useIDB, clearAll } = $idb<{ time: number; extra: string }>({ name: 'test', onError: console.error })
 

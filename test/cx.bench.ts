@@ -1,6 +1,6 @@
 import { bench, describe } from 'vitest'
-import type { CxArgs } from '../src/cx'
-import { $cx } from '../src/cx'
+import type { CxArgs } from '../src/utils/cx'
+import { $cx } from '../src/utils'
 
 function $cxMap(...args: CxArgs) {
   return args.flat(2)

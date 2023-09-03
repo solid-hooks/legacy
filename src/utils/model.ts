@@ -1,11 +1,12 @@
 import { createRenderEffect, onCleanup } from 'solid-js'
-import type { SignalObject } from './signal'
+import type { SignalObject } from '../signal'
 
 export type ModelParam = [
   signal: SignalObject<any>,
   config?: {
     event?: string
     value?: string
+    transform?: (value: any) => any
   },
 ]
 
@@ -42,12 +43,13 @@ export function $model(el: ModelElement, value: () => ModelParam) {
   }
   eventName = config?.event ?? eventName
   property = config?.value ?? property
+  const fn = config?.transform ?? (v => v)
 
   // @ts-expect-error set value
   createRenderEffect(() => (el[property] = val()))
   const handleValue = (e: Event) => {
     // @ts-expect-error set value
-    val.$set(e.target[property])
+    val.$set(fn(e.target[property]))
   }
   el.addEventListener(eventName, handleValue)
   onCleanup(() => el.removeEventListener(eventName, handleValue))

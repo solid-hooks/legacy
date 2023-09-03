@@ -1,6 +1,8 @@
 import { fireEvent, render } from '@solidjs/testing-library'
 import { describe, expect, test, vi } from 'vitest'
-import { $memo, $state, $tick } from '../src'
+import { $memo } from '../src'
+import { $state } from '../src/state'
+import { $tick } from '../src/utils'
 
 describe('test state', () => {
   test('$state()', async () => {

@@ -1,14 +1,6 @@
 import type { Path, PathValue } from 'object-standard-path'
 import type { SetStoreFunction, Store } from 'solid-js/store'
 
-/**
- * type of `$store()`
- */
-export type StoreObject<T extends object> = {
-  (): Store<T>
-  readonly $set: SetStoreFunction<T>
-}
-
 export type SubscribeCallback<State> = (state: State) => void
 
 type StateUtils<State> = {

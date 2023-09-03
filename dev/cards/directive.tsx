@@ -1,4 +1,5 @@
-import { $, $model } from '../../src'
+import { $ } from '../../src'
+import { $model } from '../../src/utils'
 
 export default function ShowDirective() {
   const val = $('test1')

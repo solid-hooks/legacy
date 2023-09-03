@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, test } from 'vitest'
-import { $i18n, $tick } from '../src'
+import { $i18n } from '../src/i18n'
+import { $tick } from '../src/utils'
 
 describe('i18n', () => {
   const en = {

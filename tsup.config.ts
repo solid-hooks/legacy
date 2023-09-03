@@ -13,8 +13,18 @@ const preset_options: preset.PresetOptions = {
       dev_entry: true,
     },
     {
-      entry: 'src/i18n/util.ts',
-      name: 'i18n-util',
+      entry: 'src/i18n/index.ts',
+      name: 'i18n',
+      dev_entry: true,
+    },
+    {
+      entry: 'src/state/index.ts',
+      name: 'state',
+      dev_entry: true,
+    },
+    {
+      entry: 'src/utils/index.ts',
+      name: 'utils',
       dev_entry: true,
     },
   ],
@@ -40,10 +50,28 @@ export default defineConfig((config) => {
 
   if (!watching && !CI) {
     const package_fields = preset.generatePackageExports(parsed_options)
+
+    package_fields.exports['./i18n/utils'] = {
+      import: {
+        types: './dist/i18n/utils.d.ts',
+        default: './dist/i18n/utils.js',
+      },
+      require: {
+        types: './dist/i18n/utils.d.cts',
+        default: './dist/i18n/utils.cjs',
+      },
+    }
+
+    // @ts-expect-error setup type
+    package_fields.typesVersions['*']['i18n/utils'] = ['./dist/i18n/utils.d.ts']
+
     console.log(`package.json: \n\n${JSON.stringify(package_fields, null, 2)}\n\n`)
 
     preset.writePackageJson(package_fields)
   }
 
-  return preset.generateTsupOptions(parsed_options)
+  const [prod, dev] = preset.generateTsupOptions(parsed_options)
+  // @ts-expect-error setup i18n utils
+  prod.entry['i18n/utils'] = './src/i18n/utils.ts'
+  return [prod!, dev!]
 })

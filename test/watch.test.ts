@@ -1,6 +1,7 @@
 import { describe, expect, test, vi } from 'vitest'
 import { createRoot } from 'solid-js'
-import { $, $tick, $watch } from '../src'
+import { $, $watch } from '../src'
+import { $tick } from '../src/utils'
 
 describe('$watch', () => {
   test('basic', async () => {

@@ -1,10 +1,10 @@
 import { afterEach, beforeEach, describe, expect, test } from 'vitest'
 import { get } from 'idb-keyval'
-import { $idb, $tick } from '../src'
-import type { IDBObject } from '../src/idb'
+import { $idb, $tick } from '../src/utils'
+import type { IDBObject } from '../src/utils/idb'
 
 describe('useIDB', () => {
-  const { useIDB, idb } = $idb()
+  const { useIDB, idb } = $idb({ name: 'test' })
   let foo: IDBObject<string | undefined>
 
   beforeEach(async () => {

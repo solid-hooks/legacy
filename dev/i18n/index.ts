@@ -1,4 +1,4 @@
-import { $i18n } from '../../src'
+import { $i18n } from '../../src/i18n'
 
 export const useI18n = $i18n({
   // message: import.meta.glob('./locales/*.tr'),
