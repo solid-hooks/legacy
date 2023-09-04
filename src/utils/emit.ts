@@ -21,14 +21,54 @@ type ParseFunction<P> = P extends Function
   ? P
   : (...args: ParseArray<P>) => void
 
+/**
+ * utility type for function emitting
+ */
 export type EmitFunctions<E extends Record<string, any>> = ParseKey<{
   [K in keyof E]: ParseFunction<E[K]>
 }>
 
+/**
+ * type for {@link $emit}
+ */
+type Emits<EventsMap, E extends Record<string, any>> =
+  <K extends FilterKeys<EventsMap>>(
+    e: K,
+    ...args: ParseArray<Required<E>[K]>
+  ) => void
+
+/**
+ * util for child component event emitting, auto handle optional prop
+ * @param properties conponents props
+ * @example
+ * ```tsx
+ * type Emits = {
+ *   update: [d1: string, d2?: string, d3?: string]
+ *   optional?: { test: number }
+ * }
+ *
+ * function Child(props: { num: number } & EmitFunctions<Emits>) {
+ *   const emit = $emit<Emits>(props)
+ *   const handleClick = () => {
+ *     emit('update', `emit from child: ${props.num}`, 'second')
+ *     emit('optional', { test: 1 })
+ *   }
+ *   return (<div>
+ *     child:
+ *     {props.num}
+ *     <button onClick={handleClick}>+</button>
+ *   </div>)
+ * }
+ * function Father() {
+ *   const count = $('init')
+ *   return <Child num={count()} $update={console.log} />
+ * }
+ * ```
+ */
 export function $emit<
   E extends Record<string, any>,
   EventsMap = EmitFunctions<E>,
->(properties: EventsMap) {
+>(properties: EventsMap): Emits<EventsMap, E> {
   return <K extends FilterKeys<EventsMap>>(
     e: K,
     ...args: ParseArray<Required<E>[K]>

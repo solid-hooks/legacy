@@ -284,6 +284,34 @@ wrapper for `window.requestIdleCallback`, with cleanup
 
 fallback to `window.requestAnimationFrame` or execute it directly
 
+### `$emit`
+
+util for child component event emitting, auto handle optional prop
+
+```tsx
+type Emits = {
+  update: [d1: string, d2?: string, d3?: string]
+  optional?: { test: number }
+}
+
+function Child(props: { num: number } & EmitFunctions<Emits>) {
+  const emit = $emit<Emits>(props)
+  const handleClick = () => {
+    emit('update', `emit from child: ${props.num}`, 'second')
+    emit('optional', { test: 1 })
+  }
+  return (<div>
+    child:
+    {props.num}
+    <button onClick={handleClick}>+</button>
+  </div>)
+}
+function Father() {
+  const count = $('init')
+  return <Child num={count()} $update={console.log} />
+}
+```
+
 ### `$model`
 
 simple two-way binding directive for `<input>`, `<textare>`, `<select>`, and others (customable)
@@ -297,10 +325,31 @@ type:
 
 ```ts
 export type ModelParam = [
+  /**
+   * binded signal
+   */
   signal: SignalObject<any>,
   config?: {
-    event?: string
-    value?: string
+    /**
+     * trigger event
+     */
+    event?: keyof HTMLElementEventMap & string
+    /**
+     * event target property
+     */
+    property?: string
+    /**
+     * update signal with event target property
+     * @param eventTargetPropertyValue `event.target[property]`
+     * @returns signal value
+     */
+    updateSignal?: (eventTargetPropertyValue: any) => any
+    /**
+     * update element property with signal
+     * @param signalValue `signal()`
+     * @returns el[property] value
+     */
+    updateProperty?: (signalValue: any) => any
   },
 ]
 ```
