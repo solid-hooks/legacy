@@ -114,6 +114,32 @@ const {
 
 object wrapper for `createStore`, return `$()` like object
 
+#### `$ctx`
+
+object wrapper for `createContextProvider` with `StoreObject`
+
+```tsx
+const useCtx = $ctx({ id: 1 })
+
+function X() {
+  const state = useCtx()!
+  return <div>X: {state().id}</div>
+}
+function Y() {
+  const state = useCtx()!
+  return <button onClick={() => state.$set('id', i => i + 1)}>+</button>
+}
+export default function ShowContext() {
+  console.log(useCtx()) // undefined
+  return (
+    <useCtx.$Provider>
+      <X />
+      <Y />
+    </useCtx.$Provider>
+  )
+}
+```
+
 #### `$trackStore`
 
 Accessor wrapper for [`trackStore`](https://github.com/solidjs-community/solid-primitives/tree/main/packages/deep#trackstore)
@@ -435,7 +461,7 @@ Vue's `createApp` like initialization, works in both `.ts` and `.tsx`
 ```ts
 import App from './App'
 
-createApp(App)
+$app(App)
   .use(RouterProvider)
   .use(I18nProvider, { dict })
   .use(GlobalStoreProvider)

@@ -31,7 +31,7 @@ export function $store<T extends object>(
 /**
  * type for {@link $ctx}
  */
-type ContextObject<T extends object> = {
+export type ContextObject<T extends object> = {
   (): StoreObject<T> | undefined
   $Provider: ContextProvider<ContextProviderProps>
 }
@@ -40,6 +40,28 @@ type ContextObject<T extends object> = {
  * object wrapper for {@link createContextProvider} with {@link StoreObject}
  * @param initialValue initial value
  * @param name store name
+ * @example
+ * ```tsx
+ * const useCtx = $ctx({ id: 1 })
+ *
+ * function X() {
+ *   const state = useCtx()!
+ *   return <div>X: {state().id}</div>
+ * }
+ * function Y() {
+ *   const state = useCtx()!
+ *   return <button onClick={() => state.$set('id', i => i + 1)}>+</button>
+ * }
+ * export default function ShowContext() {
+ *   console.log(useCtx()) // undefined
+ *   return (
+ *     <useCtx.$Provider>
+ *       <X />
+ *       <Y />
+ *     </useCtx.$Provider>
+ *   )
+ * }
+ * ```
  */
 export function $ctx<T extends object>(
   initialValue: T,

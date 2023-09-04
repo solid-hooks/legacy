@@ -1,7 +1,7 @@
 import { type Path, pathGet, pathSet } from 'object-standard-path'
 import { DEV, batch, createComputed, createContext, createEffect, on, onCleanup, onMount, useContext } from 'solid-js'
 import { createStore, produce, reconcile, unwrap } from 'solid-js/store'
-import { $trackStore } from '../store'
+import { trackStore } from '@solid-primitives/deep'
 import type { ActionObject, StateObject, StateSetup, SubscribeCallback } from './types'
 import { deepClone } from './utils'
 
@@ -89,7 +89,7 @@ export function $state<
   const init = () => {
     log('initial state:', unwrap(store))
     createEffect(on(
-      $trackStore(store),
+      () => trackStore(store),
       state => callbackList.size && batch(() => callbackList.forEach(cb => cb(state))),
     ))
     if ($persist && $persist.enable) {
@@ -104,7 +104,7 @@ export function $state<
         }
       })
       createComputed(on(
-        $trackStore(store),
+        () => trackStore(store),
         (state: State) => persistItems(state),
         { defer: true },
       ))

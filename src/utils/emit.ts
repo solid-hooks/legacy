@@ -31,7 +31,7 @@ export type EmitFunctions<E extends Record<string, any>> = ParseKey<{
 /**
  * type for {@link $emit}
  */
-type Emits<EventsMap, E extends Record<string, any>> =
+export type Emits<EventsMap, E extends Record<string, any>> =
   <K extends FilterKeys<EventsMap>>(
     e: K,
     ...args: ParseArray<Required<E>[K]>
