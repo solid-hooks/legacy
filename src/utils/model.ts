@@ -2,22 +2,40 @@ import { createRenderEffect, onCleanup } from 'solid-js'
 import type { SignalObject } from '../signal'
 
 export type ModelParam = [
+  /**
+   * binded signal
+   */
   signal: SignalObject<any>,
   config?: {
-    event?: string
-    value?: string
-    transform?: (value: any) => any
+    /**
+     * trigger event
+     */
+    event?: keyof HTMLElementEventMap & string
+    /**
+     * event target property
+     */
+    property?: string
+    /**
+     * update signal with event target property
+     * @param eventTargetPropertyValue `event.target[property]`
+     * @returns signal value
+     */
+    updateSignal?: (eventTargetPropertyValue: any) => any
+    /**
+     * update element property with signal
+     * @param signalValue `signal()`
+     * @returns el[property] value
+     */
+    updateProperty?: (signalValue: any) => any
   },
 ]
-
-export type ModelElement = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
 
 /**
  * type support for $model
  *
  * @example
  * ```ts
- * import type { ModelDirective } from "solid-dollar";
+ * import type { ModelDirective } from "solid-dollar/utils";
  * declare module 'solid-js' {
  *   namespace JSX {
  *     interface Directives extends ModelDirective {}
@@ -30,7 +48,7 @@ export interface ModelDirective {
   $model: ModelParam
 }
 
-export function $model(el: ModelElement, value: () => ModelParam) {
+export function $model(el: HTMLElement, value: () => ModelParam) {
   const [val, config] = value()
   let eventName = 'input'
   let property = 'value'
@@ -42,14 +60,15 @@ export function $model(el: ModelElement, value: () => ModelParam) {
     property = 'value'
   }
   eventName = config?.event ?? eventName
-  property = config?.value ?? property
-  const fn = config?.transform ?? (v => v)
+  property = config?.property ?? property
+  const fnProperty = config?.updateProperty || (v => v)
+  const fnSignal = config?.updateSignal || (v => v)
 
   // @ts-expect-error set value
-  createRenderEffect(() => (el[property] = val()))
-  const handleValue = (e: Event) => {
+  createRenderEffect(() => (el[property] = fnSignal(val())))
+  const handleValue = (event: Event) => {
     // @ts-expect-error set value
-    val.$set(fn(e.target[property]))
+    val.$set(fnProperty(event.target[property]))
   }
   el.addEventListener(eventName, handleValue)
   onCleanup(() => el.removeEventListener(eventName, handleValue))

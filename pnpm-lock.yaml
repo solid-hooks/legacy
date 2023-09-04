@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@solid-primitives/context':
+    specifier: ^0.2.1
+    version: 0.2.1(solid-js@1.7.11)
   '@solid-primitives/deep':
     specifier: ^0.2.3
     version: 0.2.3(solid-js@1.7.11)
@@ -829,6 +832,14 @@ packages:
   /@sinclair/typebox@0.27.8:
     resolution: {integrity: sha512-+Fj43pSMwJs4KRrH/938Uf+uAELIgVBmQzg/q1YG10djyfA3TnrU8N8XzqCh/okZdszqBQTZf96idMfE5lnwTA==}
     dev: true
+
+  /@solid-primitives/context@0.2.1(solid-js@1.7.11):
+    resolution: {integrity: sha512-XIIwCOWpRKDersgkR9LNFXaJHIV8QlCFo/tq5bV0cAOZklcwOFcqi2bN+uWgEIQSWGjWXU2kc1H1/TzgYzVDlg==}
+    peerDependencies:
+      solid-js: ^1.6.12
+    dependencies:
+      solid-js: 1.7.11
+    dev: false
 
   /@solid-primitives/deep@0.2.3(solid-js@1.7.11):
     resolution: {integrity: sha512-7oHVl6LQNS0WxhFW9HeS5KqFfR/UjMC5nTNJ3zucDu4t53CpOowkPnZRJd690HpmhfANq5dhYvA4HHUO6/rngQ==}

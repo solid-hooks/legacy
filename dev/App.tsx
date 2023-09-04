@@ -2,7 +2,7 @@ import { For } from 'solid-js'
 import type { ParentProps } from 'solid-js'
 import ShowI18n from './cards/i18n'
 import ShowGlobalState from './cards/globalState'
-import ShowSignalAndWatch from './cards/watch'
+import Basic from './cards/basic'
 import ShowDirective from './cards/directive'
 import ShowIDB from './cards/idb'
 
@@ -20,7 +20,7 @@ function Card(props: Prop) {
 function App() {
   const components = {
     'directive': <ShowDirective />,
-    'signal and watch(open devtools)': <ShowSignalAndWatch />,
+    'signal / emit / watch(open devtools)': <Basic />,
     'i18n': <ShowI18n />,
     'global state': <ShowGlobalState />,
     'IndexedDB': <ShowIDB />,

@@ -113,6 +113,7 @@ export function $i18n<
     datetimeFormats,
     numberFormats,
   } = option
+
   assertImportType(Object.values(message)[0], parseKey)
   const {
     availiableLocales,

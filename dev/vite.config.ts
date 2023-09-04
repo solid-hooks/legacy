@@ -4,11 +4,6 @@ import { parse } from 'yaml'
 import { I18nPlugin } from '../src/plugin'
 
 export default defineConfig({
-  resolve: {
-    alias: {
-      src: '/src',
-    },
-  },
   clearScreen: false,
   plugins: [
     solid(),
