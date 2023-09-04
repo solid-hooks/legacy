@@ -2,12 +2,12 @@ import type { EffectFunction, MemoOptions } from 'solid-js'
 import { createMemo } from 'solid-js'
 
 /**
- * type of `$memo()`
+ * type of {@link $memo}
  */
 export type MemoObject<T> = () => (T extends (...args: any) => infer R ? R : T)
 
 /**
- * object wrapper for `createMemo`
+ * object wrapper for {@link createMemo}
  * @param data memo data
  */
 export function $memo<T>(data: T): MemoObject<T>

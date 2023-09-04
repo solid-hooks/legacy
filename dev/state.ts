@@ -1,4 +1,4 @@
-import { $state } from '../src'
+import { $state } from '../src/state'
 
 export const useInfoState = $state('info', {
   $init: {

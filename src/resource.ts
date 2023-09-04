@@ -13,11 +13,11 @@ type BaseResourceObject<T, R, Is, Actions = ResourceActions<Is extends true ? T 
      }
   >
 /**
- * type of `$res()` with initalized value
+ * type of {@link $res} with initalized value
  */
 export type InitializedResourceObject<T, R> = BaseResourceObject<T, R, true>
 /**
- * type of `$res()`
+ * type of {@link $res}
  */
 export type ResourceObject<T, R> = BaseResourceObject<T, R, false>
 
@@ -29,9 +29,9 @@ type SourceOption<S> = {
 }
 
 /**
- * object wrapper for `createResource`
+ * object wrapper for {@link createResource}
  * @param fetcher resource fetcher
- * @param options resource options with optional source (prefix `$`)
+ * @param options resource options with optional source (set by `$`)
  */
 export function $res<T, R = unknown>(
   fetcher: ResourceFetcher<true, T, R>,

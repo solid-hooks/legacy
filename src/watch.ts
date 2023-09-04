@@ -3,7 +3,7 @@ import { createEffect, createSignal, on } from 'solid-js'
 import type { SignalObject } from './signal'
 
 /**
- * watch callback function
+ * {@link $watch} callback function
  * @param value current value
  * @param oldValue previous value
  * @description when using options.filter, `prevInput` will fail to filter
@@ -13,6 +13,9 @@ export type WatchCallback<S> = (
   oldValue: S | undefined,
 ) => void
 
+/**
+ * {@link $watch} options
+ */
 export type WatchOption<T> = OnOptions & {
   /**
    * function for trigger callback, like `debounce()` or `throttle()` in `@solid-primitives/scheduled`
@@ -45,7 +48,7 @@ type WatchReturn = {
 }
 
 /**
- * utils for watch Accessor, base on `createEffect(on())`
+ * object wrapper for {@link createEffect}, using {@link on}
  * @param deps Accessor that need to be watch
  * @param fn {@link WatchCallback callback function}
  * @param options options

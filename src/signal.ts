@@ -3,7 +3,7 @@ import { batch, createSignal, untrack } from 'solid-js'
 import { deepClone } from './state/utils'
 
 /**
- * a symbol to prevent setting value in `SignalObject` preSet option
+ * a symbol to prevent setting value in {@link $} preSet option
  */
 export const NORETURN = Symbol('do not use return in preSet')
 /**
@@ -53,6 +53,10 @@ type SignalObjectOptions<T> = SignalOptions<T> & SetterHooks<T> & {
    */
   deep?: boolean
 }
+
+/**
+ * type of {@link $}
+ */
 export type SignalObject<T> = {
   (): T
   readonly $set: Setter<T>
@@ -69,7 +73,7 @@ function isSignal<T>(val: unknown): val is Signal<T> {
 }
 
 /**
- * object wrapper with setter hooks for `createSignal`
+ * object wrapper with setter hooks for {@link createSignal}
  * @param args original signal options or signal
  */
 export function $<T>(...args: []): SignalObject<T | undefined>
@@ -107,7 +111,7 @@ export function $<T>(...args: [] | [Signal<T>] | SignalParam<T>) {
   )
 }
 /**
- * wrapper for `untrack`
+ * wrapper for {@link untrack}
  */
 export function $$<T>(signal: Accessor<T> | SignalObject<T>): T {
   return untrack(signal)
