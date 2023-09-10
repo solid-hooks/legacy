@@ -20,6 +20,7 @@ describe('i18n', () => {
   }
   const useI18n = $i18n({
     message: { en, zh },
+    defaultLocale: 'en',
     numberFormats: {
       en: {
         currency: { style: 'currency', currency: 'USD' },

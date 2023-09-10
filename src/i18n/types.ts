@@ -28,7 +28,7 @@ export type I18nOption<
   /**
    * default locale, fallback to navigator?.language, 'en'
    */
-  defaultLocale?: Locale
+  defaultLocale?: keyof Message & string
   /**
    * convert matched file path to key,
    * only effect when `message` is imported by `import.meta.glob`

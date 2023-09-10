@@ -170,15 +170,14 @@
     "solid-js": "^1.6.0"
   },
   "dependencies": {
-    "@solid-primitives/context": "^0.2.1",
     "@solid-primitives/deep": "^0.2.3",
     "object-standard-path": "^0.3.0"
   },
   "devDependencies": {
     "@solidjs/testing-library": "^0.8.4",
-    "@subframe7536/eslint-config": "^0.2.6",
+    "@subframe7536/eslint-config": "^0.2.9",
     "bumpp": "^9.2.0",
-    "eslint": "^8.48.0",
+    "eslint": "^8.49.0",
     "idb-keyval": "^6.2.1",
     "jsdom": "^22.1.0",
     "tsup": "^7.2.0",
