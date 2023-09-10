@@ -17,7 +17,7 @@ export { $emit } from './emit'
 export type { EmitFunctions, Emits } from './emit'
 
 export {
-  noThrow,
+  $noThrow,
   NormalizedError,
   isNormalizedError,
   toNormalizedError,

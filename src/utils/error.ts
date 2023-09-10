@@ -1,20 +1,29 @@
-function isError(value: unknown): value is Error {
-  return !!value && Object.prototype.toString.call(value) === '[object Error]'
+function isError(e: unknown): e is Error {
+  return !!e && Object.prototype.toString.call(e) === '[object Error]'
+}
+export function isPromise(result: unknown): result is Promise<unknown> {
+  return !!result
+  && typeof result === 'object'
+  && 'then' in result
+  && typeof result.then === 'function'
+  && 'catch' in result
+  && typeof result.catch === 'function'
 }
 
-export function isNormalizedError(value: unknown): value is NormalizedError {
-  return isError(value)
-    && 'val' in value
-    && value.stack !== undefined
+/**
+ * type guard for {@link NormalizedError}
+ */
+export function isNormalizedError(e: unknown): e is NormalizedError {
+  return isError(e) && 'val' in e && e.stack !== undefined
 }
 
 export class NormalizedError extends Error {
   val?: unknown
 
   /**
-   * Initializes a new instance of the `NormalizedError` class.
+   * normalize unknown error in try-catch
    *
-   * @param error An `Error` object.
+   * if input is not Error, `val` will be set
    */
   constructor(e: unknown) {
     if (isError(e)) {
@@ -34,10 +43,33 @@ export class NormalizedError extends Error {
   }
 }
 
+/**
+ * convert unknown error to {@link NormalizedError}
+ */
 export function toNormalizedError(e: unknown): NormalizedError {
   return new NormalizedError(e)
 }
 
-export async function noThrow<T>(action: () => Promise<T>): Promise<NormalizedError | T> {
-  return action().catch(toNormalizedError)
+type Promisable<T> = T | Promise<T>
+
+/**
+ * auto catch and normalize error
+ *
+ * @returns function return or {@link NormalizedError},
+ */
+export function $noThrow<T>(
+  fn: () => T
+): T | NormalizedError
+export function $noThrow<T>(
+  fn: () => Promise<T>,
+): Promise<T | NormalizedError>
+export function $noThrow<T>(
+  fn: () => Promisable<T>,
+): Promisable<T | NormalizedError> {
+  try {
+    const ret = fn()
+    return isPromise(ret) ? ret.catch(toNormalizedError) : ret
+  } catch (e) {
+    return toNormalizedError(e)
+  }
 }

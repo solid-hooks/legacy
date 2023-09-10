@@ -475,3 +475,7 @@ foo.$set('test')
 await foo.$del()
 await clearAll()
 ```
+
+### `$noThrow`
+
+auto catch and normalize error
