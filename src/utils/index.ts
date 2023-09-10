@@ -15,3 +15,10 @@ export { $app } from './app'
 
 export { $emit } from './emit'
 export type { EmitFunctions, Emits } from './emit'
+
+export {
+  noThrow,
+  NormalizedError,
+  isNormalizedError,
+  toNormalizedError,
+} from './error'
