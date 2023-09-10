@@ -5,7 +5,6 @@ import ShowGlobalState from './cards/globalState'
 import Basic from './cards/basic'
 import ShowDirective from './cards/directive'
 import ShowIDB from './cards/idb'
-import ShowContext from './cards/ctx'
 
 type Prop = ParentProps<{ title: string }>
 
@@ -23,7 +22,6 @@ function App() {
     'directive': <ShowDirective />,
     'signal / emit / watch(open devtools)': <Basic />,
     'i18n': <ShowI18n />,
-    'context state': <ShowContext />,
     'global state': <ShowGlobalState />,
     'IndexedDB': <ShowIDB />,
   }
