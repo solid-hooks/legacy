@@ -1,3 +1,6 @@
+import type { SignalObject } from '../signal'
+import { $ } from '../signal'
+
 type FilterKeys<T> = keyof T extends `$${infer EventName}`
   ? EventName
   : never
@@ -29,7 +32,7 @@ export type EmitFunctions<E extends Record<string, any>> = ParseKey<{
 }>
 
 /**
- * type for {@link $emit}
+ * type for {@link $emits}
  */
 export type Emits<EventsMap, E extends Record<string, any>> =
   <K extends FilterKeys<EventsMap>>(
@@ -65,15 +68,30 @@ export type Emits<EventsMap, E extends Record<string, any>> =
  * }
  * ```
  */
-export function $emit<
+export function $emits<
   E extends Record<string, any>,
   EventsMap = EmitFunctions<E>,
 >(properties: EventsMap): Emits<EventsMap, E> {
-  return <K extends FilterKeys<EventsMap>>(
-    e: K,
-    ...args: ParseArray<Required<E>[K]>
-  ): void => {
+  return (e, ...args) => {
     // @ts-expect-error access $... and call it
     properties[`$${e}`]?.(...args)
   }
+}
+export function useEmits<
+  E extends Record<string, any>,
+  EventsMap = EmitFunctions<E>,
+  K extends FilterKeys<EventsMap> = FilterKeys<EventsMap>,
+  V = ParseArray<Required<E>[K]>[0],
+>(
+  emits: Emits<EventsMap, E>,
+  e: K,
+  value: V,
+): SignalObject<V> {
+  return $(value, {
+    postSet(newValue) {
+      // @ts-expect-error emit event
+      emits(e, newValue)
+    },
+    defer: true,
+  })
 }

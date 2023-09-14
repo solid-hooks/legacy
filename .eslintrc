@@ -3,6 +3,7 @@
   "rules": {
     "@typescript-eslint/explicit-member-accessibility": "off",
     "@typescript-eslint/no-namespace": "off",
-    "no-sequences": "off"
+    "no-sequences": "off",
+    "accessor-pairs": "off"
   }
 }

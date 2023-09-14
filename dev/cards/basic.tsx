@@ -1,16 +1,19 @@
 import { $, $watch, noReturn } from '../../src'
 import type { EmitFunctions } from '../../src/utils'
-import { $cx, $emit } from '../../src/utils'
+import { $cx, $emits, useEmits } from '../../src/utils'
 
 type Emits = {
+  var: number
   update: [d1: string, d2?: string, d3?: string]
   optional?: { test: number }
 }
 
 function Child(props: { num: number } & EmitFunctions<Emits>) {
-  const emit = $emit<Emits>(props)
+  const emit = $emits<Emits>(props)
+  const v = useEmits(emit, 'var', 1)
   const handleClick = () => {
-    emit('update', `emit from child: ${props.num}`, 'second')
+    v.$set(v => v + 1)
+    emit('update', `emit from child: ${props.num}`, '[second param]')
     emit('optional', { test: 1 })
   }
   return (<div>
@@ -22,8 +25,8 @@ function Child(props: { num: number } & EmitFunctions<Emits>) {
 
 export default function Basic() {
   const count = $<number>(1, {
-    preSet: v => noReturn(() => console.log(v)),
-    postSet: console.log,
+    preSet: v => noReturn(() => console.log('pre set', v)),
+    postSet: v => console.log('post set:', v),
   })
   $watch(count, (currentCount, oldCount) => {
     console.log('watch current value:', currentCount)
@@ -42,7 +45,10 @@ export default function Basic() {
         increase
       </button>
       <div>{count()}</div>
-      <Child num={count()} $update={console.log} />
+      <Child num={count()}
+        $update={console.log}
+        $var={e => console.log('useEmits:', e)}
+      />
     </>
   )
 }
