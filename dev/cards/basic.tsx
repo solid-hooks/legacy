@@ -1,6 +1,6 @@
 import { $, $watch, noReturn } from '../../src'
 import type { EmitFunctions } from '../../src/utils'
-import { $cx, $emits, useEmits } from '../../src/utils'
+import { $cx, $emits, $noThrow, useEmits } from '../../src/utils'
 
 type Emits = {
   var: number
@@ -13,6 +13,15 @@ function Child(props: { num: number } & EmitFunctions<Emits>) {
   const v = useEmits(emit, 'var', 1)
   const handleClick = () => {
     v.$set(v => v + 1)
+    const e = $noThrow(() => {
+      const v = Date.now()
+      if (v % 2) {
+        throw new Error('asd')
+      } else {
+        return v
+      }
+    })
+    console.log(`is error: ${e instanceof Error}, value:`, e)
     emit('update', `emit from child: ${props.num}`, '[second param]')
     emit('optional', { test: 1 })
   }

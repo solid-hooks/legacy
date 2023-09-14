@@ -37,7 +37,6 @@ export class NormalizedError extends Error {
         msg = 'non-stringifiable object'
       }
       super(`Unexpected data ${msg}`)
-      Error.captureStackTrace(this, NormalizedError)
       this.val = e
     }
   }
