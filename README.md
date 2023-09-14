@@ -288,12 +288,6 @@ fallback to `window.requestAnimationFrame` or execute it directly
 
 util for child component event emitting, auto handle optional prop
 
-#### `useEmits`
-
-util for create signal object, auto emit event after setter
-
-like `defineModel` in Vue
-
 #### example
 
 ```tsx
@@ -305,7 +299,7 @@ type Emits = {
 
 function Child(props: { num: number } & EmitFunctions<Emits>) {
   const emit = $emits<Emits>(props)
-  const v = useEmits(emit, 'var', 1)
+  const v = emit.$('var', 1)
   const handleClick = () => {
     v.$set(v => v + 1)
     emit('update', `emit from child: ${props.num}`, 'second')

@@ -13,8 +13,8 @@ export { $idb } from './idb'
 
 export { $app } from './app'
 
-export { $emits, useEmits } from './emits'
-export type { EmitFunctions, Emits } from './emits'
+export { $emits } from './emits'
+export type { EmitFunctions, EmitsObject } from './emits'
 
 export {
   $noThrow,

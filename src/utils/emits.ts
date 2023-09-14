@@ -34,11 +34,16 @@ export type EmitFunctions<E extends Record<string, any>> = ParseKey<{
 /**
  * type for {@link $emits}
  */
-export type Emits<EventsMap, E extends Record<string, any>> =
+export type EmitsObject<EventsMap, E extends Record<string, any>> = {
   <K extends FilterKeys<EventsMap>>(
     e: K,
     ...args: ParseArray<Required<E>[K]>
-  ) => void
+  ): void
+  $: <K extends FilterKeys<EventsMap>>(
+    e: K,
+    value: ParseArray<Required<E>[K]>[0]
+  ) => SignalObject<ParseArray<Required<E>[K]>[0]>
+}
 
 /**
  * util for child component event emitting, auto handle optional prop
@@ -71,27 +76,17 @@ export type Emits<EventsMap, E extends Record<string, any>> =
 export function $emits<
   E extends Record<string, any>,
   EventsMap = EmitFunctions<E>,
->(properties: EventsMap): Emits<EventsMap, E> {
-  return (e, ...args) => {
+>(properties: EventsMap): EmitsObject<EventsMap, E> {
+  const fn: EmitsObject<EventsMap, E> = (e, ...args) => {
     // @ts-expect-error access $... and call it
     properties[`$${e}`]?.(...args)
   }
-}
-export function useEmits<
-  E extends Record<string, any>,
-  EventsMap = EmitFunctions<E>,
-  K extends FilterKeys<EventsMap> = FilterKeys<EventsMap>,
-  V = ParseArray<Required<E>[K]>[0],
->(
-  emits: Emits<EventsMap, E>,
-  e: K,
-  value: V,
-): SignalObject<V> {
-  return $(value, {
+  fn.$ = (e, value) => $(value, {
     postSet(newValue) {
-      // @ts-expect-error emit event
-      emits(e, newValue)
+      // @ts-expect-error emit
+      properties[`$${e}`]?.(newValue)
     },
     defer: true,
   })
+  return fn
 }
