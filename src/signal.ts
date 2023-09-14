@@ -36,9 +36,10 @@ type SetterHooks<T> = {
    * trigger post initialize and setter
    */
   postSet?: (newValue: T) => void
-}
-
-type SignalObjectOptions<T> = SignalOptions<T> & SetterHooks<T> & {
+  /**
+   * enable triggers after initialized
+   */
+  defer?: boolean
   /**
    * deepclone previous value when $set
    * @example
@@ -53,6 +54,8 @@ type SignalObjectOptions<T> = SignalOptions<T> & SetterHooks<T> & {
    */
   deep?: boolean
 }
+
+type SignalObjectOptions<T> = SignalOptions<T> & SetterHooks<T>
 
 /**
  * type of {@link $}
@@ -80,7 +83,7 @@ export function $<T>(...args: []): SignalObject<T | undefined>
 export function $<T>(...args: [Signal<T>]): SignalObject<T>
 export function $<T>(...args: SignalParam<T>): SignalObject<T>
 export function $<T>(...args: [] | [Signal<T>] | SignalParam<T>) {
-  const { preSet, postSet, deep, ...options } = args?.[1] || {}
+  const { preSet, postSet, defer, deep, ...options } = args?.[1] || {}
 
   const _pre = (value: T) => {
     const ret = preSet?.(value)
@@ -95,9 +98,9 @@ export function $<T>(...args: [] | [Signal<T>] | SignalParam<T>) {
   const [val, set] = (args.length && isSignal<T>(args[0]))
     ? args[0]
     // eslint-disable-next-line solid/reactivity
-    : createSignal(_pre(args[0] as T), options)
+    : createSignal(defer ? args[0] as T : _pre(args[0] as T), options)
 
-  _post(untrack(val))
+  !defer && _post(untrack(val))
 
   const _set = (v: any) => _post(set(_pre(
     typeof v === 'function'
@@ -105,10 +108,11 @@ export function $<T>(...args: [] | [Signal<T>] | SignalParam<T>) {
       : v,
   ) as any))
 
-  return Object.assign(
-    val,
-    { $set: _set, $signal: [val, _set] },
-  )
+  // @ts-expect-error assign
+  val.$set = _set
+  // @ts-expect-error assign
+  val.$signal = [val, _set]
+  return val
 }
 /**
  * wrapper for {@link untrack}

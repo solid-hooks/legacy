@@ -55,9 +55,11 @@ export function $res<T, S, R = unknown>(
 ) {
   const { $, ...otherOptions } = options
   const [data, { mutate, refetch }] = createResource<T, S, R>($, fetcher, otherOptions)
-
-  return Object.assign(data, {
-    $mutate: mutate,
-    $refetch: refetch,
-  })
+  // @ts-expect-error assign
+  // eslint-disable-next-line solid/reactivity
+  data.$mutate = mutate
+  // @ts-expect-error assign
+  // eslint-disable-next-line solid/reactivity
+  data.$refetch = refetch
+  return data
 }

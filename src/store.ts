@@ -20,10 +20,9 @@ export function $store<T extends object>(
   name?: string,
 ): StoreObject<T> {
   const [store, setStore] = createStore<T>(initialValue, { name })
-  return Object.assign(
-    () => store,
-    { $set: setStore },
-  )
+  const result = () => store
+  result.$set = setStore
+  return result
 }
 
 /**
