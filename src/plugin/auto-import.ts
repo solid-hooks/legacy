@@ -116,7 +116,7 @@ export const $autoImport: ImportFn = d => d
         imports: [
           'ModelParam',
           'ModelDirective',
-          'EmitFunctions',
+          'EmitProps',
           'EmitsObject',
         ],
         type: true,
