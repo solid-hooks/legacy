@@ -1,5 +1,5 @@
 import { $, $watch, noReturn } from '../../src'
-import type { EmitFunctions } from '../../src/utils'
+import type { EmitProps } from '../../src/utils'
 import { $cx, $emits, $noThrow } from '../../src/utils'
 
 type Emits = {
@@ -8,9 +8,9 @@ type Emits = {
   optional?: { test: number }
 }
 
-function Child(props: { num: number } & EmitFunctions<Emits>) {
-  const emit = $emits<Emits>(props)
-  const v = emit.$('var', 1)
+function Child(props: EmitProps<Emits, { num: number }>) {
+  const { emit, useEmits } = $emits<Emits>(props)
+  const v = useEmits('var', 1)
   const handleClick = () => {
     v.$set(v => v + 1)
     const e = $noThrow(() => {

@@ -27,22 +27,31 @@ type ParseFunction<P> = P extends Function
 /**
  * utility type for function emitting
  */
-export type EmitFunctions<E extends Record<string, any>> = ParseKey<{
+export type EmitProps<
+  E extends Record<string, any>,
+  P extends Record<string, any> = {},
+> = ParseKey<{
   [K in keyof E]: ParseFunction<E[K]>
-}>
+}> & P
 
 /**
  * type for {@link $emits}
  */
 export type EmitsObject<EventsMap, E extends Record<string, any>> = {
-  <K extends FilterKeys<EventsMap>>(
+  emit: <K extends FilterKeys<EventsMap>>(
     e: K,
     ...args: ParseArray<Required<E>[K]>
-  ): void
-  $: <K extends FilterKeys<EventsMap>>(
-    e: K,
-    value: ParseArray<Required<E>[K]>[0]
-  ) => SignalObject<ParseArray<Required<E>[K]>[0]>
+  ) => void
+  useEmits: {
+    <K extends FilterKeys<EventsMap>, V = ParseArray<Required<E>[K]>[0]>(
+      e: K,
+      value: V
+    ): SignalObject<V>
+    <K extends FilterKeys<EventsMap>, V = ParseArray<Required<E>[K]>[0]>(
+      e: K,
+      value?: V
+    ): SignalObject<V | undefined>
+  }
 }
 
 /**
@@ -51,13 +60,16 @@ export type EmitsObject<EventsMap, E extends Record<string, any>> = {
  * @example
  * ```tsx
  * type Emits = {
+ *   var: number
  *   update: [d1: string, d2?: string, d3?: string]
  *   optional?: { test: number }
  * }
  *
- * function Child(props: { num: number } & EmitFunctions<Emits>) {
- *   const emit = $emit<Emits>(props)
+ * function Child(props: EmitProps<Emits, { num: number }>) {
+ *   const { emit, useEmits } = $emits<Emits>(props)
+ *   const v = useEmits('var', 1)
  *   const handleClick = () => {
+ *     v.$set(v => v + 1)
  *     emit('update', `emit from child: ${props.num}`, 'second')
  *     emit('optional', { test: 1 })
  *   }
@@ -69,24 +81,28 @@ export type EmitsObject<EventsMap, E extends Record<string, any>> = {
  * }
  * function Father() {
  *   const count = $('init')
- *   return <Child num={count()} $update={console.log} />
+ *   return <Child num={count()}
+ *     $update={console.log}
+ *     $var={e => console.log('useEmits:', e)}
+ *   />
  * }
  * ```
  */
 export function $emits<
   E extends Record<string, any>,
-  EventsMap = EmitFunctions<E>,
+  EventsMap = EmitProps<E>,
 >(properties: EventsMap): EmitsObject<EventsMap, E> {
-  const fn: EmitsObject<EventsMap, E> = (e, ...args) => {
-    // @ts-expect-error access $... and call it
-    properties[`$${e}`]?.(...args)
-  }
-  fn.$ = (e, value) => $(value, {
-    postSet(newValue) {
-      // @ts-expect-error emit
-      properties[`$${e}`]?.(newValue)
+  return {
+    emit: (e, ...args) => {
+      // @ts-expect-error access $... and call it
+      properties[`$${e}`]?.(...args)
     },
-    defer: true,
-  })
-  return fn
+    useEmits: (e, value) => $(value, {
+      postSet(newValue) {
+        // @ts-expect-error emit
+        properties[`$${e}`]?.(newValue)
+      },
+      defer: true,
+    }),
+  }
 }

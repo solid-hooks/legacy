@@ -14,7 +14,7 @@ export { $idb } from './idb'
 export { $app } from './app'
 
 export { $emits } from './emits'
-export type { EmitFunctions, EmitsObject } from './emits'
+export type { EmitProps, EmitsObject } from './emits'
 
 export {
   $noThrow,

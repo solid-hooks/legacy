@@ -129,7 +129,7 @@ global state with auto persistence, without provider
 inspired by `pinia` & `zustand`
 
 ```tsx
-const useState = $state('test', {
+const useTestState = $state('test', {
   $init: { value: 1 },
   $action: (state, setState) => ({
     doubleValue() {
@@ -148,7 +148,7 @@ const useState = $state('test', {
     path: ['test'] // type safe, support `[]`
   },
 })
-const state = useState()
+const state = useTestState()
 render(() => (
   <div>
     <p>{state().value}</p>
@@ -297,9 +297,9 @@ type Emits = {
   optional?: { test: number }
 }
 
-function Child(props: { num: number } & EmitFunctions<Emits>) {
-  const emit = $emits<Emits>(props)
-  const v = emit.$('var', 1)
+function Child(props: EmitProps<Emits, { num: number }>) {
+  const { emit, useEmits } = $emits<Emits>(props)
+  const v = useEmits('var', 1)
   const handleClick = () => {
     v.$set(v => v + 1)
     emit('update', `emit from child: ${props.num}`, 'second')
