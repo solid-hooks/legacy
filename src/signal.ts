@@ -1,5 +1,5 @@
 import type { Accessor, Setter, Signal, SignalOptions } from 'solid-js'
-import { batch, createSignal, untrack } from 'solid-js'
+import { batch, createComputed, createSignal, on, untrack } from 'solid-js'
 import { deepClone } from './state/utils'
 
 /**
@@ -17,7 +17,7 @@ export type SignalParam<T> = [value: T, options?: SignalObjectOptions<T>]
 
 type SetterHooks<T> = {
   /**
-   * trigger before initialize and setter
+   * trigger before value is set
    *
    * the original value will be replaced by the return value
    *
@@ -33,7 +33,7 @@ type SetterHooks<T> = {
    */
   preSet?: (oldValue: T) => T | typeof NORETURN
   /**
-   * trigger post initialize and setter
+   * trigger after value is set
    */
   postSet?: (newValue: T) => void
   /**
@@ -83,16 +83,11 @@ export function $<T>(...args: []): SignalObject<T | undefined>
 export function $<T>(...args: [Signal<T>]): SignalObject<T>
 export function $<T>(...args: SignalParam<T>): SignalObject<T>
 export function $<T>(...args: [] | [Signal<T>] | SignalParam<T>) {
-  const { preSet, postSet, defer, deep, ...options } = args?.[1] || {}
+  const { preSet, postSet, defer = false, deep, ...options } = args?.[1] || {}
 
   const _pre = (value: T) => {
     const ret = preSet?.(value)
     return (!preSet || ret === NORETURN) ? value : ret as T
-  }
-
-  const _post = (value: T) => {
-    postSet?.(value)
-    return value
   }
 
   const [val, set] = (args.length && isSignal<T>(args[0]))
@@ -100,13 +95,14 @@ export function $<T>(...args: [] | [Signal<T>] | SignalParam<T>) {
     // eslint-disable-next-line solid/reactivity
     : createSignal(defer ? args[0] as T : _pre(args[0] as T), options)
 
-  !defer && _post(untrack(val))
-
-  const _set = (v: any) => _post(set(_pre(
+  const _set = (v: any) => set(_pre(
     typeof v === 'function'
       ? batch(() => (v as any)(deep ? deepClone(untrack(val)) : untrack(val)))
       : v,
-  ) as any))
+  ) as any)
+
+  // @ts-expect-error defer is boolean
+  postSet && createComputed(on(val, postSet, { defer }))
 
   // @ts-expect-error assign
   val.$set = _set

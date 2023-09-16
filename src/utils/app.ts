@@ -34,8 +34,8 @@ interface MergeParams {
 
 function mergeProviders({ app, props = {}, providers }: MergeParams) {
   return providers.reduceRight(
-    (application, { provider, opts = {} }) => () =>
-      createComponent(provider, {
+    (application, { provider, opts = {} }) =>
+      () => createComponent(provider, {
         ...opts,
         get children() {
           return application()
