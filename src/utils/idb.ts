@@ -2,6 +2,7 @@ import type { Setter } from 'solid-js'
 import { createResource, createSignal } from 'solid-js'
 import type { UseStore } from 'idb-keyval'
 import { clear, createStore, del, get, set } from 'idb-keyval'
+import { type NormalizedError, toNormalizedError } from './error'
 
 export type IDBObject<T> = {
   (): T
@@ -19,7 +20,7 @@ export type IDBOptions = {
   /**
    * call on error
    */
-  onError?: (e: unknown) => void
+  onError?: (e: NormalizedError) => void
   /**
    * whether to cover default value on init
    */
@@ -66,7 +67,7 @@ export function $idb<T extends Record<string, any>>(
       await clear(idb)
       clearCallbackList.forEach(c => c())
     } catch (err) {
-      onError?.(err)
+      onError?.(toNormalizedError(err))
     }
   }
 
@@ -91,8 +92,8 @@ export function $idb<T extends Record<string, any>>(
           await set(key, value, idb)
         }
         return value
-      } catch (e) {
-        onError?.(e)
+      } catch (err) {
+        onError?.(toNormalizedError(err))
         return initialValue
       }
     }, { initialValue })
@@ -104,13 +105,10 @@ export function $idb<T extends Record<string, any>>(
 
     clearCallbackList.push(_del)
 
-    return Object.assign(
-      () => data(),
-      {
-        $set: setVal as Setter<T[K]>,
-        $del: () => del(key, idb).then(_del).catch(e => onError?.(e)),
-      },
-    )
+    const result = () => data()
+    result.$set = setVal as Setter<T[K]>
+    result.$del = () => del(key, idb).then(_del).catch(e => onError?.(e))
+    return result
   }
   return { useIDB, idb, clearAll }
 }
