@@ -22,7 +22,7 @@ type StateUtils<State> = {
 }
 
 /**
- * type of `$state()`
+ * type of {@link $state}
  */
 export type StateObject<State, Action = ActionObject> = Action & StateUtils<State> & (() => State)
 

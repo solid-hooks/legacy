@@ -1,5 +1,6 @@
 import { fireEvent, render } from '@solidjs/testing-library'
 import { describe, expect, test, vi } from 'vitest'
+import { createRoot } from 'solid-js'
 import { $memo } from '../src'
 import { $state } from '../src/state'
 import { $tick } from '../src/utils'
@@ -39,7 +40,7 @@ describe('test state', () => {
     expect(state().test).toBe(1)
     expect(state.doubleValue()).toBe(2)
 
-    const value = $memo(state.getLarger(1e8))
+    const value = createRoot(() => $memo(state.getLarger(1e8)))
 
     for (let i = 0; i < 10; i++) {
       console.time(`$memo-${i}`)

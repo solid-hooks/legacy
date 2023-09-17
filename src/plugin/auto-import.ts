@@ -80,6 +80,7 @@ export const $autoImport: ImportFn = d => d
         from: 'solid-dollar/state',
         imports: [
           '$state',
+          '$STATE$',
           'deepClone',
         ],
       },

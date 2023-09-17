@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, test } from 'vitest'
 import { get } from 'idb-keyval'
+import { createRoot } from 'solid-js'
 import { $idb, $tick } from '../src/utils'
 import type { IDBObject } from '../src/utils/idb'
 
@@ -8,7 +9,7 @@ describe('useIDB', () => {
   let foo: IDBObject<string | undefined>
 
   beforeEach(async () => {
-    foo = useIDB('foo', 'initial value')
+    foo = createRoot(() => useIDB('foo', 'initial value'))
     await $tick()
   })
 
@@ -34,8 +35,8 @@ describe('useIDB', () => {
 describe('clearAll', () => {
   const { useIDB, clearAll, idb } = $idb()
   test('should clearAll', async () => {
-    const data1 = useIDB('test1')
-    const data2 = useIDB('test2')
+    const data1 = createRoot(() => useIDB('test1'))
+    const data2 = createRoot(() => useIDB('test2'))
 
     data1.$set('test data 1')
     data2.$set('test data 2')

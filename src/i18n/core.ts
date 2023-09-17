@@ -1,4 +1,4 @@
-import { createContext, createResource, useContext } from 'solid-js'
+import { createResource, createRoot } from 'solid-js'
 import { $ } from '../signal'
 import type { I18nContext, I18nOption, MessageType } from './types'
 import { parseMessage, translate } from './utils'
@@ -143,7 +143,7 @@ export function $i18n<
 
   const locale = $(defaultLocale || navigator?.language || availiableLocales[0] || 'en')
 
-  const [currentMessage] = createResource(locale, async (l) => {
+  const [currentMessage] = createRoot(() => createResource(locale, async (l) => {
     document?.querySelector('html')?.setAttribute('lang', l)
     if (!messageMap.has(l)) {
       throw new Error(`unsupported locale: ${l}, availiable: [${availiableLocales}]`)
@@ -153,7 +153,7 @@ export function $i18n<
     return typeof msg === 'function'
       ? (await msg() as { default: any }).default
       : msg
-  })
+  }))
 
   const $t: I18nContext<Locale, Message>['$t'] = (path, variable) => {
     return translate(currentMessage(), path, variable)
@@ -167,13 +167,12 @@ export function $i18n<
     datetimeFormatMap.get(l || locale())?.[type]?.format(date)
     || date.toLocaleString([locale(), 'en-US'])
 
-  const ctx = createContext({
+  const ctx = {
     $t,
     $n,
     $d,
     locale,
     availiableLocales,
-  })
-
-  return () => useContext(ctx)
+  }
+  return () => ctx
 }

@@ -48,10 +48,10 @@ describe('$ options', () => {
   test('no transform before set', () => {
     const cbPreSet = vi.fn()
     const cbPostSet = vi.fn()
-    const bar = $(1, {
+    const bar = createRoot(() => $(1, {
       preSet: v => noReturn(() => cbPreSet(v)),
       postSet: v => cbPostSet(v),
-    })
+    }))
     expect(bar()).toBe(1)
     expect(cbPreSet).toBeCalledWith(1)
     expect(cbPostSet).toBeCalledWith(1)
@@ -62,10 +62,10 @@ describe('$ options', () => {
   })
   test('transform before set', () => {
     const cb = vi.fn()
-    const volume = $(1, {
+    const volume = createRoot(() => $(1, {
       preSet: v => v > 1 ? v / 100 : v,
       postSet: v => cb(v),
-    })
+    }))
     expect(volume()).toBe(1)
     expect(cb).toBeCalledWith(1)
     expect(volume.$set(20)).toBe(0.2)

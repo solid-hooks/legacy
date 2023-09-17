@@ -1,9 +1,14 @@
 import { type Path, pathGet, pathSet } from 'object-standard-path'
-import { DEV, batch, createComputed, createContext, createEffect, on, onCleanup, onMount, useContext } from 'solid-js'
+import { DEV, batch, createComputed, createEffect, createRoot, on, onCleanup, onMount } from 'solid-js'
 import { createStore, produce, reconcile, unwrap } from 'solid-js/store'
 import { trackStore } from '@solid-primitives/deep'
 import type { ActionObject, StateObject, StateSetup, SubscribeCallback } from './types'
 import { deepClone } from './utils'
+
+/**
+ * total {@link $state} map
+ */
+export const $STATE$ = new Map<string, any>()
 
 /**
  * initialize global state
@@ -121,6 +126,6 @@ export function $state<
     )
   }
 
-  const ctx = createContext(init())
-  return () => useContext(ctx)
+  $STATE$.set(name, createRoot(init))
+  return () => $STATE$.get(name)
 }
