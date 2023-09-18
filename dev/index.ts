@@ -3,8 +3,10 @@ import './styles.css'
 
 import { $app } from '../src/utils'
 import App from './App'
+import { I18nProvider } from './i18n'
 
 // render(() => <App />, document.getElementById('root')!)
 
 $app(App)
+  .use(I18nProvider)
   .mount('#root')

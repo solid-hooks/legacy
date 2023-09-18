@@ -1,7 +1,8 @@
 import { $, $watch, noReturn } from '../../src'
 import type { EmitProps } from '../../src/utils'
-import { $cx, $emits, $noThrow } from '../../src/utils'
+import { $ctx, $cx, $emits, $noThrow } from '../../src/utils'
 
+const { useTest, TestProvider } = $ctx('test', () => `$ctx: ${new Date()}`)
 type Emits = {
   var: number
   update: [d1: string, d2?: string, d3?: string]
@@ -25,6 +26,7 @@ function Child(props: EmitProps<Emits, { num: number }>) {
     emit('update', `emit from child: ${props.num}`, '[second param]')
     emit('optional', { test: 1 })
   }
+  console.log('$ctx:', useTest())
   return (<div>
     child:
     {props.num}
@@ -42,7 +44,7 @@ export default function Basic() {
     console.log('watch old value:', oldCount)
   }, { defer: true })
   return (
-    <>
+    <TestProvider>
       <button
         class={$cx(
           'bg-rose-300 text-white',
@@ -58,6 +60,6 @@ export default function Basic() {
         $update={console.log}
         $var={e => console.log('useEmits:', e)}
       />
-    </>
+    </TestProvider>
   )
 }

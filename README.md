@@ -188,6 +188,9 @@ to get typesafe i18n:
 or separately define `datetimeFormats`/`numberFormats`
 with manually type declartion using type `DatetimeFormats`/`NumberFormats`
 
+#### `$i18nContext`
+
+`$i18n` with context and provider
 
 #### variable syntax
 
@@ -244,6 +247,9 @@ export const useI18n = $i18n({
 })
 // usage
 const { $t, $d, $n, availiableLocales, locale } = useI18n()
+
+// $18nContext
+export const { I18nProvider, useI18n } = $i18nContext({ /*options*/ })
 ```
 
 load on demand:
@@ -487,3 +493,13 @@ await clearAll()
 ### `$noThrow`
 
 auto catch and normalize error
+
+### `$ctx`
+
+object style [createContextProvider](https://github.com/solidjs-community/solid-primitives/tree/main/packages/context#createcontextprovider)
+
+if use context outside provider, throw Error when DEV
+
+```ts
+const { useDate, DateProvider } = $ctx('date', () => new Date())
+```

@@ -16,8 +16,13 @@ export type ContextObject<
 }
 
 /**
- * Context-Provider builder, if use context outside provider,
+ * object style {@link https://github.com/solidjs-community/solid-primitives/tree/main/packages/context#createcontextprovider createContextProvider}.
+ * if use context outside provider,
  * throw Error when DEV
+ * @example
+ * ```ts
+ * const { useDate, DateProvider } = $ctx('date', () => new Date())
+ * ```
  */
 export function $ctx<T, N extends string>(name: N, fn: () => T): ContextObject<N, T> {
   const _name = name.charAt(0).toUpperCase() + name.slice(1)

@@ -64,13 +64,14 @@ export const $autoImport: ImportFn = d => d
         from: 'solid-dollar/i18n',
         imports: [
           '$i18n',
+          '$i18nContext',
         ],
       },
       {
         from: 'solid-dollar/i18n',
         imports: [
-          'I18nOption',
-          'I18nContext',
+          'I18nOptions',
+          'I18nObject',
           'NumberFormats',
           'DateTimeFormats',
         ],
@@ -80,18 +81,19 @@ export const $autoImport: ImportFn = d => d
         from: 'solid-dollar/state',
         imports: [
           '$state',
-          '$STATE$',
+          '$GLOBALSTATE$',
           'deepClone',
         ],
       },
       {
         from: 'solid-dollar/state',
         imports: [
+          'InitialState',
           'PersistOption',
           'StateSetup',
           'StateObject',
           'StorageLike',
-          'SubscribeCallback',
+          'StateListener',
         ],
         type: true,
       },
@@ -101,6 +103,7 @@ export const $autoImport: ImportFn = d => d
           '$idle',
           '$model',
           '$cx',
+          '$ctx',
           '$tick',
           '$runWithOwner',
           '$idb',
