@@ -1,7 +1,7 @@
 import type { Path, PathValue } from 'object-standard-path'
 import type { SetStoreFunction, Store } from 'solid-js/store'
 
-export type SubscribeCallback<State> = (state: State) => void
+export type StateListener<State> = (state: State) => void
 
 type StateUtils<State> = {
   /**
@@ -18,13 +18,15 @@ type StateUtils<State> = {
   /**
    * subscribe to state
    */
-  readonly $subscribe: (callback: SubscribeCallback<State>) => () => boolean
+  readonly $subscribe: (callback: StateListener<State>) => () => boolean
 }
 
 /**
- * type of {@link $state}
+ * retrun type of {@link $state}
  */
 export type StateObject<State, Action = ActionObject> = Action & StateUtils<State> & (() => State)
+
+export type InitialState<State extends object> = State | (() => State | [Store<State>, SetStoreFunction<State>])
 
 export type StateSetup<
   State extends object,
@@ -37,24 +39,27 @@ export type StateSetup<
    * if is Store, maybe built-in `$patch` and `$reset`
    * will not work as expect
    */
-  $init: State | (() => State | [Store<State>, SetStoreFunction<State>])
+  $init: InitialState<State>
   /**
-   * actions for the state
+   * functions to manage state
    */
-  $action?: ActionFunction<State, Action>
+  $action?: StateAction<State, Action>
   /**
    * persist options for state
    */
   $persist?: PersistOption<State, Paths>
 }
 
-export type ActionFunction<State, Return> = (
+export type StateAction<State, Return> = (
   state: State,
   setState: SetStoreFunction<State>,
   utils: StateUtils<State>
 ) => Return
 export type ActionObject = Record<string, (...args: any[]) => void>
 
+/**
+ * persist options for {@link $state}
+ */
 export type PersistOption<State extends object, Paths extends Path<State>[] = []> = {
   /**
    * whether to enable persist
@@ -99,6 +104,9 @@ type ConvertType<T> = {
 }
 export type StorageLike = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>
 
+/**
+ * serializer type for {@link $state}
+ */
 interface Serializer<State> {
   /**
    * Serializes state into string before storing

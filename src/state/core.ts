@@ -1,14 +1,14 @@
 import { type Path, pathGet, pathSet } from 'object-standard-path'
-import { DEV, batch, createComputed, createEffect, createRoot, on, onCleanup, onMount } from 'solid-js'
+import { DEV, batch, createComputed, createEffect, createRoot, on, onCleanup } from 'solid-js'
 import { createStore, produce, reconcile, unwrap } from 'solid-js/store'
 import { trackStore } from '@solid-primitives/deep'
-import type { ActionObject, StateObject, StateSetup, SubscribeCallback } from './types'
+import type { ActionObject, StateListener, StateObject, StateSetup } from './types'
 import { deepClone } from './utils'
 
 /**
  * total {@link $state} map
  */
-export const $STATE$ = new Map<string, any>()
+export const $GLOBALSTATE$ = new Map<string, any>()
 
 /**
  * initialize global state
@@ -40,8 +40,7 @@ export function $state<
     // eslint-disable-next-line solid/reactivity
     : createStore<State>(deepClone(initialState), { name: stateName })
 
-  const callbackList = new Set<SubscribeCallback<State>>()
-  const effectList = new Set<(state: State) => void>()
+  const listeners = new Set<StateListener<State>>()
   const log = (...args: any[]) => DEV && _log && console.log(`[${stateName}]`, ...args)
 
   const persistItems = (state: State, isInital = false) => {
@@ -86,8 +85,8 @@ export function $state<
       }
     },
     $subscribe: (callback: (state: State) => void) => {
-      callbackList.add(callback)
-      return () => callbackList.delete(callback)
+      listeners.add(callback)
+      return () => listeners.delete(callback)
     },
   }
 
@@ -95,19 +94,17 @@ export function $state<
     log('initial state:', unwrap(store))
     createEffect(on(
       () => trackStore(store),
-      state => callbackList.size && batch(() => callbackList.forEach(cb => cb(state))),
+      state => listeners.size && batch(() => listeners.forEach(cb => cb(state))),
     ))
     if ($persist && $persist.enable) {
-      onMount(() => {
-        const stored = storage.getItem(key)
-        if (stored) {
-          log('load from storage:', stored)
-          utilFn.$patch(readFn(stored))
-        } else {
-          log('no previous store, persist')
-          persistItems(unwrap(store), true)
-        }
-      })
+      const stored = storage.getItem(key)
+      if (stored) {
+        log('load from storage:', stored)
+        utilFn.$patch(readFn(stored))
+      } else {
+        log('no previous store, persist')
+        persistItems(unwrap(store), true)
+      }
       createComputed(on(
         () => trackStore(store),
         (state: State) => persistItems(state),
@@ -116,8 +113,7 @@ export function $state<
     }
     onCleanup(() => {
       log('cleanup')
-      callbackList.clear()
-      effectList.clear()
+      listeners.clear()
     })
     return Object.assign(
       () => store,
@@ -126,6 +122,6 @@ export function $state<
     )
   }
 
-  $STATE$.set(name, createRoot(init))
-  return () => $STATE$.get(name)
+  $GLOBALSTATE$.set(name, createRoot(init))
+  return () => $GLOBALSTATE$.get(name)
 }
