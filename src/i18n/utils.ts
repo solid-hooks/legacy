@@ -71,11 +71,11 @@ const pluralRegex = /{([\w\d]+)}\(([^()]+)\)/g
  * // 'hello test, a few days ago'
  */
 export function translate<T extends Record<string, any>>(
-  message: T,
+  message: T | undefined,
   path: Path<T> extends '' ? string : Path<T>,
   variable?: Record<string, string | number>,
 ): string {
-  return `${pathGet(message, path as any)}`
+  return `${pathGet(message, path as any) || ''}`
     .replace(varRegex, (_, key) => pathGet(variable, key))
     .replace(pluralRegex, (originalStr, key, configs) => {
       const num = +pathGet(variable, key)

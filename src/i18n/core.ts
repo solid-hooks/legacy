@@ -1,9 +1,11 @@
 import { createResource, createRoot } from 'solid-js'
 import { $ } from '../signal'
-import type { I18nContext, I18nOption, MessageType } from './types'
+import { $ctx } from '../utils'
+import type { ContextObject } from '../utils/ctx'
+import type { I18nObject, I18nOptions, MessageType } from './types'
 import { parseMessage, translate } from './utils'
 
-function assertImportType(value: any, fn: I18nOption['parseKey']) {
+function assertImportType(value: any, fn: I18nOptions['parseKey']) {
   if (typeof value === 'function' && fn === undefined) {
     throw new Error('parseKey must be set when use import.meta.glob as message')
   }
@@ -73,7 +75,7 @@ function assertImportType(value: any, fn: I18nOption['parseKey']) {
  * @example
  * load on demand
  * ```ts
- * export const useI18n = $i18n({
+ * export const { I18nProvider, useI18n } = $i18n({
  *   message: import.meta.glob('./locales/*.yml'),
  *   parseKey: path => path.slice(10, -5),
  * })
@@ -104,8 +106,46 @@ export function $i18n<
   NumberKey extends string = string,
   DatetimeKey extends string = string,
 >(
-  option: I18nOption<Locale, Message, NumberKey, DatetimeKey>,
-): () => I18nContext<Locale, Message, NumberKey, DatetimeKey> {
+  option: I18nOptions<Locale, Message, NumberKey, DatetimeKey>,
+): () => I18nObject<Locale, Message, NumberKey, DatetimeKey> {
+  const _ = createRoot(() => createI18n(option))
+  return () => _
+}
+
+/**
+ * {@link $i18n} with context and provider
+ * @example
+ * ```ts
+ * export const { I18nProvider, useI18n } = $i18nContext({
+ *   // options
+ * })
+ * ```
+ */
+export function $i18nContext<
+  Locale extends string = string,
+  Message extends MessageType<Locale> = any,
+  NumberKey extends string = string,
+  DatetimeKey extends string = string,
+>(
+  option: I18nOptions<Locale, Message, NumberKey, DatetimeKey>,
+): ContextObject<
+  'i18n',
+  I18nObject<Locale, Message, NumberKey, DatetimeKey>
+> {
+  return $ctx('i18n', () => createI18n(option))
+}
+
+/**
+ * @internal
+ */
+export function createI18n<
+  Locale extends string = string,
+  Message extends MessageType<Locale> = any,
+  NumberKey extends string = string,
+  DatetimeKey extends string = string,
+>(
+  option: I18nOptions<Locale, Message, NumberKey, DatetimeKey>,
+): I18nObject<Locale, Message, NumberKey, DatetimeKey> {
   const {
     message,
     parseKey,
@@ -140,10 +180,9 @@ export function $i18n<
     }
     numberFormatMap.set(l, obj)
   }
-
   const locale = $(defaultLocale || navigator?.language || availiableLocales[0] || 'en')
 
-  const [currentMessage] = createRoot(() => createResource(locale, async (l) => {
+  const [currentMessage] = createResource(locale, async (l) => {
     document?.querySelector('html')?.setAttribute('lang', l)
     if (!messageMap.has(l)) {
       throw new Error(`unsupported locale: ${l}, availiable: [${availiableLocales}]`)
@@ -153,26 +192,25 @@ export function $i18n<
     return typeof msg === 'function'
       ? (await msg() as { default: any }).default
       : msg
-  }))
+  })
 
-  const $t: I18nContext<Locale, Message>['$t'] = (path, variable) => {
+  const $t: I18nObject<Locale, Message>['$t'] = (path, variable) => {
     return translate(currentMessage(), path, variable)
   }
 
-  const $n: I18nContext<Locale, Message>['$n'] = (num, type, l) =>
+  const $n: I18nObject<Locale, Message>['$n'] = (num, type, l) =>
     numberFormatMap.get(l || locale())?.[type]?.format(num)
-    || num.toLocaleString([locale(), 'en-US'])
+  || num.toLocaleString([locale(), 'en-US'])
 
-  const $d: I18nContext<Locale, Message>['$d'] = (date, type, l) =>
+  const $d: I18nObject<Locale, Message>['$d'] = (date, type, l) =>
     datetimeFormatMap.get(l || locale())?.[type]?.format(date)
     || date.toLocaleString([locale(), 'en-US'])
 
-  const ctx = {
+  return {
     $t,
     $n,
     $d,
     locale,
     availiableLocales,
   }
-  return () => ctx
 }
