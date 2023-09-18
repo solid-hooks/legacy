@@ -5,6 +5,8 @@ export type { ModelParam, ModelDirective } from './model'
 
 export { $cx } from './cx'
 
+export { $ctx } from './ctx'
+
 export { $tick } from './tick'
 
 export { $runWithOwner } from './runWithOwner'
