@@ -1,6 +1,8 @@
 import type { Accessor, AccessorArray, OnOptions } from 'solid-js'
-import { createEffect, createSignal, on } from 'solid-js'
+import { createEffect, createSignal, on, onCleanup } from 'solid-js'
 import type { SignalObject } from './signal'
+
+export type Cleanupable = void | (() => void)
 
 /**
  * {@link $watch} callback function
@@ -11,12 +13,12 @@ import type { SignalObject } from './signal'
 export type WatchCallback<S> = (
   value: S,
   oldValue: S | undefined,
-) => void
+) => Cleanupable
 
 /**
  * {@link $watch} options
  */
-export type WatchOption<T> = OnOptions & {
+export type WatchOptions<T> = OnOptions & {
   /**
    * function for trigger callback, like `debounce()` or `throttle()` in `@solid-primitives/scheduled`
    */
@@ -27,7 +29,7 @@ export type WatchOption<T> = OnOptions & {
   filterFn?: (newValue: T, times: number) => boolean
 }
 
-type WatchReturn = {
+export type WatchObject = {
   /**
    * pause watch
    */
@@ -57,8 +59,8 @@ type WatchReturn = {
 export function $watch<T>(
   deps: Accessor<T> | AccessorArray<T> | SignalObject<T>,
   fn: WatchCallback<T>,
-  options: WatchOption<T> = {},
-): WatchReturn {
+  options: WatchOptions<T> = {},
+): WatchObject {
   const [isWatch, setIsWatch] = createSignal(true)
   const [callTimes, setCallTimes] = createSignal(0)
   const { triggerFn, defer = false, filterFn } = options
@@ -70,16 +72,17 @@ export function $watch<T>(
         : true
       : false
   }
-  const _fn = triggerFn?.(() => {
+  const _fn = (value: T, oldValue: T | undefined) => {
     setCallTimes(time => time + 1)
-    return fn
-  }) || ((value, oldValue) => {
-    setCallTimes(time => time + 1)
-    return fn(value, oldValue)
-  })
+    return (triggerFn ? triggerFn(fn) : fn)(value, oldValue)
+  }
   createEffect(on(deps, (value, oldValue) => {
-    needToTriggerEffect(value) && _fn(value, oldValue)
-  }, { defer: defer as any }))
+    if (needToTriggerEffect(value)) {
+      const cleanup = _fn(value, oldValue)
+      typeof cleanup === 'function' && onCleanup(cleanup)
+    }
+    // @ts-expect-error defer is boolean
+  }, { defer }))
 
   return {
     pause: () => setIsWatch(false),
