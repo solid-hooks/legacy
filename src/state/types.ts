@@ -1,9 +1,10 @@
 import type { Path, PathValue } from 'object-standard-path'
 import type { SetStoreFunction, Store } from 'solid-js/store'
+import type { Cleanupable, WatchObject, WatchOptions } from '../watch'
 
 export type StateListener<State> = (state: State) => void
 
-type StateUtils<State> = {
+export type StateUtils<State> = {
   /**
    * update state
    * - `Partial<State>`: using `reconcile` with `merge: true`, merged with previous state
@@ -16,9 +17,9 @@ type StateUtils<State> = {
    */
   readonly $reset: (resetPersist?: boolean) => void
   /**
-   * subscribe to state
+   * subscribe to state, return {@link WatchObject}
    */
-  readonly $subscribe: (callback: StateListener<State>) => () => boolean
+  readonly $subscribe: (callback: (value: State) => Cleanupable, options?: WatchOptions<State>) => WatchObject
 }
 
 /**
@@ -107,7 +108,7 @@ export type StorageLike = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>
 /**
  * serializer type for {@link $state}
  */
-interface Serializer<State> {
+export interface Serializer<State> {
   /**
    * Serializes state into string before storing
    * @default JSON.stringify
@@ -120,3 +121,5 @@ interface Serializer<State> {
    */
   read: (value: string) => State
 }
+
+export type StateFunction<T> = (stateName: string, log: (...args: any[]) => void) => T
