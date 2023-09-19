@@ -2,6 +2,8 @@
 import './styles.css'
 
 import { $app } from '../src/utils'
+
+// import { $Provider } from '../src/state/core'
 import App from './App'
 import { I18nProvider } from './i18n'
 

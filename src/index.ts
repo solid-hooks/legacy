@@ -11,4 +11,4 @@ export { $store, $trackStore } from './store'
 export type { StoreObject } from './store'
 
 export { $watch } from './watch'
-export type { WatchCallback, WatchOption } from './watch'
+export type { WatchCallback, WatchOptions } from './watch'

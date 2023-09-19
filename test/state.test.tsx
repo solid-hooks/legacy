@@ -36,7 +36,7 @@ describe('test state', () => {
     const state = useState()
 
     await $tick()
-    state.$subscribe(callback)
+    createRoot(() => state.$subscribe(callback, { defer: true }))
     expect(state().test).toBe(1)
     expect(state.doubleValue()).toBe(2)
 
@@ -44,7 +44,7 @@ describe('test state', () => {
 
     for (let i = 0; i < 10; i++) {
       console.time(`$memo-${i}`)
-      console.log(value())
+      value()
       console.timeEnd(`$memo-${i}`)
     }
     expect(cacheCount).toBeCalledTimes(1)
@@ -151,21 +151,22 @@ describe('test state', () => {
       </div>
     ))
 
+    const key = '$state::test'
     const p = getByTestId('value')
     const incrementBtn = getByTestId('increment')
     const decrementBtn = getByTestId('decrement')
 
     await $tick()
     expect(p.innerHTML).toBe('0')
-    expect(kv.get('test')).toBe('{"count":0}')
+    expect(kv.get(key)).toBe('{"count":0}')
 
     fireEvent.click(incrementBtn)
     expect(p.innerHTML).toBe('1')
-    expect(kv.get('test')).toBe('{"count":1}')
+    expect(kv.get(key)).toBe('{"count":1}')
 
     fireEvent.click(decrementBtn)
     expect(p.innerHTML).toBe('0')
-    expect(kv.get('test')).toBe('{"count":0}')
+    expect(kv.get(key)).toBe('{"count":0}')
 
     fireEvent.click(incrementBtn)
     fireEvent.click(incrementBtn)
@@ -174,7 +175,7 @@ describe('test state', () => {
       <p>{test().count}</p>
     ))
     const newP = newContainer.querySelector('p')!
-    expect(kv.get('test')).toBe('{"count":2}')
+    expect(kv.get(key)).toBe('{"count":2}')
     expect(newP.innerHTML).toBe('2')
   })
   test('should persist state to storage by paths', async () => {
@@ -217,23 +218,24 @@ describe('test state', () => {
       </div>
     ))
 
+    const key = '$state::test'
     const p = getByTestId('value')
     const incrementBtn = getByTestId('increment')
     const decrementBtn = getByTestId('decrement')
 
     await $tick()
     expect(p.innerHTML).toBe('0')
-    expect(kv.get('test')).toBe('{"persist":{"count":0},"nonePersist":["test"]}')
+    expect(kv.get(key)).toBe('{"persist":{"count":0},"nonePersist":["test"]}')
 
     fireEvent.click(incrementBtn)
     await $tick()
     expect(p.innerHTML).toBe('1')
-    expect(kv.get('test')).toBe('{"persist":{"count":1},"nonePersist":["increment"]}')
+    expect(kv.get(key)).toBe('{"persist":{"count":1},"nonePersist":["increment"]}')
 
     fireEvent.click(decrementBtn)
     await $tick()
     expect(p.innerHTML).toBe('0')
-    expect(kv.get('test')).toBe('{"persist":{"count":0},"nonePersist":["decrement"]}')
+    expect(kv.get(key)).toBe('{"persist":{"count":0},"nonePersist":["decrement"]}')
 
     unmount()
   })

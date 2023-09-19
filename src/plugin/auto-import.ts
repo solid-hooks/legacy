@@ -56,7 +56,7 @@ export const $autoImport: ImportFn = d => d
           'InitializedResourceObject',
           'StoreObject',
           'WatchCallback',
-          'WatchOption',
+          'WatchOptions',
         ],
         type: true,
       },

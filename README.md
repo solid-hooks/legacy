@@ -1,3 +1,7 @@
+<p>
+  <img width="100%" src="https://assets.solidjs.com/banner?type=solid-dollar&background=tiles&project=%20" alt="solid-dollar">
+</p>
+
 # solid-dollar
 
 object style hooks / i18n / global state management for solid.js
@@ -165,10 +169,10 @@ state.$patch((state) => {
 state.$patch({
   test: 2
 })
-const unsubscribe = state.$subscribe((state) => {
-  console.log(state)
-})
-unsubscribe()
+const { pause, resume, isWatching } = state.$subscribe(
+  (state) => console.log(state),
+  { defer: true },
+)
 state.$reset()
 ```
 
@@ -305,9 +309,13 @@ type Emits = {
 
 function Child(props: EmitProps<Emits, { num: number }>) {
   const { emit, useEmits } = $emits<Emits>(props)
+
+  // auto emit after setter, inspird by `defineModel` in Vue
   const v = useEmits('var', 1)
   const handleClick = () => {
     v.$set(v => v + 1)
+
+    // manully emit
     emit('update', `emit from child: ${props.num}`, 'second')
     emit('optional', { test: 1 })
   }

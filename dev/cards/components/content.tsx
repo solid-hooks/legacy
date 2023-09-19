@@ -1,15 +1,26 @@
-import { useInfoState } from '../../state'
+import { useCustomState, useInfoState } from '../../state'
 
 export default function Content() {
   const info = useInfoState()
+  const plain = useCustomState()
   const start = new Date().getTime()
+  const { pause, resume, isWatching } = info.$subscribe(state => console.log('watching info:', state))
+  async function handleClick() {
+    const v = (new Date().getTime() - start) / 1000
+    info.setTest(v)
+    plain.$set(v)
+    await info.sleepAndPlus(500)
+  }
   return (
     <>
       <div>
         source:
         {info().test}
       </div>
-      <button onClick={() => info.setTest((new Date().getTime() - start) / 1000)}>sync</button>
+      <div>{`is watching: ${isWatching()}`}</div>
+      <button onClick={handleClick}>sync</button>
+      <button onClick={pause}>pause</button>
+      <button onClick={resume}>resume</button>
     </>
   )
 }

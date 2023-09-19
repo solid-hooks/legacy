@@ -5,27 +5,22 @@ const preset_options: preset.PresetOptions = {
   entries: [
     {
       entry: 'src/index.ts',
-      dev_entry: true,
     },
     {
       entry: 'src/plugin/index.ts',
       name: 'plugin',
-      dev_entry: true,
     },
     {
       entry: 'src/i18n/index.ts',
       name: 'i18n',
-      dev_entry: true,
     },
     {
       entry: 'src/state/index.ts',
       name: 'state',
-      dev_entry: true,
     },
     {
       entry: 'src/utils/index.ts',
       name: 'utils',
-      dev_entry: true,
     },
   ],
   drop_console: true,
@@ -70,8 +65,8 @@ export default defineConfig((config) => {
     preset.writePackageJson(package_fields)
   }
 
-  const [prod, dev] = preset.generateTsupOptions(parsed_options)
+  const [prod] = preset.generateTsupOptions(parsed_options)
   // @ts-expect-error setup i18n utils
   prod.entry['i18n/utils'] = './src/i18n/utils.ts'
-  return [prod!, dev!]
+  return prod!
 })

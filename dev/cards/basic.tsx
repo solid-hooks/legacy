@@ -2,7 +2,7 @@ import { $, $watch, noReturn } from '../../src'
 import type { EmitProps } from '../../src/utils'
 import { $ctx, $cx, $emits, $noThrow } from '../../src/utils'
 
-const { useTest, TestProvider } = $ctx('test', () => `$ctx: ${new Date()}`)
+const { useTest, TestProvider } = $ctx('test', () => new Date())
 type Emits = {
   var: number
   update: [d1: string, d2?: string, d3?: string]
