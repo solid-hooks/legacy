@@ -1,4 +1,4 @@
-import type { SignalObject } from '../signal'
+import type { SignalObject, SignalObjectOptions } from '../signal'
 import { $ } from '../signal'
 
 type FilterKeys<T> = keyof T extends `$${infer EventName}`
@@ -38,20 +38,21 @@ export type EmitProps<
  * type for {@link $emits}
  */
 export type EmitsObject<EventsMap, E extends Record<string, any>> = {
+  /**
+   * trigger event
+   */
   emit: <K extends FilterKeys<EventsMap>>(
-    e: K,
+    event: K,
     ...args: ParseArray<Required<E>[K]>
   ) => void
-  useEmits: {
-    <K extends FilterKeys<EventsMap>, V = ParseArray<Required<E>[K]>[0]>(
-      e: K,
-      value: V
-    ): SignalObject<V>
-    <K extends FilterKeys<EventsMap>, V = ParseArray<Required<E>[K]>[0]>(
-      e: K,
-      value?: V
-    ): SignalObject<V | undefined>
-  }
+  /**
+   * return a {@link SignalObject} that trigger event after value is set
+   */
+  useEmits: <K extends FilterKeys<EventsMap>, V = ParseArray<Required<E>[K]>>(
+    event: K,
+    value: V,
+    options?: Omit<SignalObjectOptions<V>, 'defer'>
+  ) => SignalObject<V>
 }
 
 /**
@@ -97,10 +98,12 @@ export function $emits<
       // @ts-expect-error access $... and call it
       properties[`$${e}`]?.(...args)
     },
-    useEmits: (e, value) => $(value, {
+    useEmits: (e, value, { postSet, ...options } = {}) => $(value, {
+      ...options,
       postSet(newValue) {
         // @ts-expect-error emit
         properties[`$${e}`]?.(newValue)
+        postSet?.(newValue)
       },
       defer: true,
     }),
