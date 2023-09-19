@@ -2,7 +2,7 @@ import type { Component, FlowProps, JSX } from 'solid-js'
 import { DEV } from 'solid-js'
 import { createComponent, render } from 'solid-js/web'
 
-interface App {
+type App = {
   /**
    * Add a Provider to the app. The list of provider will be merged
    * at mount time.
@@ -21,19 +21,19 @@ interface App {
   mount(domElement: HTMLElement | string): ReturnType<typeof render>
 }
 
-interface Provider<Props extends Record<string, any>> {
+type Provider<Props extends Record<string, any>> = {
   provider: Component<FlowProps<Props>>
   opts?: Props
 }
 
-interface MergeParams {
+type MergeParams = {
   app: (props?: any) => JSX.Element
   props?: Record<string, any>
   providers: Provider<any>[]
 }
 
 function mergeProviders({ app, props = {}, providers }: MergeParams) {
-  return providers.reduceRight(
+  return providers.reduce(
     (application, { provider, opts = {} }) =>
       () => createComponent(provider, {
         ...opts,
