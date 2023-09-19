@@ -1,20 +1,8 @@
-function isError(e: unknown): e is Error {
-  return !!e && Object.prototype.toString.call(e) === '[object Error]'
-}
-export function isPromise(result: unknown): result is Promise<unknown> {
-  return !!result
-  && typeof result === 'object'
-  && 'then' in result
-  && typeof result.then === 'function'
-  && 'catch' in result
-  && typeof result.catch === 'function'
-}
-
 /**
  * type guard for {@link NormalizedError}
  */
 export function isNormalizedError(e: unknown): e is NormalizedError {
-  return isError(e) && 'val' in e && e.stack !== undefined
+  return e instanceof Error && 'val' in e && e.stack !== undefined
 }
 
 export class NormalizedError extends Error {
@@ -26,7 +14,7 @@ export class NormalizedError extends Error {
    * if input is not Error, `val` will be set
    */
   constructor(e: unknown) {
-    if (isError(e)) {
+    if (e instanceof Error) {
       super(e.message)
       this.stack = e.stack
     } else {
@@ -34,9 +22,9 @@ export class NormalizedError extends Error {
       try {
         msg = typeof e === 'string' ? e : JSON.stringify(e)
       } catch (ignore) {
-        msg = 'non-stringifiable object'
+        msg = 'non-serializable value'
       }
-      super(`Unexpected data ${msg}`)
+      super(msg)
       this.val = e
     }
   }
@@ -67,7 +55,7 @@ export function $noThrow<T>(
 ): Promisable<T | NormalizedError> {
   try {
     const ret = fn()
-    return isPromise(ret) ? ret.catch(toNormalizedError) : ret
+    return ret instanceof Promise ? ret.catch(toNormalizedError) : ret
   } catch (e) {
     return toNormalizedError(e)
   }
