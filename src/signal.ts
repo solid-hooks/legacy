@@ -34,6 +34,8 @@ type SetterHooks<T> = {
   preSet?: (oldValue: T) => T | typeof NORETURN
   /**
    * trigger after value is set
+   *
+   * use {@link createComputed} to batched track value
    */
   postSet?: (newValue: T) => void
   /**
@@ -55,7 +57,7 @@ type SetterHooks<T> = {
   deep?: boolean
 }
 
-type SignalObjectOptions<T> = SignalOptions<T> & SetterHooks<T>
+export type SignalObjectOptions<T> = SignalOptions<T> & SetterHooks<T>
 
 /**
  * type of {@link $}
@@ -102,7 +104,7 @@ export function $<T>(...args: [] | [Signal<T>] | SignalParam<T>) {
   ) as any)
 
   // @ts-expect-error defer is boolean
-  postSet && createComputed(on(val, postSet, { defer }))
+  postSet && createComputed(on(val, batch(() => postSet), { defer }))
 
   // @ts-expect-error assign
   val.$set = _set
