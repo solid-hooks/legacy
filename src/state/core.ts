@@ -1,33 +1,49 @@
 import { type Path, pathGet, pathSet } from 'object-standard-path'
-import { DEV, createComputed, createRoot, on } from 'solid-js'
-import { createStore, produce, reconcile, unwrap } from 'solid-js/store'
-import { $trackStore } from '../store'
+import type { FlowProps, Owner } from 'solid-js'
+import {
+  DEV,
+  createComponent,
+  createComputed,
+  createContext,
+  createMemo,
+  createRoot,
+  getOwner,
+  on,
+  runWithOwner,
+  useContext,
+} from 'solid-js'
+import { produce, reconcile, unwrap } from 'solid-js/store'
+import type { StoreObject } from '../store'
+import { $store, $trackStore } from '../store'
 import { $watch } from '../watch'
-import type { ActionObject, StateFunction, StateObject, StateSetup, StateUtils } from './types'
-import { deepClone } from './utils'
+import type { GetterOrActionObject, StateFunction, StateObject, StateSetup, StateUtils } from './types'
+import { createActions, deepClone } from './utils'
 
+const GLOBAL_CTX = createContext<{
+  owner: Owner | null
+  map: Map<string, any>
+}>({
+  owner: null,
+  map: new Map(),
+})
 /**
- * {@link $state} global map
- */
-export const $GLOBALSTATE$ = new Map<string, any>()
-
-/**
- * initialize global state
+ * initialize global state with setup object
  * @param name state name
  * @param setup state setup object
  * @param _log whether to enable log when dev, default is `false`
 */
 export function $state<
   State extends object = Record<string, any>,
-  Action extends ActionObject = {},
+  Getter extends GetterOrActionObject = {},
+  Action extends GetterOrActionObject = {},
   Paths extends Path<State>[] = [],
 >(
   name: string,
-  setup: StateSetup<State, Action, Paths>,
+  setup: StateSetup<State, Getter, Action, Paths>,
   _log?: boolean,
-): () => StateObject<State, Action>
+): () => StateObject<State, Getter, Action>
 /**
- * initialize global state
+ * initialize global state with functions
  * @param name state name
  * @param setup state setup function
  * @param _log whether to enable log when dev, default is `false`
@@ -41,29 +57,68 @@ export function $state<
 ): () => State
 export function $state<
   State extends object = Record<string, any>,
-  Action extends ActionObject = {},
+  Getter extends GetterOrActionObject = {},
+  Action extends GetterOrActionObject = {},
   Paths extends Path<State>[] = [],
 >(
   name: string,
-  setup: StateSetup<State, Action, Paths> | StateFunction<State>,
+  setup: StateSetup<State, Getter, Action, Paths> | StateFunction<State>,
   _log?: boolean,
-): () => State | StateObject<State, Action> {
+): () => State | StateObject<State, Getter, Action> {
   const stateName = `$state::${name}`
   const log = (...args: any[]) => DEV && _log && console.log(`[${stateName}]`, ...args)
-  const build = typeof setup === 'function' ? setup : setupObject(setup)
+  let build = typeof setup === 'function' ? setup : setupObject(setup)
 
-  $GLOBALSTATE$.set(name, createRoot(() => build(stateName, log)))
-  return () => $GLOBALSTATE$.get(name)
+  return () => {
+    const ctx = useContext(GLOBAL_CTX)
+    const _m = ctx.map
+    if (_m.has(name)) {
+      return _m.get(name)
+    }
+    function mount(result: State | StateObject<State, Getter, Action>, msg: string) {
+      _m.set(name, result)
+      log(msg)
+      // @ts-expect-error for GC
+      build = null
+      return result
+    }
+    return !ctx.owner
+      ? mount(
+        createRoot(() => build(stateName, log)),
+        '<StateProvider /> is not set, fallback to use createRoot',
+      )
+      : runWithOwner(ctx.owner, () => mount(
+        build(stateName, log),
+        'mount to <StateProvider />',
+      ))
+  }
+}
+
+export function StateProvider(props: FlowProps) {
+  const _owner = getOwner()
+  if (DEV && !_owner) {
+    throw new Error('<StateProvider /> must called inside component')
+  }
+  return createComponent(GLOBAL_CTX.Provider, {
+    value: {
+      owner: _owner!,
+      map: new Map(),
+    },
+    get children() {
+      return props.children
+    },
+  })
 }
 
 function setupObject<
   State extends object = Record<string, any>,
-  Action extends ActionObject = {},
+  Getter extends GetterOrActionObject = {},
+  Action extends GetterOrActionObject = {},
   Paths extends Path<State>[] = [],
 >(
-  setup: StateSetup<State, Action, Paths>,
-): StateFunction<StateObject<State, Action>> {
-  const { $init, $action, $persist } = setup
+  setup: StateSetup<State, Getter, Action, Paths>,
+): StateFunction<StateObject<State, Getter, Action>> {
+  const { $init, $getters, $actions, $persist } = setup
   const {
     serializer: {
       write: writeFn,
@@ -79,10 +134,10 @@ function setupObject<
   return (stateName, log) => {
     const key = $persist?.key ?? stateName
     const initialState = typeof $init === 'function' ? $init() : $init
-    const [store, setStore] = Array.isArray(initialState)
-      ? initialState
-      // eslint-disable-next-line solid/reactivity
-      : createStore<State>(deepClone(initialState), { name: stateName })
+    const _store = $store(
+      Array.isArray(initialState) ? initialState : deepClone(initialState),
+      stateName,
+    ) as StoreObject<State>
 
     const persistItems = (state: State, isInital = false) => {
       const old = storage.getItem(key)
@@ -103,11 +158,11 @@ function setupObject<
     }
     const utilFn: StateUtils<State> = {
       $patch: (state) => {
-        setStore(
+        _store.$set(
           typeof state === 'function'
             ? produce(state)
             : reconcile(
-              Object.assign({}, unwrap(store), state),
+              Object.assign({}, unwrap(_store()), state),
               { key: stateName, merge: true },
             ),
         )
@@ -117,7 +172,7 @@ function setupObject<
           log('cannot reset, type of initial value is Store')
           return
         }
-        setStore(
+        _store.$set(
           reconcile(initialState, { key: stateName, merge: true }),
         )
         if (resetPersist && $persist && $persist.enable) {
@@ -126,12 +181,12 @@ function setupObject<
         }
       },
       $subscribe: (callback, options) => $watch(
-        $trackStore(store),
+        $trackStore(_store()),
         s => callback(unwrap(s)),
         options,
       ),
     }
-    log('initial state:', unwrap(store))
+    log('initial state:', unwrap(_store()))
 
     if ($persist && $persist.enable) {
       const stored = storage.getItem(key)
@@ -140,18 +195,29 @@ function setupObject<
         utilFn.$patch(readFn(stored))
       } else {
         log('no previous store, persist')
-        persistItems(unwrap(store), true)
+        persistItems(unwrap(_store()), true)
       }
       createComputed(on(
-        $trackStore(store),
+        $trackStore(_store()),
         (state: State) => persistItems(state),
         { defer: true },
       ))
     }
+
+    const result = {} as Readonly<Getter>
+    for (const [key, getter] of Object.entries($getters?.(_store()) || {})) {
+      // @ts-expect-error assign
+      // eslint-disable-next-line solid/reactivity
+      result[key] = getter.length === 0 ? createMemo(getter) : getter
+    }
+
     return Object.assign(
-      () => store,
+      () => _store(),
       utilFn,
-      $action?.(store, setStore, utilFn),
+      createActions($actions?.(_store, utilFn)),
+      {
+        $: result,
+      },
     )
   }
 }

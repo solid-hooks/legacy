@@ -12,14 +12,26 @@ export type StoreObject<T extends object> = {
 
 /**
  * object wrapper for {@link createStore}
- * @param initialValue initial value
+ * @param data initial value
  * @param name store name
  */
 export function $store<T extends object>(
-  initialValue: T,
+  data: T,
+  name?: string,
+): StoreObject<T>
+/**
+ * object wrapper for {@link createStore}
+ * @param data exist store
+ */
+export function $store<T extends object>(
+  data: [Store<T>, SetStoreFunction<T>],
+): StoreObject<T>
+export function $store<T extends object>(
+  data: any,
   name?: string,
 ): StoreObject<T> {
-  const [store, setStore] = createStore<T>(initialValue, { name })
+  // eslint-disable-next-line solid/reactivity
+  const [store, setStore] = Array.isArray(data) ? data : createStore<T>(data, { name })
   const result = () => store
   result.$set = setStore
   return result

@@ -23,11 +23,10 @@ const preset_options: preset.PresetOptions = {
       name: 'utils',
     },
   ],
-  drop_console: true,
   cjs: true,
   modify_esbuild_options(option) {
     option.platform = 'node'
-    option.external = ['vite']
+    option.external = ['vite', 'solid-js']
     return option
   },
 }

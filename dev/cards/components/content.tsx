@@ -9,7 +9,7 @@ export default function Content() {
     const v = (new Date().getTime() - start) / 1000
     info.setTest(v)
     plain.$set(v)
-    await info.sleepAndPlus(500)
+    info.sleepAndPlus(500)
   }
   return (
     <>

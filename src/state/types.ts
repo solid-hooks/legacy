@@ -1,6 +1,7 @@
 import type { Path, PathValue } from 'object-standard-path'
 import type { SetStoreFunction, Store } from 'solid-js/store'
 import type { Cleanupable, WatchObject, WatchOptions } from '../watch'
+import type { StoreObject } from '../store'
 
 export type StateListener<State> = (state: State) => void
 
@@ -25,13 +26,22 @@ export type StateUtils<State> = {
 /**
  * retrun type of {@link $state}
  */
-export type StateObject<State, Action = ActionObject> = Action & StateUtils<State> & (() => State)
-
+export type StateObject<
+  State,
+  Getter = GetterOrActionObject,
+  Action = GetterOrActionObject,
+> = Readonly<Action> & StateUtils<State> & (() => Readonly<State>) & {
+  /**
+   * getters
+   */
+  readonly $: Readonly<Getter>
+}
 export type InitialState<State extends object> = State | (() => State | [Store<State>, SetStoreFunction<State>])
 
 export type StateSetup<
   State extends object,
-  Action extends ActionObject,
+  Getter extends GetterOrActionObject,
+  Action extends GetterOrActionObject,
   Paths extends Path<State>[],
 > = {
   /**
@@ -42,21 +52,33 @@ export type StateSetup<
    */
   $init: InitialState<State>
   /**
+   * functions to get state
+   *
+   * if the function param is none, use {@link createMemo}
+   */
+  $getters?: StateGetter<State, Getter>
+  /**
    * functions to manage state
    */
-  $action?: StateAction<State, Action>
+  $actions?: StateAction<State, Action>
   /**
    * persist options for state
    */
   $persist?: PersistOption<State, Paths>
 }
 
-export type StateAction<State, Return> = (
-  state: State,
-  setState: SetStoreFunction<State>,
+export type StateAction<
+  State extends object,
+  Return extends GetterOrActionObject,
+> = (
+  stateObject: StoreObject<State>,
   utils: StateUtils<State>
 ) => Return
-export type ActionObject = Record<string, (...args: any[]) => void>
+export type StateGetter<
+  State extends object,
+  Getter extends GetterOrActionObject,
+> = (state: State) => Getter
+export type GetterOrActionObject = Record<string, (...args: any[]) => void>
 
 /**
  * persist options for {@link $state}

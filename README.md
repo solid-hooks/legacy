@@ -128,39 +128,47 @@ Accessor wrapper for [`trackStore`](https://github.com/solidjs-community/solid-p
 
 ### `$state`
 
-global state with auto persistence, without provider
+global state with auto persistence
+
+support run without provider (fallback to `createRoot`)
 
 inspired by `pinia` & `zustand`
 
 ```tsx
 const useTestState = $state('test', {
   $init: { value: 1 },
-  $action: (state, setState) => ({
+  $getter: state => ({
+    // without param, will auto wrapped with `createMemo`
     doubleValue() {
       return state.value * 2
     },
+  }),
+  $action: stateObj => ({
     double(num: number) {
-      setState('value', value => value * 2 * number)
+      stateObj.$set('value', value => value * 2 * number)
     },
     plus(num: number) {
-      setState('value', value => value + num)
+      stateObj.$set('value', value => value + num)
     },
   }),
   $persist: {
     enable: true,
     storage: localStorage,
-    path: ['test'] // type safe, support `[]`
+    path: ['test'] // type safe, support array
   },
-})
+}, true) // set true to enable DEV log
+
+// usage
 const state = useTestState()
 render(() => (
-  <div>
-    <p>{state().value}</p>
-    <p>{state.doubleValue(2)}</p>
-    <button onClick={state.double()}>double</button>
-    <button onClick={() => state.plus(2)}>plus 2</button>
-  </div>
+  <StateProvider> {/* optional */}
+    state: <p>{state().value}</p>
+    getter: <p>{state.$.doubleValue(2)}</p>
+    action: <button onClick={state.double}>double</button>
+    action: <button onClick={() => state.plus(2)}>plus 2</button>
+  </StateProvider>
 ))
+
 // use produce()
 state.$patch((state) => {
   state().test = 3
@@ -169,10 +177,14 @@ state.$patch((state) => {
 state.$patch({
   test: 2
 })
+
+// watch
 const { pause, resume, isWatching } = state.$subscribe(
   (state) => console.log(state),
   { defer: true },
 )
+
+// reset
 state.$reset()
 ```
 
@@ -237,7 +249,7 @@ export const useI18n = $i18n({
     },
     'zh-CN': {
       short: { dateStyle: 'short' },
-      long: { dateStyle: 'long' },
+      long: { dateStyle: 'full' },
     },
   },
   numberFormats: {

@@ -5,16 +5,19 @@ export const useInfoState = $state('info', {
   $init: {
     test: 1,
   },
-  $action: (state, setState) => ({
+  $getters: state => ({
     doubleValue() {
+      console.log('update in memo')
       return state.test * 2
     },
+  }),
+  $actions: state => ({
     setTest(test: number) {
-      setState('test', test)
+      state.$set('test', test)
     },
     async sleepAndPlus(ms: number) {
       return new Promise<void>(resolve => setTimeout(() => {
-        setState('test', t => t + 1)
+        state.$set('test', t => t + 1)
         console.log('async action')
         resolve()
       }, ms))

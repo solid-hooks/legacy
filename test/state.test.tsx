@@ -9,9 +9,9 @@ describe('test state', () => {
   test('$state()', async () => {
     const callback = vi.fn()
     const cacheCount = vi.fn()
-    const useState = $state('test', {
+    const useState = createRoot(() => $state('test-utils', {
       $init: { test: 1, foo: 'bar' },
-      $action: (state, setState) => ({
+      $getters: state => ({
         doubleValue() {
           return state.test * 2
         },
@@ -24,23 +24,25 @@ describe('test state', () => {
           }
           return state.test + value
         },
+      }),
+      $actions: state => ({
         double() {
-          setState('test', test => test * 2)
+          state.$set('test', test => test * 2)
         },
         plus(num: number) {
-          setState('test', test => test + num)
+          state.$set('test', test => test + num)
         },
       }),
-    })
+    }))
 
     const state = useState()
 
     await $tick()
     createRoot(() => state.$subscribe(callback, { defer: true }))
     expect(state().test).toBe(1)
-    expect(state.doubleValue()).toBe(2)
+    expect(state.$.doubleValue()).toBe(2)
 
-    const value = createRoot(() => $memo(state.getLarger(1e8)))
+    const value = createRoot(() => $memo(state.$.getLarger(1e8)))
 
     for (let i = 0; i < 10; i++) {
       console.time(`$memo-${i}`)
@@ -48,15 +50,15 @@ describe('test state', () => {
       console.timeEnd(`$memo-${i}`)
     }
     expect(cacheCount).toBeCalledTimes(1)
-    expect(state.getLarger(4)).toBe(5)
+    expect(state.$.getLarger(4)).toBe(5)
 
     state.double()
     expect(state().test).toBe(2)
-    expect(state.doubleValue()).toBe(4)
+    expect(state.$.doubleValue()).toBe(4)
 
     state.plus(200)
     expect(state().test).toBe(202)
-    expect(state.doubleValue()).toBe(404)
+    expect(state.$.doubleValue()).toBe(404)
 
     state.$patch({ foo: 'baz' })
     expect(state().foo).toBe('baz')
@@ -64,30 +66,32 @@ describe('test state', () => {
     state.$reset()
     expect(state().test).toBe(1)
     expect(state().foo).toBe('bar')
-    expect(state.doubleValue()).toBe(2)
+    expect(state.$.doubleValue()).toBe(2)
 
     await $tick()
     expect(callback).toHaveBeenCalledTimes(4)
   })
   test('should successfully use nest $state()', async () => {
     const initialState = { count: 0 }
-    const useState = $state('test', {
+    const useState = $state('test-nest', {
       $init: initialState,
-      $action: (state, setState) => ({
+      $getters: state => ({
         fresh: () => {
           return state.count * 2 + 20
         },
-        increment: () => setState('count', n => n + 1),
-        decrement: () => setState('count', n => n - 1),
+      }),
+      $actions: state => ({
+        increment: () => state.$set('count', n => n + 1),
+        decrement: () => state.$set('count', n => n - 1),
       }),
     })
     const state = useState()
-    const useTempState = $state('temp', {
+    const useTempState = $state('test-nest-temp', {
       $init: initialState,
-      $action: (_, set) => ({
+      $actions: tmp => ({
         generate: () => {
           state.increment()
-          set('count', state.fresh())
+          tmp.$set('count', state.$.fresh())
         },
       }),
     })
@@ -121,11 +125,11 @@ describe('test state', () => {
   test('should persist state to storage', async () => {
     const initialState = { count: 0 }
     const kv = new Map()
-    const useState = $state('test', {
+    const useState = $state('test-persist', {
       $init: initialState,
-      $action: (_, set) => ({
-        increment: () => set('count', n => n + 1),
-        decrement: () => set('count', n => n - 1),
+      $actions: state => ({
+        increment: () => state.$set('count', n => n + 1),
+        decrement: () => state.$set('count', n => n - 1),
       }),
       $persist: {
         enable: true,
@@ -141,7 +145,7 @@ describe('test state', () => {
           },
         },
       },
-    })
+    }, true)
     const test = useState()
     const { unmount, getByTestId } = render(() => (
       <div>
@@ -151,7 +155,7 @@ describe('test state', () => {
       </div>
     ))
 
-    const key = '$state::test'
+    const key = '$state::test-persist'
     const p = getByTestId('value')
     const incrementBtn = getByTestId('increment')
     const decrementBtn = getByTestId('decrement')
@@ -179,18 +183,21 @@ describe('test state', () => {
     expect(newP.innerHTML).toBe('2')
   })
   test('should persist state to storage by paths', async () => {
-    const initialState = { persist: { count: 0 }, nonePersist: ['test', 'test1'] }
+    const initialState = {
+      persist: { count: 0 },
+      nonePersist: ['test', 'test1'],
+    }
     const kv = new Map()
-    const useState = $state('test', {
+    const useState = $state('test-persist-optional', {
       $init: initialState,
-      $action: (s, set) => ({
+      $actions: state => ({
         increment: () => {
-          set('persist', 'count', n => n + 1)
-          set('nonePersist', ['increment', `${s.persist.count}`])
+          state.$set('persist', 'count', n => n + 1)
+          state.$set('nonePersist', ['increment', `${state().persist.count}`])
         },
         decrement: () => {
-          set('persist', 'count', n => n - 1)
-          set('nonePersist', ['decrement', `${s.persist.count}`])
+          state.$set('persist', 'count', n => n - 1)
+          state.$set('nonePersist', ['decrement', `${state().persist.count}`])
         },
       }),
       $persist: {
@@ -210,7 +217,8 @@ describe('test state', () => {
       },
     })
     const state = useState()
-    const { unmount, getByTestId } = render(() => (
+    console.log(state())
+    const { getByTestId } = render(() => (
       <div>
         <p data-testid="value">{state().persist.count}</p>
         <button data-testid="increment" onClick={state.increment}>Increment</button>
@@ -218,7 +226,7 @@ describe('test state', () => {
       </div>
     ))
 
-    const key = '$state::test'
+    const key = '$state::test-persist-optional'
     const p = getByTestId('value')
     const incrementBtn = getByTestId('increment')
     const decrementBtn = getByTestId('decrement')
@@ -236,7 +244,5 @@ describe('test state', () => {
     await $tick()
     expect(p.innerHTML).toBe('0')
     expect(kv.get(key)).toBe('{"persist":{"count":0},"nonePersist":["decrement"]}')
-
-    unmount()
   })
 })
