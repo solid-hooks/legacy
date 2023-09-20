@@ -1,3 +1,4 @@
+import type { Owner } from 'solid-js'
 import { getOwner, runWithOwner } from 'solid-js'
 
 /**
@@ -10,9 +11,9 @@ import { getOwner, runWithOwner } from 'solid-js'
  *     console.log(foo)
  *   })
  * })
- * setTimeout(() => run, 1000)
+ * setTimeout(run, 1000)
  * ```
  */
 export function $runWithOwner(fn: () => void, owner = getOwner()) {
-  return () => runWithOwner(owner, fn)
+  return (customOwner?: Owner) => runWithOwner(customOwner ?? owner, fn)
 }
