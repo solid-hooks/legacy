@@ -1,7 +1,6 @@
-import { createResource, createRoot } from 'solid-js'
+import type { FlowProps, Owner } from 'solid-js'
+import { DEV, createComponent, createContext, createResource, createRoot, getOwner, runWithOwner, useContext } from 'solid-js'
 import { $ } from '../signal'
-import { $ctx } from '../utils'
-import type { ContextObject } from '../utils/ctx'
 import type { I18nObject, I18nOptions, MessageType } from './types'
 import { parseMessage, translate } from './utils'
 
@@ -10,10 +9,16 @@ function assertImportType(value: any, fn: I18nOptions['parseKey']) {
     throw new Error('parseKey must be set when use import.meta.glob as message')
   }
 }
-
+const GLOBAL_$I18N = createContext<{
+  owner: Owner | null
+  data: I18nObject<any> | null
+}>({
+  owner: null,
+  data: null,
+})
 /**
  * initalize i18n
- * @param option i18n option
+ * @param options i18n option
  * @description
  * to get typesafe i18n:
  * 1. add first type param `Locale` of `$i18n`,
@@ -44,9 +49,9 @@ function assertImportType(value: any, fn: I18nOptions['parseKey']) {
  * $t('plural', { var: 5 }) // at a few days ago
  * ```
  * @example
- * ```ts
- * const en = { t: 1, deep: { t: 1 } }
- * const zh = { t: 2, deep: { t: 2 } }
+ * ```tsx
+ * const en = { t: '1', deep: { t: '{name}' }, plural: '{day}' }
+ * const zh = { t: '2', deep: { t: '{name}' }, plural: '{day}(0=zero|1=one)' }
  * export const useI18n = $i18n({
  *   message: { 'en': en, 'zh-CN': zh },
  *   defaultLocale: 'en',
@@ -57,7 +62,7 @@ function assertImportType(value: any, fn: I18nOptions['parseKey']) {
  *     },
  *     'zh-CN': {
  *       short: { dateStyle: 'short' },
- *       long: { dateStyle: 'long' },
+ *       long: { dateStyle: 'full' },
  *     },
  *   },
  *   numberFormats: {
@@ -71,11 +76,27 @@ function assertImportType(value: any, fn: I18nOptions['parseKey']) {
  * })
  * // usage
  * const { $t, $d, $n, availiableLocales, locale } = useI18n()
+ *
+ * <I18nProvider> // optional
+ *   <select onChange={e => locale.$set(e.target.value)}>
+ *     <For each={availiableLocales}>
+ *       {l => <option selected={l === locale()}>{l}</option>}
+ *     </For>
+ *   </select>
+ *   <div>{$t('t')}</div>
+ *   <br />
+ *   <div>{$t('t.deep', { name: 'test' })}</div>
+ *   <div>{$t('plural', { day: 1 })}</div>
+ *   <div>{$d(new Date())}</div>
+ *   <div>{$d(new Date(), 'long')}</div>
+ *   <div>{$d(new Date(), 'long', 'en')}</div>
+ *   <div>{$n(100, 'currency')}</div>
+ * </I18nProvider>
  * ```
- * @example
- * load on demand
+ *
+ * load on demand:
  * ```ts
- * export const { I18nProvider, useI18n } = $i18n({
+ * export const useI18n = $i18n({
  *   message: import.meta.glob('./locales/*.yml'),
  *   parseKey: path => path.slice(10, -5),
  * })
@@ -95,6 +116,8 @@ function assertImportType(value: any, fn: I18nOptions['parseKey']) {
  *     I18nPlugin({
  *       include: 'i18n/locales/*.yml',
  *       transformMessage: content => parse(content),
+ *       // generate yml for https://github.com/lokalise/i18n-ally/wiki/Custom-Framework
+ *       generateConfigYml: true,
  *     }),
  *   ],
  * })
@@ -105,40 +128,56 @@ export function $i18n<
   Message extends MessageType<Locale> = any,
   NumberKey extends string = string,
   DatetimeKey extends string = string,
->(
-  option: I18nOptions<Locale, Message, NumberKey, DatetimeKey>,
+  >(
+  options: I18nOptions<Locale, Message, NumberKey, DatetimeKey>,
 ): () => I18nObject<Locale, Message, NumberKey, DatetimeKey> {
-  const _ = createRoot(() => createI18n(option))
-  return () => _
+  let build = () => createI18n(options)
+  let log = DEV && console.log
+  return () => {
+    const ctx = useContext(GLOBAL_$I18N)
+    const _data = ctx.data
+    if (_data) {
+      return _data as any
+    }
+    function mount(result: I18nObject<Locale, Message, NumberKey, DatetimeKey>, msg: string) {
+      ctx.data = result
+      log?.(msg)
+      // @ts-expect-error for GC
+      build = null
+      // @ts-expect-error for GC
+      log = null
+      return result
+    }
+    return !ctx.owner
+      ? mount(
+        createRoot(build),
+        '<StateProvider /> is not set, fallback to use createRoot',
+      )
+      : runWithOwner(ctx.owner, () => mount(
+        build(),
+        'mount to <StateProvider />',
+      ))
+  }
 }
-
-/**
- * {@link $i18n} with context and provider
- * @example
- * ```ts
- * export const { I18nProvider, useI18n } = $i18nContext({
- *   // options
- * })
- * ```
- */
-export function $i18nContext<
-  Locale extends string = string,
-  Message extends MessageType<Locale> = any,
-  NumberKey extends string = string,
-  DatetimeKey extends string = string,
->(
-  option: I18nOptions<Locale, Message, NumberKey, DatetimeKey>,
-): ContextObject<
-  'i18n',
-  I18nObject<Locale, Message, NumberKey, DatetimeKey>
-> {
-  return $ctx('i18n', () => createI18n(option))
+export function I18nProvider(props: FlowProps) {
+  const _owner = getOwner()
+  if (DEV && !_owner) {
+    throw new Error('<I18nProvider /> must called inside component')
+  }
+  return createComponent(GLOBAL_$I18N.Provider, {
+    value: {
+      owner: _owner!,
+      data: null,
+    },
+    get children() {
+      return props.children
+    },
+  })
 }
-
 /**
  * @internal
  */
-export function createI18n<
+function createI18n<
   Locale extends string = string,
   Message extends MessageType<Locale> = any,
   NumberKey extends string = string,

@@ -1,6 +1,6 @@
-import { $i18nContext } from '../../src/i18n'
+import { $i18n } from '../../src/i18n'
 
-export const { I18nProvider, useI18n } = $i18nContext({
+export const useI18n = $i18n({
   // message: import.meta.glob('./locales/*.tr'),
   // parseKey: path => path.slice(10, -3),
   message: import.meta.glob('./locales/*.yml'),

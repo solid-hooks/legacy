@@ -1,4 +1,4 @@
-export { $i18n, $i18nContext } from './core'
+export { $i18n, I18nProvider } from './core'
 export type {
   I18nOptions,
   I18nObject,
