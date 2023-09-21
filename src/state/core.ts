@@ -19,7 +19,7 @@ import { $watch } from '../watch'
 import type { GetterOrActionObject, StateFunction, StateObject, StateSetup, StateUtils } from './types'
 import { createActions, deepClone } from './utils'
 
-const GLOBAL_CTX = createContext<{
+const GLOBAL_$STATE = createContext<{
   owner: Owner | null
   map: Map<string, any>
 }>({
@@ -31,7 +31,61 @@ const GLOBAL_CTX = createContext<{
  * @param name state name
  * @param setup state setup object
  * @param _log whether to enable log when dev, default is `false`
-*/
+ * @example
+ * ```tsx
+ * const useTestState = $state('test', {
+ *   $init: { value: 1 },
+ *   $getter: state => ({
+ *     // without param, will auto wrapped with `createMemo`
+ *     doubleValue() {
+ *       return state.value * 2
+ *     },
+ *   }),
+ *   $action: stateObj => ({
+ *     double(num: number) {
+ *       stateObj.$set('value', value => value * 2 * number)
+ *     },
+ *     plus(num: number) {
+ *       stateObj.$set('value', value => value + num)
+ *     },
+ *   }),
+ *   $persist: {
+ *     enable: true,
+ *     storage: localStorage,
+ *     path: ['test'] // type safe, support array
+ *   },
+ * }, true) // set true to enable DEV log
+ *
+ * // usage
+ * const state = useTestState()
+ * render(() => (
+ *   <StateProvider> // optional
+ *     state: <p>{state().value}</p>
+ *     getter: <p>{state.$.doubleValue()}</p>
+ *     action: <button onClick={state.double}>double</button>
+ *     action: <button onClick={() => state.plus(2)}>plus 2</button>
+ *   </StateProvider>
+ * ))
+ *
+ * // use produce()
+ * state.$patch((state) => {
+ *   state().test = 3
+ * })
+ * // use reconcile()
+ * state.$patch({
+ *   test: 2
+ * })
+ *
+ * // watch
+ * const { pause, resume, isWatching } = state.$subscribe(
+ *   (state) => console.log(state),
+ *   { defer: true },
+ * )
+ *
+ * // reset
+ * state.$reset()
+ * ```
+ */
 export function $state<
   State extends object = Record<string, any>,
   Getter extends GetterOrActionObject = {},
@@ -43,7 +97,7 @@ export function $state<
   _log?: boolean,
 ): () => StateObject<State, Getter, Action>
 /**
- * initialize global state with functions
+ * initialize global state with functions, just like {@link createContext} globally
  * @param name state name
  * @param setup state setup function
  * @param _log whether to enable log when dev, default is `false`
@@ -70,7 +124,7 @@ export function $state<
   let build = typeof setup === 'function' ? setup : setupObject(setup)
 
   return () => {
-    const ctx = useContext(GLOBAL_CTX)
+    const ctx = useContext(GLOBAL_$STATE)
     const _m = ctx.map
     if (_m.has(name)) {
       return _m.get(name)
@@ -99,7 +153,7 @@ export function StateProvider(props: FlowProps) {
   if (DEV && !_owner) {
     throw new Error('<StateProvider /> must called inside component')
   }
-  return createComponent(GLOBAL_CTX.Provider, {
+  return createComponent(GLOBAL_$STATE.Provider, {
     value: {
       owner: _owner!,
       map: new Map(),

@@ -163,7 +163,7 @@ const state = useTestState()
 render(() => (
   <StateProvider> {/* optional */}
     state: <p>{state().value}</p>
-    getter: <p>{state.$.doubleValue(2)}</p>
+    getter: <p>{state.$.doubleValue()}</p>
     action: <button onClick={state.double}>double</button>
     action: <button onClick={() => state.plus(2)}>plus 2</button>
   </StateProvider>
@@ -236,9 +236,9 @@ $t('plural', { var: 5 }) // at a few days ago
 
 #### example
 
-```ts
-const en = { t: 1, deep: { t: 1 } }
-const zh = { t: 2, deep: { t: 2 } }
+```tsx
+const en = { t: '1', deep: { t: '{name}' }, plural: '{day}' }
+const zh = { t: '2', deep: { t: '{name}' }, plural: '{day}(0=zero|1=one)' }
 export const useI18n = $i18n({
   message: { 'en': en, 'zh-CN': zh },
   defaultLocale: 'en',
@@ -264,8 +264,21 @@ export const useI18n = $i18n({
 // usage
 const { $t, $d, $n, availiableLocales, locale } = useI18n()
 
-// $18nContext
-export const { I18nProvider, useI18n } = $i18nContext({ /*options*/ })
+<I18nProvider>{/* optional */}
+  <select onChange={e => locale.$set(e.target.value)}>
+    <For each={availiableLocales}>
+      {l => <option selected={l === locale()}>{l}</option>}
+    </For>
+  </select>
+  <div>{$t('t')}</div>
+  <br />
+  <div>{$t('t.deep', { name: 'test' })}</div>
+  <div>{$t('plural', { day: 1 })}</div>
+  <div>{$d(new Date())}</div>
+  <div>{$d(new Date(), 'long')}</div>
+  <div>{$d(new Date(), 'long', 'en')}</div>
+  <div>{$n(100, 'currency')}</div>
+</I18nProvider>
 ```
 
 load on demand:
@@ -290,6 +303,8 @@ export default defineConfig({
     I18nPlugin({
       include: 'i18n/locales/*.yml',
       transformMessage: content => parse(content),
+      // generate yml for https://github.com/lokalise/i18n-ally/wiki/Custom-Framework
+      generateConfigYml: true,
     }),
   ],
 })

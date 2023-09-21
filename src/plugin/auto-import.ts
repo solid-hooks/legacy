@@ -64,7 +64,7 @@ export const $autoImport: ImportFn = d => d
         from: 'solid-dollar/i18n',
         imports: [
           '$i18n',
-          '$i18nContext',
+          'I18nProvider',
         ],
       },
       {
