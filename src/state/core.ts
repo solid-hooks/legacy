@@ -97,7 +97,7 @@ export function $state<
   _log?: boolean,
 ): () => StateObject<State, Getter, Action>
 /**
- * initialize global state with functions, just like {@link createContext} globally
+ * initialize global state with functions, just like global {@link createContext}
  * @param name state name
  * @param setup state setup function
  * @param _log whether to enable log when dev, default is `false`
@@ -253,7 +253,7 @@ function setupObject<
       }
       createComputed(on(
         $trackStore(_store()),
-        (state: State) => persistItems(state),
+        state => persistItems(unwrap(state)),
         { defer: true },
       ))
     }

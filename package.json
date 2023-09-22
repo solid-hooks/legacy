@@ -114,7 +114,7 @@
   },
   "peerDependencies": {
     "idb-keyval": "^6.2.1",
-    "solid-js": "^1.6.0"
+    "solid-js": "^1.7.12"
   },
   "dependencies": {
     "@solid-primitives/deep": "^0.2.3",

@@ -1,4 +1,4 @@
-import type { Accessor, Setter, Signal, SignalOptions } from 'solid-js'
+import type { Setter, Signal, SignalOptions } from 'solid-js'
 import { batch, createComputed, createSignal, on, untrack } from 'solid-js'
 import { deepClone } from './state/utils'
 
@@ -35,7 +35,7 @@ type SetterHooks<T> = {
   /**
    * trigger after value is set
    *
-   * use {@link createComputed} to batched track value
+   * use {@link createComputed} to track value
    */
   postSet?: (newValue: T) => void
   /**
@@ -65,6 +65,9 @@ export type SignalObjectOptions<T> = SignalOptions<T> & SetterHooks<T>
 export type SignalObject<T> = {
   (): T
   readonly $set: Setter<T>
+  /**
+   * original getter and setter, do not trigger `preSet`
+   */
   readonly $signal: Signal<T>
 }
 
@@ -103,18 +106,15 @@ export function $<T>(...args: [] | [Signal<T>] | SignalParam<T>) {
       : v,
   ) as any)
 
-  // @ts-expect-error defer is boolean
-  postSet && createComputed(on(val, batch(() => postSet), { defer }))
+  postSet && createComputed(on(val, postSet, { defer }))
 
   // @ts-expect-error assign
   val.$set = _set
   // @ts-expect-error assign
-  val.$signal = [val, _set]
+  val.$signal = [val, set]
   return val
 }
 /**
- * wrapper for {@link untrack}
+ * alias for {@link untrack}
  */
-export function $$<T>(signal: Accessor<T> | SignalObject<T>): T {
-  return untrack(signal)
-}
+export const $$ = untrack
