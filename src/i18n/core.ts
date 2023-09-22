@@ -151,11 +151,11 @@ export function $i18n<
     return !ctx.owner
       ? mount(
         createRoot(build),
-        '<StateProvider /> is not set, fallback to use createRoot',
+        DEV ? '<StateProvider /> is not set, fallback to use createRoot' : '',
       )
       : runWithOwner(ctx.owner, () => mount(
         build(),
-        'mount to <StateProvider />',
+        DEV ? 'mount to <StateProvider />' : '',
       ))
   }
 }

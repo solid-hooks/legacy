@@ -139,11 +139,11 @@ export function $state<
     return !ctx.owner
       ? mount(
         createRoot(() => build(stateName, log)),
-        '<StateProvider /> is not set, fallback to use createRoot',
+        DEV ? '<StateProvider /> is not set, fallback to use createRoot' : '',
       )
       : runWithOwner(ctx.owner, () => mount(
         build(stateName, log),
-        'mount to <StateProvider />',
+        DEV ? 'mount to <StateProvider />' : '',
       ))
   }
 }
