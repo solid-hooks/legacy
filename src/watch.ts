@@ -1,5 +1,5 @@
 import type { Accessor, AccessorArray, OnOptions } from 'solid-js'
-import { createEffect, createSignal, on, onCleanup } from 'solid-js'
+import { batch, createEffect, createReaction, createRenderEffect, createSignal, on, onCleanup } from 'solid-js'
 import type { SignalObject } from './signal'
 
 export type Cleanupable = void | (() => void)
@@ -50,6 +50,14 @@ export type WatchObject = {
 }
 
 /**
+ * wrapper for {@link createReaction}
+ */
+export function $watchOnce<T>(deps: Accessor<T>, cb: WatchCallback<T>) {
+  const old = deps()
+  return createReaction(() => cb(deps(), old))(deps)
+}
+
+/**
  * object wrapper for {@link createEffect}, using {@link on}
  * @param deps Accessor that need to be watch
  * @param fn {@link WatchCallback callback function}
@@ -81,7 +89,6 @@ export function $watch<T>(
       const cleanup = _fn(value, oldValue)
       typeof cleanup === 'function' && onCleanup(cleanup)
     }
-    // @ts-expect-error defer is boolean
   }, { defer }))
 
   return {
@@ -90,8 +97,17 @@ export function $watch<T>(
     isWatching: () => isWatch(),
     runWithoutEffect: (update: () => void) => {
       setIsWatch(false)
-      update()
+      batch(() => update())
       setIsWatch(true)
     },
   }
 }
+
+/**
+ * alias for {@link createEffect}
+ */
+export const $effect = createEffect
+/**
+ * alias for {@link createRenderEffect}
+ */
+export const $renderEffect = createRenderEffect

@@ -10,5 +10,5 @@ export type { ResourceObject, InitializedResourceObject } from './resource'
 export { $store, $trackStore } from './store'
 export type { StoreObject } from './store'
 
-export { $watch } from './watch'
+export { $watch, $effect, $renderEffect, $watchOnce } from './watch'
 export type { WatchCallback, WatchOptions } from './watch'
