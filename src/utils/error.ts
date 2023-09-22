@@ -1,3 +1,5 @@
+import { catchError } from 'solid-js'
+
 /**
  * type guard for {@link NormalizedError}
  */
@@ -37,26 +39,32 @@ export function toNormalizedError(e: unknown): NormalizedError {
   return new NormalizedError(e)
 }
 
-type Promisable<T> = T | Promise<T>
-
 /**
  * auto catch and normalize error
- *
- * @returns function return or {@link NormalizedError},
  */
-export function $noThrow<T>(
+export function noThrow<T>(
   fn: () => T
 ): T | NormalizedError
-export function $noThrow<T>(
+export function noThrow<T>(
   fn: () => Promise<T>,
 ): Promise<T | NormalizedError>
-export function $noThrow<T>(
-  fn: () => Promisable<T>,
-): Promisable<T | NormalizedError> {
+export function noThrow(
+  fn: () => any,
+): any {
   try {
     const ret = fn()
     return ret instanceof Promise ? ret.catch(toNormalizedError) : ret
   } catch (e) {
     return toNormalizedError(e)
   }
+}
+
+/**
+ * wrapper for {@link catchError}, handle {@link NormalizedError}
+ */
+export function $catchError<T>(
+  fn: () => T,
+  handler: (err: NormalizedError) => void,
+): T | undefined {
+  return catchError(fn, e => handler(toNormalizedError(e)))
 }

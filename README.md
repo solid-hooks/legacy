@@ -109,8 +109,8 @@ const {
   triggerFn: fn => throttle(fn, 500),
   // function for filter value
   filterFn: filter,
-  // createEffect `onOptions.defer`
-  defer: true,
+  // createEffect `onOptions.defer`, default is true
+  defer: false,
 })
 ```
 
@@ -514,6 +514,14 @@ create function to generate `$()` like IndexedDB wrapper, using [idb-keyval](htt
 
 no serializer, be caution when store `Proxy`
 
+#### install
+
+```ts
+pnpm add -D idb-keyval
+```
+
+#### example
+
 ```ts
 const { useIDB, idb, clearAll } = $idb({ name: 'dbName' })
 
@@ -525,9 +533,28 @@ await foo.$del()
 await clearAll()
 ```
 
-### `$noThrow`
+### `$catchError`
+
+wrapper for `catchError`, handle `NormalizedError`
+
+```ts
+$catchError(() => {
+  //
+}, (e: NormalizedError) => {
+  //...
+})
+```
+
+#### `noThrow`
 
 auto catch and normalize error
+
+```ts
+const result = noThrow(async () => 1)
+if (isNormalizedError(result)) {
+  // ...
+}
+```
 
 ### `$ctx`
 

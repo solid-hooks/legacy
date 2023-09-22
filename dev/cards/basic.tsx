@@ -1,6 +1,6 @@
 import { $, $watch, noReturn } from '../../src'
 import type { EmitProps } from '../../src/utils'
-import { $ctx, $cx, $emits, $noThrow } from '../../src/utils'
+import { $ctx, $cx, $emits, noThrow } from '../../src/utils'
 
 const { useTest, TestProvider } = $ctx('test', () => new Date())
 type Emits = {
@@ -13,8 +13,8 @@ function Child(props: EmitProps<Emits, { num: number }>) {
   const { emit, useEmits } = $emits<Emits>(props)
   const v = useEmits('var', 1)
   const handleClick = () => {
-    v.$set(v => v + 1)
-    const e = $noThrow(() => {
+    v.$set(v() + 1)
+    const e = noThrow(() => {
       const v = Date.now()
       if (v % 2) {
         throw new Error('asd')

@@ -19,7 +19,8 @@ export { $emits } from './emits'
 export type { EmitProps, EmitsObject } from './emits'
 
 export {
-  $noThrow,
+  noThrow,
+  $catchError,
   NormalizedError,
   isNormalizedError,
   toNormalizedError,
