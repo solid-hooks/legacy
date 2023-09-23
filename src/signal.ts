@@ -47,7 +47,7 @@ type SetterHooks<T> = {
    * @example
    * ```ts
    * const list = $([], { deep: true })
-   * list.$set((l) => {
+   * list.$((l) => {
    *   l.push(1)
    *   return l
    * })
@@ -64,9 +64,12 @@ export type SignalObjectOptions<T> = SignalOptions<T> & SetterHooks<T>
  */
 export type SignalObject<T> = {
   (): T
-  readonly $set: Setter<T>
   /**
-   * original getter and setter, do not trigger `preSet`
+   * setter function
+   */
+  readonly $: Setter<T>
+  /**
+   * original getter and untracked setter
    */
   readonly $signal: Signal<T>
 }
@@ -109,9 +112,9 @@ export function $<T>(...args: [] | [Signal<T>] | SignalParam<T>) {
   postSet && createComputed(on(val, postSet, { defer }))
 
   // @ts-expect-error assign
-  val.$set = _set
+  val.$ = _set
   // @ts-expect-error assign
-  val.$signal = [val, set]
+  val.$signal = [val, (arg: any) => untrack(() => set(arg))]
   return val
 }
 /**

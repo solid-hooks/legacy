@@ -7,7 +7,7 @@ import { createStore } from 'solid-js/store'
  */
 export type StoreObject<T extends object> = {
   (): Store<T>
-  readonly $set: SetStoreFunction<T>
+  readonly $: SetStoreFunction<T>
 }
 
 /**
@@ -33,7 +33,7 @@ export function $store<T extends object>(
   // eslint-disable-next-line solid/reactivity
   const [store, setStore] = Array.isArray(data) ? data : createStore<T>(data, { name })
   const result = () => store
-  result.$set = setStore
+  result.$ = setStore
   return result
 }
 

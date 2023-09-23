@@ -12,7 +12,7 @@ describe('test signal', () => {
   test('$(number)', () => {
     const bar = $(1)
     expect(bar()).toBe(1)
-    expect(bar.$set(4)).toBe(4)
+    expect(bar.$(4)).toBe(4)
     expect(bar()).toBe(4)
     expectTypeOf(bar.$signal).toBeArray()
     expectTypeOf(bar.$signal[0]).toBeFunction()
@@ -22,7 +22,7 @@ describe('test signal', () => {
     // eslint-disable-next-line solid/reactivity
     const x = $(createSignal('str'))
     expect(x()).toBe('str')
-    expect(x.$set('test modify')).toBe('test modify')
+    expect(x.$('test modify')).toBe('test modify')
     expect(x()).toBe('test modify')
     expectTypeOf(x.$signal).toBeArray()
     expectTypeOf(x.$signal[0]).toBeFunction()
@@ -33,7 +33,7 @@ describe('$ options', () => {
   test('deep', async () => {
     const list = $<number[]>([], { deep: true })
     expect(list()).toStrictEqual([])
-    list.$set((l) => {
+    list.$((l) => {
       l.push(1)
       return l
     })
@@ -55,7 +55,7 @@ describe('$ options', () => {
     expect(bar()).toBe(1)
     expect(cbPreSet).toBeCalledWith(1)
     expect(cbPostSet).toBeCalledWith(1)
-    expect(bar.$set(2)).toBe(2)
+    expect(bar.$(2)).toBe(2)
     expect(cbPreSet).toBeCalledWith(2)
     expect(cbPostSet).toBeCalledWith(2)
     expect(bar()).toBe(2)
@@ -68,7 +68,7 @@ describe('$ options', () => {
     }))
     expect(volume()).toBe(1)
     expect(cb).toBeCalledWith(1)
-    expect(volume.$set(20)).toBe(0.2)
+    expect(volume.$(20)).toBe(0.2)
     expect(cb).toBeCalledWith(0.2)
     expect(volume()).toBe(0.2)
   })

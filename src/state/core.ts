@@ -43,10 +43,10 @@ const GLOBAL_$STATE = createContext<{
  *   }),
  *   $action: stateObj => ({
  *     double(num: number) {
- *       stateObj.$set('value', value => value * 2 * number)
+ *       stateObj.$('value', value => value * 2 * number)
  *     },
  *     plus(num: number) {
- *       stateObj.$set('value', value => value + num)
+ *       stateObj.$('value', value => value + num)
  *     },
  *   }),
  *   $persist: {
@@ -61,9 +61,9 @@ const GLOBAL_$STATE = createContext<{
  * render(() => (
  *   <StateProvider> // optional
  *     state: <p>{state().value}</p>
- *     getter: <p>{state.$.doubleValue()}</p>
- *     action: <button onClick={state.double}>double</button>
- *     action: <button onClick={() => state.plus(2)}>plus 2</button>
+ *     getter: <p>{state.doubleValue()}</p>
+ *     action: <button onClick={state.$.double}>double</button>
+ *     action: <button onClick={() => state.$.plus(2)}>plus 2</button>
  *   </StateProvider>
  * ))
  *
@@ -212,7 +212,7 @@ function setupObject<
     }
     const utilFn: StateUtils<State> = {
       $patch: (state) => {
-        _store.$set(
+        _store.$(
           typeof state === 'function'
             ? produce(state)
             : reconcile(
@@ -226,7 +226,7 @@ function setupObject<
           log('cannot reset, type of initial value is Store')
           return
         }
-        _store.$set(
+        _store.$(
           reconcile(initialState, { key: stateName, merge: true }),
         )
         if (resetPersist && $persist && $persist.enable) {
@@ -268,9 +268,9 @@ function setupObject<
     return Object.assign(
       () => _store(),
       utilFn,
-      createActions($actions?.(_store, utilFn)),
+      result,
       {
-        $: result,
+        $: createActions($actions?.(_store, utilFn)),
       },
     )
   }

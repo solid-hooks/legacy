@@ -6,10 +6,10 @@ export default function ShowIDB() {
   const time = useIDB('time')
   const extra = useIDB('extra')
   const cb = () => {
-    time.$set(new Date().getTime())
+    time.$(new Date().getTime())
   }
   const cbExtra = () => {
-    extra.$set('extra')
+    extra.$('extra')
     // console.log('extra', extra())
   }
   cb()

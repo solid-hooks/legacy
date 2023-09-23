@@ -11,12 +11,12 @@ describe('$watch', () => {
     createRoot(() => $watch(value, callback, { defer: true }))
 
     await $tick()
-    value.$set(1)
+    value.$(1)
     await $tick()
     expect(callback).toHaveBeenCalledTimes(1)
     expect(callback).toHaveBeenCalledWith(1, undefined)
 
-    value.$set(2)
+    value.$(2)
     await $tick()
     expect(callback).toHaveBeenCalledTimes(2)
     expect(callback).toHaveBeenCalledWith(2, 1)
@@ -32,11 +32,11 @@ describe('$watch', () => {
     createRoot(() => $watch(str, callback, { filterFn, defer: true }))
 
     await $tick()
-    str.$set('new')
+    str.$('new')
     await $tick()
     expect(callback).toHaveBeenCalledTimes(0)
 
-    str.$set('new new')
+    str.$('new new')
     await $tick()
     expect(callback).toHaveBeenCalledTimes(1)
 
@@ -52,19 +52,19 @@ describe('$watch', () => {
       const { pause, resume, isWatching } = $watch(value, callback, { defer: true })
 
       await $tick()
-      value.$set(100)
+      value.$(100)
       await $tick()
       expect(callback).toHaveBeenCalledTimes(1)
       expect(callback).toHaveBeenCalledWith(100, undefined)
 
       pause()
       expect(isWatching()).toBe(false)
-      value.$set(200)
+      value.$(200)
       await $tick()
       expect(callback).toHaveBeenCalledTimes(1)
 
       resume()
-      value.$set(300)
+      value.$(300)
       await $tick()
       expect(callback).toHaveBeenCalledTimes(2)
 

@@ -68,9 +68,9 @@ export type EmitsObject<EventsMap, E extends Record<string, any>> = {
  *
  * function Child(props: EmitProps<Emits, { num: number }>) {
  *   const { emit, useEmits } = $emits<Emits>(props)
- *   const v = useEmits('var', 1)
+ *   const var = useEmits('var', 1)
  *   const handleClick = () => {
- *     v.$set(v => v + 1)
+ *     var.$(v => v + 1)
  *     emit('update', `emit from child: ${props.num}`, 'second')
  *     emit('optional', { test: 1 })
  *   }

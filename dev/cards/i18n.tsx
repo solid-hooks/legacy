@@ -6,7 +6,7 @@ export default function ShowI18n() {
   const info = useInfoState()
   const { $t, $d, $n, availiableLocales, locale } = useI18n()
   function changeLocale(target: string) {
-    locale.$set(target)
+    locale.$(target)
   }
   return (
     <>

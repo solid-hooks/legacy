@@ -7,9 +7,9 @@ export default function Content() {
   const { pause, resume, isWatching } = info.$subscribe(state => console.log('watching info:', state))
   async function handleClick() {
     const v = (new Date().getTime() - start) / 1000
-    info.setTest(v)
-    plain.$set(v)
-    info.sleepAndPlus(500)
+    info.$.setTest(v)
+    plain.$(v)
+    info.$.sleepAndPlus(500)
   }
   return (
     <>

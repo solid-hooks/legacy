@@ -78,7 +78,7 @@ const GLOBAL_$I18N = createContext<{
  * const { $t, $d, $n, availiableLocales, locale } = useI18n()
  *
  * <I18nProvider> // optional
- *   <select onChange={e => locale.$set(e.target.value)}>
+ *   <select onChange={e => locale.$(e.target.value)}>
  *     <For each={availiableLocales}>
  *       {l => <option selected={l === locale()}>{l}</option>}
  *     </For>

@@ -6,11 +6,11 @@ export default function Input() {
     <>
       <div>
         double:
-        <span>{info.$.doubleValue()}</span>
+        <span>{info.doubleValue()}</span>
       </div>
       <div>
         test memo:
-        <span>{info.$.doubleValue()}</span>
+        <span>{info.doubleValue()}</span>
       </div>
     </>
   )

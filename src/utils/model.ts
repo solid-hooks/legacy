@@ -68,7 +68,7 @@ export function $model(el: HTMLElement, value: () => ModelParam) {
   createRenderEffect(() => (el[property] = fnSignal(val())))
   const handleValue = (event: Event) => {
     // @ts-expect-error set value
-    val.$set(fnProperty(event.target[property]))
+    val.$(fnProperty(event.target[property]))
   }
   el.addEventListener(eventName, handleValue)
   onCleanup(() => el.removeEventListener(eventName, handleValue))

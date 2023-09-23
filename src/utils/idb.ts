@@ -6,7 +6,7 @@ import { type NormalizedError, toNormalizedError } from './error'
 
 export type IDBObject<T> = {
   (): T
-  readonly $set: Setter<Exclude<T, undefined>>
+  readonly $: Setter<Exclude<T, undefined>>
   readonly $del: () => Promise<void>
 }
 
@@ -106,7 +106,7 @@ export function $idb<T extends Record<string, any>>(
     clearCallbackList.push(_del)
 
     const result = () => data()
-    result.$set = setVal as Setter<T[K]>
+    result.$ = setVal as Setter<T[K]>
     result.$del = () => del(key, idb).then(_del).catch(e => onError?.(e))
     return result
   }

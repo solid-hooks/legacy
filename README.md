@@ -31,7 +31,7 @@ const data = $(0)
 
 console.log(data()) // 0
 
-console.log(data.$set(1)) // 1
+console.log(data.$(1)) // 1
 
 console.log(data()) // 1
 
@@ -145,10 +145,10 @@ const useTestState = $state('test', {
   }),
   $action: stateObj => ({
     double(num: number) {
-      stateObj.$set('value', value => value * 2 * number)
+      stateObj.$('value', value => value * 2 * number)
     },
     plus(num: number) {
-      stateObj.$set('value', value => value + num)
+      stateObj.$('value', value => value + num)
     },
   }),
   $persist: {
@@ -265,7 +265,7 @@ export const useI18n = $i18n({
 const { $t, $d, $n, availiableLocales, locale } = useI18n()
 
 <I18nProvider>{/* optional */}
-  <select onChange={e => locale.$set(e.target.value)}>
+  <select onChange={e => locale.$(e.target.value)}>
     <For each={availiableLocales}>
       {l => <option selected={l === locale()}>{l}</option>}
     </For>
@@ -338,9 +338,9 @@ function Child(props: EmitProps<Emits, { num: number }>) {
   const { emit, useEmits } = $emits<Emits>(props)
 
   // auto emit after setter, inspird by `defineModel` in Vue
-  const v = useEmits('var', 1)
+  const var = useEmits('var', 1)
   const handleClick = () => {
-    v.$set(v => v + 1)
+    var.$(v => v + 1)
 
     // manully emit
     emit('update', `emit from child: ${props.num}`, 'second')
@@ -527,7 +527,7 @@ const { useIDB, idb, clearAll } = $idb({ name: 'dbName' })
 
 const foo = useIDB('foo', 'initial value')
 
-foo.$set('test')
+foo.$('test')
 
 await foo.$del()
 await clearAll()

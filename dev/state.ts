@@ -13,11 +13,11 @@ export const useInfoState = $state('info', {
   }),
   $actions: state => ({
     setTest(test: number) {
-      state.$set('test', test)
+      state.$('test', test)
     },
     async sleepAndPlus(ms: number) {
       return new Promise<void>(resolve => setTimeout(() => {
-        state.$set('test', t => t + 1)
+        state.$('test', t => t + 1)
         console.log('async action')
         resolve()
       }, ms))

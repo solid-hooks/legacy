@@ -43,11 +43,11 @@ describe('i18n', () => {
   const { availiableLocales, locale, $t, $d, $n } = useI18n()
 
   beforeEach(() => {
-    locale.$set('en')
+    locale.$('en')
   })
 
   async function changeLocale() {
-    locale.$set('zh')
+    locale.$('zh')
     await $tick()
   }
 

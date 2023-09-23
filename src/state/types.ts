@@ -30,11 +30,11 @@ export type StateObject<
   State,
   Getter = GetterOrActionObject,
   Action = GetterOrActionObject,
-> = Readonly<Action> & StateUtils<State> & (() => Readonly<State>) & {
+> = Readonly<Getter> & StateUtils<State> & (() => Readonly<State>) & {
   /**
    * getters
    */
-  readonly $: Readonly<Getter>
+  readonly $: Readonly<Action>
 }
 export type InitialState<State extends object> = State | (() => State | [Store<State>, SetStoreFunction<State>])
 

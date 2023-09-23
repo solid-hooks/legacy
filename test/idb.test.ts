@@ -22,7 +22,7 @@ describe('useIDB', () => {
   })
 
   test('should update the value using $set', async () => {
-    foo.$set('new value')
+    foo.$('new value')
     expect(await get('foo', idb)).toBe('new value')
     expect(foo()).toBe('new value')
   })
@@ -38,8 +38,8 @@ describe('clearAll', () => {
     const data1 = createRoot(() => useIDB('test1'))
     const data2 = createRoot(() => useIDB('test2'))
 
-    data1.$set('test data 1')
-    data2.$set('test data 2')
+    data1.$('test data 1')
+    data2.$('test data 2')
 
     expect(await get('test1', idb)).toBe('test data 1')
     expect(await get('test2', idb)).toBe('test data 2')

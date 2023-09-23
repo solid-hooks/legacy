@@ -13,7 +13,7 @@ function Child(props: EmitProps<Emits, { num: number }>) {
   const { emit, useEmits } = $emits<Emits>(props)
   const v = useEmits('var', 1)
   const handleClick = () => {
-    v.$set(v() + 1)
+    v.$(v() + 1)
     const e = noThrow(() => {
       const v = Date.now()
       if (v % 2) {
@@ -51,7 +51,7 @@ export default function Basic() {
           { 'hover:bg-slate-300': true },
           count() === 2 && 'm-1',
         )}
-        onClick={() => count.$set(c => c + 1)}
+        onClick={() => count.$(c => c + 1)}
       >
         increase
       </button>
