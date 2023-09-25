@@ -1,4 +1,4 @@
-export { $idleCallback, $idle } from './idle'
+export { $idleCallback } from './idle'
 
 export { $model } from './model'
 export type { ModelParam, ModelDirective } from './model'
@@ -17,6 +17,3 @@ export { $app } from './app'
 
 export { $emits } from './emits'
 export type { EmitProps, EmitsObject } from './emits'
-
-export { $selector } from './selector'
-export type { SelectorObject, SelectorObjectOptions } from './selector'

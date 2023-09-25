@@ -54,11 +54,7 @@ object wrapper for `createMemo`
 
 ```ts
 const test = $('test')
-
 const memoByValue = $memo(`value: ${test()}`)
-
-const fn = v => `value: ${v}`
-const memoByFn = $memo(fn, test())
 ```
 
 ### `$res`
@@ -91,7 +87,7 @@ data.$refetch()
 
 ### `$watch`
 
-pausable and filterable `createEffect`
+pausable and filterable `createEffect(on())`
 
 ```ts
 const str = $('old')
@@ -114,6 +110,18 @@ const {
 })
 ```
 
+#### `$effect`
+
+normal effect, alias for `createEffect`
+
+#### `$renderEffect`
+
+run effect after rendered, be able to access DOM, alias for `createRenderEffect`
+
+#### `$instantEffect`
+
+run effect instantly, alias for `createComputed`
+
 ### `$store`
 
 object wrapper for `createStore`, return `$()` like object
@@ -121,6 +129,25 @@ object wrapper for `createStore`, return `$()` like object
 #### `$trackStore`
 
 Accessor wrapper for [`trackStore`](https://github.com/solidjs-community/solid-primitives/tree/main/packages/deep#trackstore)
+
+### `$deferred`
+
+defer update notification until browser idle, alias for `createDeferred`
+
+### `$selector`
+
+object wrapper for `createSelector`
+
+```tsx
+const activeId = $selector(0)
+activeId.$(1)
+
+<For each={list()}>
+  {item => <li classList={{ active: activeId.$bind(item.id) }}>
+    {item.name}
+   </li>}
+</For>
+```
 
 ---
 
@@ -531,21 +558,6 @@ foo.$('test')
 
 await foo.$del()
 await clearAll()
-```
-
-### `$selector`
-
-object wrapper for `createSelector`
-
-```tsx
-const activeId = $selector(0)
-activeId.$(1)
-
-<For each={list()}>
-  {item => <li classList={{ active: activeId.$bind(item.id) }}>
-    {item.name}
-   </li>}
-</For>
 ```
 
 ### `$ctx`

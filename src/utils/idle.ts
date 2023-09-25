@@ -1,4 +1,4 @@
-import { createComputed, createDeferred, createSignal, getOwner, onCleanup, untrack } from 'solid-js'
+import { createComputed, createSignal, getOwner, onCleanup, untrack } from 'solid-js'
 
 /**
  * executes a callback using the {@link requestIdleCallback} API, fallback to {@link requestAnimationFrame}.
@@ -39,10 +39,3 @@ export function $idleCallback(
     })
   })
 }
-
-/**
- * defer update notification until browser idle
- *
- * alias for {@link createDeferred}
- */
-export const $idle = createDeferred

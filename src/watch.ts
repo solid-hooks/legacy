@@ -107,7 +107,7 @@ export function $watch<T>(
 }
 
 /**
- * normal effect, update batchly
+ * normal effect
  *
  * alias for {@link createEffect}
  */
