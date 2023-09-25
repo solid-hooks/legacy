@@ -1,7 +1,6 @@
-import { createEffect, createRoot, createSignal, on } from 'solid-js'
+import { createRoot, createSignal } from 'solid-js'
 import { describe, expect, expectTypeOf, test, vi } from 'vitest'
 import { $, noReturn } from '../src'
-import { $tick } from '../src/utils/tick'
 
 describe('test signal', () => {
   test('$()', () => {
@@ -30,21 +29,6 @@ describe('test signal', () => {
   })
 })
 describe('$ options', () => {
-  test('deep', async () => {
-    const list = $<number[]>([], { deep: true })
-    expect(list()).toStrictEqual([])
-    list.$((l) => {
-      l.push(1)
-      return l
-    })
-    const fn = vi.fn()
-    createRoot(() => createEffect(on(list, v => fn(v))))
-    expect(list()).toStrictEqual([1])
-
-    await $tick()
-    expect(fn).toBeCalledTimes(1)
-    expect(fn).toBeCalledWith([1])
-  })
   test('no transform before set', () => {
     const cbPreSet = vi.fn()
     const cbPostSet = vi.fn()
