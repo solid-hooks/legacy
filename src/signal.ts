@@ -1,6 +1,5 @@
 import type { Setter, Signal, SignalOptions } from 'solid-js'
 import { batch, createComputed, createSignal, on, untrack } from 'solid-js'
-import { deepClone } from './state/utils'
 
 /**
  * a symbol to prevent setting value in {@link $} preSet option
@@ -42,19 +41,6 @@ type SetterHooks<T> = {
    * enable triggers after initialized
    */
   defer?: boolean
-  /**
-   * deepclone previous value when $set
-   * @example
-   * ```ts
-   * const list = $([], { deep: true })
-   * list.$((l) => {
-   *   l.push(1)
-   *   return l
-   * })
-   * console.log(list()) // [1]
-   * ```
-   */
-  deep?: boolean
 }
 
 export type SignalObjectOptions<T> = SignalOptions<T> & SetterHooks<T>
@@ -91,7 +77,7 @@ export function $<T>(...args: []): SignalObject<T | undefined>
 export function $<T>(...args: [Signal<T>]): SignalObject<T>
 export function $<T>(...args: SignalParam<T>): SignalObject<T>
 export function $<T>(...args: [] | [Signal<T>] | SignalParam<T>) {
-  const { preSet, postSet, defer = false, deep, ...options } = args?.[1] || {}
+  const { preSet, postSet, defer = false, ...options } = args?.[1] || {}
 
   const _pre = (value: T) => {
     const ret = preSet?.(value)
@@ -105,7 +91,7 @@ export function $<T>(...args: [] | [Signal<T>] | SignalParam<T>) {
 
   const _set = (v: any) => set(_pre(
     typeof v === 'function'
-      ? batch(() => (v as any)(deep ? deepClone(untrack(val)) : untrack(val)))
+      ? batch(() => (v as any)(val()))
       : v,
   ) as any)
 
@@ -118,6 +104,8 @@ export function $<T>(...args: [] | [Signal<T>] | SignalParam<T>) {
   return val
 }
 /**
+ * prevent update notification and run
+ *
  * alias for {@link untrack}
  */
 export const $$ = untrack
