@@ -1,5 +1,5 @@
 import { createSelector } from 'solid-js'
-import type { EqualityCheckerFunction } from 'solid-js/types/reactive/signal'
+import type { Accessor, EqualityCheckerFunction } from 'solid-js/types/reactive/signal'
 import type { SignalObject, SignalObjectOptions } from '../signal'
 import { $ } from '../signal'
 
@@ -33,11 +33,11 @@ export type SelectorObjectOptions<T, U = T> = SignalObjectOptions<T> & {
  * ```
  */
 export function $selector<T, U = T>(
-  defaultValue: T,
+  value: T | Accessor<T> | SignalObject<T>,
   options: SelectorObjectOptions<T, U> = {},
 ): SelectorObject<T, U> {
   const { selectorEqual, selectorName, ...op } = options
-  const _ = $(defaultValue, op) as SelectorObject<T, U>
+  const _ = (typeof value === 'function' ? value : $(value, op)) as SelectorObject<T, U>
   const change = createSelector<T, U>(_, selectorEqual, { name: selectorName })
   _.$bind = change
   return _
