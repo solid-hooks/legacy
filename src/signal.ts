@@ -67,11 +67,11 @@ export type SignalObject<T> = {
   /**
    * setter function
    */
-  readonly $: Setter<T>
+  $: Setter<T>
   /**
    * original getter and untracked setter
    */
-  readonly $signal: Signal<T>
+  $signal: Signal<T>
 }
 
 function isSignal<T>(val: unknown): val is Signal<T> {

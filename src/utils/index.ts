@@ -18,10 +18,5 @@ export { $app } from './app'
 export { $emits } from './emits'
 export type { EmitProps, EmitsObject } from './emits'
 
-export {
-  noThrow,
-  $catchError,
-  NormalizedError,
-  isNormalizedError,
-  toNormalizedError,
-} from './error'
+export { $selector } from './selector'
+export type { SelectorObject, SelectorObjectOptions } from './selector'

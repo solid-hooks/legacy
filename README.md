@@ -533,27 +533,19 @@ await foo.$del()
 await clearAll()
 ```
 
-### `$catchError`
+### `$selector`
 
-wrapper for `catchError`, handle `NormalizedError`
+object wrapper for `createSelector`
 
-```ts
-$catchError(() => {
-  //
-}, (e: NormalizedError) => {
-  //...
-})
-```
+```tsx
+const activeId = $selector(0)
+activeId.$(1)
 
-#### `noThrow`
-
-auto catch and normalize error
-
-```ts
-const result = noThrow(async () => 1)
-if (isNormalizedError(result)) {
-  // ...
-}
+<For each={list()}>
+  {item => <li classList={{ active: activeId.$bind(item.id) }}>
+    {item.name}
+   </li>}
+</For>
 ```
 
 ### `$ctx`
