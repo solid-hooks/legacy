@@ -76,14 +76,15 @@ export function $idb<T extends Record<string, any>>(
   ): IDBObject<T[K] | undefined> => {
     const [val, setVal] = createSignal(initialValue)
 
+    let unchanged = true
+
     // Determine the initial value
     const _initVal = writeDefaults ? initialValue : undefined
-    _initVal !== undefined && _initVal !== null
-      // if initializeValue is not undefined or null, set the initial value to indexeddb
+    _initVal !== undefined
+      // if initializeValue is not undefined, set the initial value to indexeddb
       ? set(key, initialValue, idb)
       // otherwise, get value from indexeddb and set to val
-      // eslint-disable-next-line solid/reactivity
-      : get(key, idb).then(v => !val() && setVal(v))
+      : get(key, idb).then(v => unchanged && v !== undefined && setVal(v))
 
     const [data, { mutate }] = createResource(val, async (value) => {
       try {
@@ -105,7 +106,7 @@ export function $idb<T extends Record<string, any>>(
     clearCallbackList.push(_del)
 
     const result = () => data()
-    result.$ = setVal as Setter<T[K]>
+    result.$ = (!unchanged && (unchanged = false), setVal) as Setter<T[K]>
     result.$del = () => del(key, idb).then(_del).catch(e => onError?.(e))
     return result
   }
