@@ -1,4 +1,4 @@
-export { $idle } from './idle'
+export { $idleCallback, $idle } from './idle'
 
 export { $model } from './model'
 export type { ModelParam, ModelDirective } from './model'

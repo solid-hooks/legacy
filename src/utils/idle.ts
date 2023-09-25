@@ -1,13 +1,13 @@
-import { createComputed, createSignal, onCleanup, untrack } from 'solid-js'
+import { createComputed, createDeferred, createSignal, getOwner, onCleanup, untrack } from 'solid-js'
 
 /**
- * executes a callback using the `requestIdleCallback` API, fallback to `requestAnimationFrame`.
+ * executes a callback using the {@link requestIdleCallback} API, fallback to {@link requestAnimationFrame}.
  * otherwise execute the callback directly, auto cleanup
  *
  * @param fn callback function.
  * @param options original IdleRequestOptions.
  */
-export function $idle(
+export function $idleCallback(
   fn: () => void,
   options?: IdleRequestOptions,
 ): void {
@@ -24,7 +24,7 @@ export function $idle(
       fn()
     }
 
-    onCleanup(() => {
+    getOwner() && onCleanup(() => {
       const currentHandle = handle()
 
       if (currentHandle == null) {
@@ -39,3 +39,10 @@ export function $idle(
     })
   })
 }
+
+/**
+ * defer update notification until browser idle
+ *
+ * alias for {@link createDeferred}
+ */
+export const $idle = createDeferred
