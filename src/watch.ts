@@ -1,5 +1,5 @@
 import type { Accessor, AccessorArray, OnOptions } from 'solid-js'
-import { batch, createEffect, createReaction, createRenderEffect, createSignal, on, onCleanup } from 'solid-js'
+import { batch, createComputed, createEffect, createReaction, createRenderEffect, createSignal, on, onCleanup } from 'solid-js'
 import type { SignalObject } from './signal'
 
 export type Cleanupable = void | (() => void)
@@ -29,6 +29,9 @@ export type WatchOptions<T> = OnOptions & {
   filterFn?: (newValue: T, times: number) => boolean
 }
 
+/**
+ * type of {@link $watch}
+ */
 export type WatchObject = {
   /**
    * pause watch
@@ -104,10 +107,20 @@ export function $watch<T>(
 }
 
 /**
+ * normal effect, update batchly
+ *
  * alias for {@link createEffect}
  */
 export const $effect = createEffect
 /**
+ * run effect after rendered, be able to access DOM
+ *
  * alias for {@link createRenderEffect}
  */
 export const $renderEffect = createRenderEffect
+/**
+ * run effect instantly
+ *
+ * alias for {@link createComputed}
+ */
+export const $instantEffect = createComputed
