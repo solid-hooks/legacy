@@ -1,8 +1,7 @@
 import type { Setter } from 'solid-js'
 import { createResource, createSignal } from 'solid-js'
 import type { UseStore } from 'idb-keyval'
-import { clear, createStore, del, get, set } from 'idb-keyval'
-import { type NormalizedError, toNormalizedError } from './error'
+import { clear, createStore as createIDBStore, del, get, set } from 'idb-keyval'
 
 export type IDBObject<T> = {
   (): T
@@ -20,7 +19,7 @@ export type IDBOptions = {
   /**
    * call on error
    */
-  onError?: (e: NormalizedError) => void
+  onError?: (e: unknown) => void
   /**
    * whether to cover default value on init
    */
@@ -58,7 +57,7 @@ export function $idb<T extends Record<string, any>>(
   options: IDBOptions = {},
 ): IDBObjectGenerator<T> {
   const { name = 'kv', onError, writeDefaults = false } = options
-  const idb = createStore(name, '$idb')
+  const idb = createIDBStore(name, '$idb')
 
   const clearCallbackList: (() => void)[] = []
 
@@ -67,7 +66,7 @@ export function $idb<T extends Record<string, any>>(
       await clear(idb)
       clearCallbackList.forEach(c => c())
     } catch (err) {
-      onError?.(toNormalizedError(err))
+      onError?.(err)
     }
   }
 
@@ -93,7 +92,7 @@ export function $idb<T extends Record<string, any>>(
         }
         return value
       } catch (err) {
-        onError?.(toNormalizedError(err))
+        onError?.(err)
         return initialValue
       }
     }, { initialValue })
