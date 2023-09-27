@@ -6,7 +6,7 @@ import type { IDBObject } from '../src/utils/idb'
 
 describe('useIDB', () => {
   const { useIDB, idb } = $idb({ name: 'test' })
-  let foo: IDBObject<string | undefined>
+  let foo: IDBObject<string>
 
   beforeEach(async () => {
     foo = createRoot(() => useIDB('foo', 'initial value'))
@@ -35,14 +35,14 @@ describe('useIDB', () => {
 describe('clearAll', () => {
   const { useIDB, clearAll, idb } = $idb()
   test('should clearAll', async () => {
-    const data1 = createRoot(() => useIDB('test1'))
-    const data2 = createRoot(() => useIDB('test2'))
+    const data1 = createRoot(() => useIDB<string>('test1'))
+    const data2 = createRoot(() => useIDB<number>('test2'))
 
     data1.$('test data 1')
-    data2.$('test data 2')
+    data2.$(0)
 
     expect(await get('test1', idb)).toBe('test data 1')
-    expect(await get('test2', idb)).toBe('test data 2')
+    expect(await get('test2', idb)).toBe(0)
 
     await clearAll()
 

@@ -4,7 +4,7 @@ import { batch, createComputed, createSignal, on, untrack } from 'solid-js'
 /**
  * a symbol to prevent setting value in {@link $} preSet option
  */
-export const NORETURN = Symbol('do not use return in preSet')
+export const NORETURN = Symbol('no return')
 /**
  * a util function to for {@link $} to prevent setting value when `preSet`
  */

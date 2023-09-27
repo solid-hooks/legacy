@@ -3,10 +3,19 @@ import { createResource, createSignal } from 'solid-js'
 import type { UseStore } from 'idb-keyval'
 import { clear, createStore as createIDBStore, del, get, set } from 'idb-keyval'
 
+/**
+ * type of {@link useIDB}
+ */
 export type IDBObject<T> = {
-  (): T
-  readonly $: Setter<Exclude<T, undefined>>
-  readonly $del: () => Promise<void>
+  (): T | undefined
+  /**
+   * setter function
+   */
+  $: Setter<T | undefined>
+  /**
+   * delete item
+   */
+  $del: () => Promise<void>
 }
 
 export type IDBOptions = {
@@ -26,7 +35,7 @@ export type IDBOptions = {
   writeDefaults?: boolean
 }
 
-type IDBObjectGenerator<T extends Record<string, any>> = {
+type IDBObjectGenerator = {
   /**
    * source {@link UseStore UseStore} of idb-keyval
    */
@@ -40,10 +49,10 @@ type IDBObjectGenerator<T extends Record<string, any>> = {
    *
    * initial value is undefined, get value at next tick
    */
-  useIDB: <K extends keyof T & string>(
-    key: K,
-    initialValue?: T[K] | undefined
-  ) => IDBObject<T[K] | undefined>
+  useIDB: <T>(
+    key: string,
+    initialValue?: T
+  ) => IDBObject<T>
 }
 
 /**
@@ -53,9 +62,9 @@ type IDBObjectGenerator<T extends Record<string, any>> = {
  *
  * no serializer, be caution when store `Proxy`
  */
-export function $idb<T extends Record<string, any>>(
+export function $idb(
   options: IDBOptions = {},
-): IDBObjectGenerator<T> {
+): IDBObjectGenerator {
   const { name = 'kv', onError, writeDefaults = false } = options
   const idb = createIDBStore(name, '$idb')
 
@@ -70,10 +79,10 @@ export function $idb<T extends Record<string, any>>(
     }
   }
 
-  const useIDB = <K extends keyof T & string>(
-    key: K,
-    initialValue?: T[K],
-  ): IDBObject<T[K] | undefined> => {
+  const useIDB = <T>(
+    key: string,
+    initialValue?: T,
+  ): IDBObject<T> => {
     const [val, setVal] = createSignal(initialValue)
 
     let unchanged = true
@@ -106,7 +115,7 @@ export function $idb<T extends Record<string, any>>(
     clearCallbackList.push(_del)
 
     const result = () => data()
-    result.$ = (!unchanged && (unchanged = false), setVal) as Setter<T[K]>
+    result.$ = (!unchanged && (unchanged = false), setVal) as any
     result.$del = () => del(key, idb).then(_del).catch(e => onError?.(e))
     return result
   }

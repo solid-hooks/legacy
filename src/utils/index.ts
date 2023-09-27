@@ -6,12 +6,14 @@ export type { ModelParam, ModelDirective } from './model'
 export { $cx } from './cx'
 
 export { $ctx } from './ctx'
+export type { ContextObject } from './ctx'
 
 export { $tick } from './tick'
 
 export { $runWithOwner } from './runWithOwner'
 
 export { $idb } from './idb'
+export type { IDBObject, IDBOptions } from './idb'
 
 export { $app } from './app'
 
