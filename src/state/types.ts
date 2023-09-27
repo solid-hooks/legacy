@@ -11,16 +11,16 @@ export type StateUtils<State> = {
    * - `Partial<State>`: using `reconcile` with `merge: true`, merged with previous state
    * - `((state: State) => void)`: using `produce`
    */
-  readonly $patch: (state: Partial<State> | ((state: State) => void)) => void
+  $patch: (state: Partial<State> | ((state: State) => void)) => void
   /**
    * reset state
    * @param resetPersist whether to also reset persist
    */
-  readonly $reset: (resetPersist?: boolean) => void
+  $reset: (resetPersist?: boolean) => void
   /**
    * subscribe to state, return {@link WatchObject}
    */
-  readonly $subscribe: (callback: (value: State) => Cleanupable, options?: WatchOptions<State>) => WatchObject
+  $subscribe: (callback: (value: State) => Cleanupable, options?: WatchOptions<State>) => WatchObject
 }
 
 /**
@@ -30,11 +30,11 @@ export type StateObject<
   State,
   Getter = GetterOrActionObject,
   Action = GetterOrActionObject,
-> = Readonly<Getter> & StateUtils<State> & (() => Readonly<State>) & {
+> = Getter & StateUtils<State> & (() => State) & {
   /**
-   * getters
+   * action records
    */
-  readonly $: Readonly<Action>
+  $: Action
 }
 export type InitialState<State extends object> = State | (() => State | [Store<State>, SetStoreFunction<State>])
 

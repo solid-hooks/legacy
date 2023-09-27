@@ -261,8 +261,10 @@ function setupObject<
     const result = {} as Readonly<Getter>
     for (const [key, getter] of Object.entries($getters?.(_store()) || {})) {
       // @ts-expect-error assign
-      // eslint-disable-next-line solid/reactivity
-      result[key] = getter.length === 0 ? createMemo(getter) : getter
+      result[key] = getter.length === 0
+        // eslint-disable-next-line solid/reactivity
+        ? createMemo(getter)
+        : getter
     }
 
     return Object.assign(
