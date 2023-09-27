@@ -1,5 +1,5 @@
 export { $, $$, NORETURN, noReturn } from './signal'
-export type { SignalObject } from './signal'
+export type { SignalObject, SignalObjectOptions } from './signal'
 
 export { $memo } from './memo'
 export type { MemoObject } from './memo'

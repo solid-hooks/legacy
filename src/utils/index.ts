@@ -19,3 +19,6 @@ export { $app } from './app'
 
 export { $emits } from './emits'
 export type { EmitProps, EmitsObject } from './emits'
+
+export { $reactive } from './reactive'
+export type { ReactiveObject } from './reactive'

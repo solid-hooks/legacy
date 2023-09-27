@@ -12,7 +12,7 @@ export function noReturn(cb: () => any): typeof NORETURN {
   cb()
   return NORETURN
 }
-export type SignalParam<T> = [value: T, options?: SignalObjectOptions<T>]
+type SignalParam<T> = [value: T, options?: SignalObjectOptions<T>]
 
 type SetterHooks<T> = {
   /**

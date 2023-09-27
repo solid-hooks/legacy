@@ -57,6 +57,7 @@ export const $autoImport: ImportFn = d => d
         from: 'solid-dollar',
         imports: [
           'SignalObject',
+          'SignalObjectOptions',
           'MemoObject',
           'ResourceObject',
           'InitializedResourceObject',
@@ -118,6 +119,7 @@ export const $autoImport: ImportFn = d => d
           '$idb',
           '$app',
           '$emits',
+          '$reactive',
         ],
       },
       {
@@ -125,8 +127,12 @@ export const $autoImport: ImportFn = d => d
         imports: [
           'ModelParam',
           'ModelDirective',
+          'ContextObject',
+          'IDBObject',
+          'IDBOptions',
           'EmitProps',
           'EmitsObject',
+          'ReactiveObject',
         ],
         type: true,
       },
