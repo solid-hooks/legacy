@@ -569,3 +569,21 @@ if use context outside provider, throw Error when DEV
 ```ts
 const { useDate, DateProvider } = $ctx('date', () => new Date())
 ```
+
+### `$reactive`
+
+`$()` like wrapper to reactify object props
+
+```ts
+const value = {
+  deep: {
+    data: 'str',
+  },
+}
+
+const bar = $reactive(value, 'deep.data')
+
+bar() // 'str'
+bar.$('updated') // 'update'
+bar() // 'updated'
+```

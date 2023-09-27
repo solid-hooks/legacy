@@ -2,6 +2,9 @@ import { type Path, type PathValue, pathGet, pathSet } from 'object-standard-pat
 import type { SignalOptions } from 'solid-js'
 import { createSignal } from 'solid-js'
 
+/**
+ * type of {@link $reactive}
+ */
 export type ReactiveObject<T> = {
   (): T
   /**
@@ -10,9 +13,22 @@ export type ReactiveObject<T> = {
   $: (value: T | ((prev: T) => T)) => T
 }
 /**
- * reactify object property
- */
-
+ * `$()` like wrapper to reactify object props
+ *
+ * ```ts
+ * const value = {
+ *   deep: {
+ *     data: 'str',
+ *   },
+ * }
+ *
+ * const bar = $reactive(value, 'deep.data')
+ *
+ * bar() // 'str'
+ * bar.$('updated') // 'update'
+ * bar() // 'updated'
+ * ```
+*/
 export function $reactive<T, P extends Path<T>>(data: T, path: P, options?: SignalOptions<PathValue<T, P>>): ReactiveObject<PathValue<T, P>> {
   const { equals, ...op } = options || {}
   const [track, trigger] = createSignal(undefined, { equals: false, ...op })
