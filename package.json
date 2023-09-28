@@ -1,6 +1,6 @@
 {
   "name": "solid-dollar",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "object style hooks / i18n / global state management for solid.js",
   "license": "MIT",
   "author": "subframe7536",
