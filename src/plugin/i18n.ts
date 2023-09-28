@@ -1,5 +1,6 @@
+import { join, relative } from 'node:path/posix'
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
-import { createFilter } from 'vite'
+import { createFilter, createLogger, normalizePath } from 'vite'
 import type { FilterPattern, Plugin } from 'vite'
 
 export interface I18nPluginOptions {
@@ -20,26 +21,30 @@ export interface I18nPluginOptions {
   transformMessage: (content: string, id: string) => any
   /**
    * whether to generate yml for {@link https://github.com/lokalise/i18n-ally/wiki/Custom-Framework i18n-ally plugin}
+   *
+   * if type is string, generate the file to target dir
    */
-  generateConfigYml?: boolean
+  generateConfigYml?: boolean | string
 }
 
-function generateYml() {
+function generateYml(basePath = '') {
   const yml = `# auto generate by solid $i18n plugin
 # more config: https://github.com/lokalise/i18n-ally/wiki/Custom-Framework
 languageIds:
-- javascript
-- typescript
-- javascriptreact
-- typescriptreact
+  - javascript
+  - typescript
+  - javascriptreact
+  - typescriptreact
 usageMatchRegex:
-- "[^\\\\w\\\\d]t\\(['\\\\"\`]({key})['\\\\"\`]"
+  - "[^\\\\w\\\\d]t\\\\(['\\"\`]({key})['\\"\`]"
 monopoly: true`.replace(/\r\n?/g, '\n')
-  if (!existsSync('.vscode')) {
-    mkdirSync('.vscode')
+
+  const base = join(basePath, '.vscode')
+  if (!existsSync(base)) {
+    mkdirSync(base)
   }
 
-  const ymlPath = '.vscode/i18n-ally-custom-framework.yml'
+  const ymlPath = join(base, 'i18n-ally-custom-framework.yml')
   if (!existsSync(ymlPath)) {
     writeFileSync(ymlPath, yml, 'utf-8')
   }
@@ -49,15 +54,18 @@ export function I18nPlugin(option: I18nPluginOptions): Plugin {
   const { include, exclude, generateConfigYml, transformMessage } = option
 
   if (generateConfigYml) {
-    generateYml()
+    generateYml(typeof generateConfigYml === 'string' ? generateConfigYml : undefined)
   }
 
+  const logger = createLogger('info', { prefix: '[$i18n]' })
   const filter = createFilter(include, exclude)
+  const cwd = normalizePath(process.cwd())
   return {
     name: 'vite-solid-$i18n',
     transform(code, id) {
       if (filter(id)) {
         const msg = transformMessage(code, id)
+        logger.info(`transform messages at ${relative(cwd, id)}`, { timestamp: true })
         return `export default ${JSON.stringify(msg)}`
       }
     },
