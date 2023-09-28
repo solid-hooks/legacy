@@ -572,9 +572,9 @@ if use context outside provider, throw Error when DEV
 const { useDate, DateProvider } = $ctx('date', () => new Date())
 ```
 
-### `$reactive`
+### `$ref`
 
-`$()` like wrapper to reactify object props
+`$()` like wrapper to make object props reactive
 
 ```ts
 const value = {
@@ -583,7 +583,7 @@ const value = {
   },
 }
 
-const bar = $reactive(value, 'deep.data')
+const bar = $ref(value, 'deep.data')
 
 bar() // 'str'
 bar.$('updated') // 'update'

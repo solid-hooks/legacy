@@ -3,9 +3,9 @@ import type { SignalOptions } from 'solid-js'
 import { createSignal } from 'solid-js'
 
 /**
- * type of {@link $reactive}
+ * type of {@link $ref}
  */
-export type ReactiveObject<T> = {
+export type RefObject<T> = {
   (): T
   /**
    * setter function
@@ -13,7 +13,7 @@ export type ReactiveObject<T> = {
   $: (value: T | ((prev: T) => T)) => T
 }
 /**
- * `$()` like wrapper to reactify object props
+ * `$()` like wrapper to make object props reactive
  *
  * ```ts
  * const value = {
@@ -29,7 +29,7 @@ export type ReactiveObject<T> = {
  * bar() // 'updated'
  * ```
 */
-export function $reactive<T, P extends Path<T>>(data: T, path: P, options?: SignalOptions<PathValue<T, P>>): ReactiveObject<PathValue<T, P>> {
+export function $ref<T, P extends Path<T>>(data: T, path: P, options?: SignalOptions<PathValue<T, P>>): RefObject<PathValue<T, P>> {
   const { equals, ...op } = options || {}
   const [track, trigger] = createSignal(undefined, { equals: false, ...op })
   const get = () => pathGet(data, path)
