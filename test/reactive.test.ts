@@ -1,13 +1,13 @@
 import { createEffect, createRoot } from 'solid-js'
 import { describe, expect, test, vi } from 'vitest'
-import { $reactive, $tick } from '../src/utils'
+import { $ref, $tick } from '../src/utils'
 
-describe('test $reactive', () => {
+describe('test $ref', () => {
   test('basic', () => {
     const value = {
       data: 1,
     }
-    const bar = $reactive(value, 'data')
+    const bar = $ref(value, 'data')
     expect(bar()).toBe(1)
     expect(bar.$(4)).toBe(4)
     expect(value.data).toBe(4)
@@ -20,7 +20,7 @@ describe('test $reactive', () => {
       },
     }
     const updatedString = 'updated'
-    const bar = $reactive(value, 'deep.data')
+    const bar = $ref(value, 'deep.data')
     expect(bar()).toBe('str')
     expect(bar.$(updatedString)).toBe(updatedString)
     expect(value.deep.data).toBe(updatedString)
@@ -30,7 +30,7 @@ describe('test $reactive', () => {
     const value = {
       data: 1,
     }
-    const bar = $reactive(value, 'data')
+    const bar = $ref(value, 'data')
     const fn = vi.fn()
     createRoot(() => createEffect(() => fn(bar())))
 

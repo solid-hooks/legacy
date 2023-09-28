@@ -1,21 +1,21 @@
 import { describe, expect, test } from 'vitest'
-import { $res } from '../src'
+import { $resource } from '../src'
 
-describe('$res', () => {
+describe('$resource', () => {
   test('returns a resource object with mutate and refetch functions', async () => {
     const fetcher = (source: string) => Promise.resolve(`${source} data`)
     const options = {
       $: 'source',
     }
-    const resourceObject = $res(fetcher, options)
-    expect(resourceObject()).toBe(undefined)
-    expect(resourceObject.loading).toBe(true)
-    expect(resourceObject.state).toBe('pending')
-    console.log(resourceObject.state)
+    const obj = $resource(fetcher, options)
+    expect(obj()).toBe(undefined)
+    expect(obj.loading).toBe(true)
+    expect(obj.state).toBe('pending')
+    console.log(obj.state)
     await Promise.resolve()
-    expect(resourceObject()).toBe('source data')
-    expect(resourceObject.state).toBe('ready')
-    expect(resourceObject.$mutate).toBeTypeOf('function')
-    expect(resourceObject.$refetch).toBeTypeOf('function')
+    expect(obj()).toBe('source data')
+    expect(obj.state).toBe('ready')
+    expect(obj.$mutate).toBeTypeOf('function')
+    expect(obj.$refetch).toBeTypeOf('function')
   })
 })
