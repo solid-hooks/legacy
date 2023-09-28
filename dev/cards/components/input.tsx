@@ -1,7 +1,6 @@
 import { For } from 'solid-js'
 import { useInfoState } from '../../state'
-import { $ } from '../../../src'
-import { $selector } from '../../../src/utils'
+import { $, $selector } from '../../../src'
 
 export default function Input() {
   const info = useInfoState()

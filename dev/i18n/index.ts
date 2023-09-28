@@ -9,10 +9,12 @@ export const useI18n = $i18n({
     'en': {
       short: { dateStyle: 'short' },
       long: { dateStyle: 'long' },
+      custom: d => d.getTime().toString(),
     },
     'zh-CN': {
       short: { dateStyle: 'short' },
       long: { dateStyle: 'full' },
+      custom: d => d.getTime().toString(),
     },
   },
   numberFormats: {

@@ -13,6 +13,7 @@ export default defineConfig({
       transformMessage: content => parse(content),
       // include: 'dev/i18n/locales/*.tr',
       // transformMessage: content => JSON.parse(content),
+      generateConfigYml: true,
     }),
   ],
 })

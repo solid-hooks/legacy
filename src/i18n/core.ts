@@ -11,7 +11,7 @@ function assertImportType(value: any, fn: I18nOptions['parseKey']) {
 }
 const GLOBAL_$I18N = createContext<{
   owner: Owner | null
-  data: I18nObject<any> | null
+  data: I18nObject<any, any, any, any> | null
 }>({
   owner: null,
   data: null,
@@ -59,18 +59,22 @@ const GLOBAL_$I18N = createContext<{
  *     'en': {
  *       short: { dateStyle: 'short' },
  *       long: { dateStyle: 'long' },
+ *       custom: d => d.getTime().toString(),
  *     },
  *     'zh-CN': {
  *       short: { dateStyle: 'short' },
  *       long: { dateStyle: 'full' },
+ *       custom: d => d.getTime().toString(),
  *     },
  *   },
  *   numberFormats: {
  *     'en': {
  *       currency: { style: 'currency', currency: 'USD' },
+ *       custom: n => n + '.00'
  *     },
  *     'zh-CN': {
  *       currency: { style: 'currency', currency: 'CNY' },
+ *       custom: n => n + '.00'
  *     },
  *   },
  * })
@@ -199,23 +203,30 @@ function createI18n<
     messageMap,
   } = parseMessage<Locale, Message>(message, parseKey)
 
-  const datetimeFormatMap = new Map<string, Record<string, Intl.DateTimeFormat>>()
-  const numberFormatMap = new Map<string, Record<string, Intl.NumberFormat>>()
+  type DateTimeFormatItem = Intl.DateTimeFormat | ((date: Date) => string)
+  const datetimeFormatMap = new Map<string, Record<string, DateTimeFormatItem>>()
+
+  type NumberFormatItem = Intl.NumberFormat | ((num: number | bigint) => string)
+  const numberFormatMap = new Map< string, Record<string, NumberFormatItem>>()
 
   // setup datetime formatters
   for (const [l, datetimeFormat] of Object.entries(datetimeFormats || {})) {
-    const obj: Record<string, Intl.DateTimeFormat> = {}
+    const obj = {} as Record<string, DateTimeFormatItem>
     for (const [key, config] of Object.entries(datetimeFormat || {})) {
-      obj[key] = new Intl.DateTimeFormat([l, 'en-US'], config as any)
+      obj[key] = typeof config === 'function'
+        ? config
+        : new Intl.DateTimeFormat([l, 'en-US'], config as any)
     }
     datetimeFormatMap.set(l, obj)
   }
 
   // setup number formatters
   for (const [l, numberFormat] of Object.entries(numberFormats || {})) {
-    const obj: Record<string, Intl.NumberFormat> = {}
+    const obj = {} as Record<string, NumberFormatItem>
     for (const [key, config] of Object.entries(numberFormat || {})) {
-      obj[key] = new Intl.NumberFormat([l, 'en-US'], config as any)
+      obj[key] = typeof config === 'function'
+        ? config
+        : new Intl.NumberFormat([l, 'en-US'], config)
     }
     numberFormatMap.set(l, obj)
   }
@@ -237,13 +248,19 @@ function createI18n<
     return translate(currentMessage(), path, variable)
   }
 
-  const $n: I18nObject<Locale, Message>['$n'] = (num, type, l) =>
-    numberFormatMap.get(l || locale())?.[type]?.format(num)
-  || num.toLocaleString([locale(), 'en-US'])
+  const $n: I18nObject<Locale, Message>['$n'] = (num, type, l) => {
+    const _ = numberFormatMap.get(l || locale())?.[type]
+    return typeof _ === 'function'
+      ? _(num)
+      : _?.format(num) || num.toLocaleString([locale(), 'en'])
+  }
 
-  const $d: I18nObject<Locale, Message>['$d'] = (date, type, l) =>
-    datetimeFormatMap.get(l || locale())?.[type]?.format(date)
-    || date.toLocaleString([locale(), 'en-US'])
+  const $d: I18nObject<Locale, Message>['$d'] = (date, type, l) => {
+    const _ = datetimeFormatMap.get(l || locale())?.[type]
+    return typeof _ === 'function'
+      ? _(date)
+      : _?.format(date) || date.toLocaleString([locale(), 'en'])
+  }
 
   return {
     $t,

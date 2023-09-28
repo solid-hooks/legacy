@@ -39,11 +39,39 @@ export type I18nOptions<
    */
   parseKey?: (key: string) => string
   /**
-   * number formatters config
-   */
+   * number formatters config,
+   * support {@link NumberFormatOptions} or custom function
+   * @example
+   * {
+   *   'en': {
+   *     currency: { style: 'currency', currency: 'USD' },
+   *     custom: n => n + '.00'
+   *   },
+   *   'zh-CN': {
+   *     currency: { style: 'currency', currency: 'CNY' },
+   *     custom: n => n + '.00'
+   *   },
+   * }
+  */
   numberFormats?: NumberFormats<Locale, NumberKey>
   /**
-   * date formatters config
+   * date formatters config,
+   * support {@link DateTimeFormatOptions} or custom function
+   * @example
+   * {
+   *   datetimeFormats: {
+   *     'en': {
+   *       short: { dateStyle: 'short' },
+   *       long: { dateStyle: 'long' },
+   *       custom: d => d.getTime().toString(),
+   *     },
+   *     'zh-CN': {
+   *       short: { dateStyle: 'short' },
+   *       long: { dateStyle: 'full' },
+   *       custom: d => d.getTime().toString(),
+   *     },
+   *   },
+   * }
    */
   datetimeFormats?: DateTimeFormats<Locale, DatetimeKey>
 }
@@ -53,9 +81,9 @@ export type I18nOptions<
  */
 export type I18nObject<
   Locale extends string = string,
-  Message extends MessageType<Locale> = any,
-  NumberKey extends string = any,
-  DatetimeKey extends string = any,
+  Message extends MessageType<Locale> = MessageType<Locale>,
+  NumberKey extends string = string,
+  DatetimeKey extends string = string,
 > = {
   /**
    * display message, support plural
@@ -69,21 +97,21 @@ export type I18nObject<
   /**
    * localize number
    *
-   * if type is not defined or set, fallback to `(Number/Bigint).toLocaleString([locale(), 'en-US'])`
+   * if type is not defined or set, fallback to `(Number/Bigint).toLocaleString([locale(), 'en'])`
    * @param num number value
    * @param type predefined number type
    * @param locale custom locale
    */
-  $n: (num: number | bigint, type?: NumberKey, locale?: Locale) => string
+  $n: (num: number | bigint, type: NumberKey, locale?: Locale) => string
   /**
    * localize date
    *
-   * if type is not defined or set, fallback to `Date.toLocaleString([locale(), 'en-US'])`
+   * if type is not defined or set, fallback to `Date.toLocaleString([locale(), 'en'])`
    * @param date date value
    * @param type predefined date type
    * @param locale custom locale
    */
-  $d: (date: Date, type?: DatetimeKey, locale?: Locale) => string
+  $d: (date: Date, type: DatetimeKey, locale?: Locale) => string
   /**
    * current locale
    */
@@ -120,7 +148,7 @@ export type DateTimeFormatOptions =
   | Intl.DateTimeFormatOptions
   | SpecificDateTimeFormatOptions
 
-export type DateTimeFormat<T extends string> = Record<T, DateTimeFormatOptions>
+export type DateTimeFormat<T extends string> = Record<T, DateTimeFormatOptions | ((date: Date) => string)>
 
 export type DateTimeFormats<Locale extends string = string, Key extends string = string> = Record<Locale, DateTimeFormat<Key>>
 
@@ -144,6 +172,6 @@ export type NumberFormatOptions =
   | Intl.NumberFormatOptions
   | SpecificNumberFormatOptions
   | CurrencyNumberFormatOptions
-export type NumberFormat<T extends string> = Record<T, NumberFormatOptions>
+export type NumberFormat<T extends string> = Record<T, NumberFormatOptions | ((num: number | bigint) => string)>
 
 export type NumberFormats<Locale extends string = string, Key extends string = string> = Record<Locale, NumberFormat<Key>>

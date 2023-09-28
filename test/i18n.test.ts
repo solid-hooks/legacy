@@ -33,10 +33,12 @@ describe('i18n', () => {
       en: {
         short: { dateStyle: 'short' },
         long: { dateStyle: 'long' },
+        custom: d => d.getTime().toString(),
       },
       zh: {
         short: { dateStyle: 'short' },
         long: { dateStyle: 'long' },
+        custom: d => d.getTime().toString(),
       },
     },
   })
@@ -75,24 +77,22 @@ describe('i18n', () => {
     expect($t('var', { name: 'test', num: 4 })).toBe('欢迎 test, 上次登录: 4 天前')
   })
   test('number', async () => {
-    expect($n(1)).toBe('1')
     expect($n(1, 'currency')).toBe('$1.00')
 
     await changeLocale()
 
-    expect($n(1)).toBe('1')
     expect($n(1, 'currency')).toBe('¥1.00')
   })
 
   test('date', async () => {
     const date = new Date('2000-01-01')
-    expect($d(date)).toBe('1/1/2000, 8:00:00 AM')
     expect($d(date, 'short')).toBe('1/1/00')
     expect($d(date, 'long')).toBe('January 1, 2000')
+    expect($d(date, 'custom')).toBe('946684800000')
 
     await changeLocale()
-    expect($d(date)).toBe('2000/1/1 08:00:00')
     expect($d(date, 'short')).toBe('2000/1/1')
     expect($d(date, 'long')).toBe('2000年1月1日')
+    expect($d(date, 'custom')).toBe('946684800000')
   })
 })
