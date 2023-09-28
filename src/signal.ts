@@ -103,9 +103,3 @@ export function $<T>(...args: [] | [Signal<T>] | SignalParam<T>) {
   val.$signal = [val, (arg: any) => untrack(() => set(arg))]
   return val
 }
-/**
- * prevent update notification and run
- *
- * alias for {@link untrack}
- */
-export const $$ = untrack

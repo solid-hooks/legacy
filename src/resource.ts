@@ -11,11 +11,11 @@ type BaseResourceObject<T, R, Is, Actions = ResourceActions<Is extends true ? T 
     [K in keyof Actions]: Actions[K]
   }>
 /**
- * type of {@link $res} with initalized value
+ * type of {@link $resource} with initalized value
  */
 export type InitializedResourceObject<T, R> = BaseResourceObject<T, R, true>
 /**
- * type of {@link $res}
+ * type of {@link $resource}
  */
 export type ResourceObject<T, R> = BaseResourceObject<T, R, false>
 
@@ -31,23 +31,23 @@ type SourceOption<S> = {
  * @param fetcher resource fetcher
  * @param options resource options with optional source (set by `$`)
  */
-export function $res<T, R = unknown>(
+export function $resource<T, R = unknown>(
   fetcher: ResourceFetcher<true, T, R>,
   options: InitializedResourceOptions<NoInfer<T>, true>,
 ): InitializedResourceObject<T, R>
-export function $res<T, R = unknown>(
+export function $resource<T, R = unknown>(
   fetcher: ResourceFetcher<true, T, R>,
   options?: ResourceOptions<T, true>,
 ): ResourceObject<T, R>
-export function $res<T, S, R = unknown>(
+export function $resource<T, S, R = unknown>(
   fetcher: ResourceFetcher<S, T, R>,
   options: InitializedResourceOptions<NoInfer<T>, S> & SourceOption<S>,
 ): InitializedResourceObject<T, R>
-export function $res<T, S, R = unknown>(
+export function $resource<T, S, R = unknown>(
   fetcher: ResourceFetcher<S, T, R>,
   options?: ResourceOptions<T, S> & SourceOption<S>,
 ): ResourceObject<T, R>
-export function $res<T, S, R = unknown>(
+export function $resource<T, S, R = unknown>(
   fetcher: ResourceFetcher<S, T, R>,
   options: (InitializedResourceOptions<T, S> | ResourceOptions<NoInfer<T>, S>) & Partial<SourceOption<S>> = {},
 ) {

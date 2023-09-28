@@ -57,13 +57,13 @@ const test = $('test')
 const memoByValue = $memo(`value: ${test()}`)
 ```
 
-### `$res`
+### `$resource`
 
 object wrapper for `createResource`
 
 ```tsx
 const fetcher = (source: string) => Promise.resolve(`${source} data`)
-const data = $res(fetcher, {
+const data = $resource(fetcher, {
   /**
    * source signal
    */

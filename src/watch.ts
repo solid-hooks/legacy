@@ -1,5 +1,5 @@
 import type { Accessor, AccessorArray, OnOptions } from 'solid-js'
-import { batch, createComputed, createEffect, createReaction, createRenderEffect, createSignal, on, onCleanup } from 'solid-js'
+import { batch, createEffect, createReaction, createSignal, on, onCleanup } from 'solid-js'
 import type { SignalObject } from './signal'
 
 export type Cleanupable = void | (() => void)
@@ -8,7 +8,7 @@ export type Cleanupable = void | (() => void)
  * {@link $watch} callback function
  * @param value current value
  * @param oldValue previous value
- * @description when using options.filter, `prevInput` will fail to filter
+ * @description when using `options.filter`, `oldValue` will fail to filter
  */
 export type WatchCallback<S> = (
   value: S,
@@ -105,22 +105,3 @@ export function $watch<T>(
     },
   }
 }
-
-/**
- * normal effect
- *
- * alias for {@link createEffect}
- */
-export const $effect = createEffect
-/**
- * run effect after rendered, be able to access DOM
- *
- * alias for {@link createRenderEffect}
- */
-export const $renderEffect = createRenderEffect
-/**
- * run effect instantly
- *
- * alias for {@link createComputed}
- */
-export const $instantEffect = createComputed
