@@ -9,7 +9,7 @@ export default defineConfig({
     solid(),
     // useful when using yml as locale message
     I18nPlugin({
-      include: 'dev/i18n/locales/*.yml',
+      include: './dev/i18n/locales/*.yml',
       transformMessage: content => parse(content),
       // include: 'dev/i18n/locales/*.tr',
       // transformMessage: content => JSON.parse(content),

@@ -1,4 +1,4 @@
-import { createDeferred, createSelector } from 'solid-js'
+import { createSelector } from 'solid-js'
 import type { Accessor, EqualityCheckerFunction } from 'solid-js/types/reactive/signal'
 import type { SignalObject, SignalObjectOptions } from './signal'
 import { $ } from './signal'
@@ -42,10 +42,3 @@ export function $selector<T, U = T>(
   _.$bind = change
   return _
 }
-
-/**
- * defer update notification until browser idle
- *
- * alias for {@link createDeferred}
- */
-export const $deferred = createDeferred

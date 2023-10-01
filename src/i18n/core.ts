@@ -242,7 +242,7 @@ function createI18n<
     return typeof msg === 'function'
       ? (await msg() as { default: any }).default
       : msg
-  })
+  }, { name: '$18n-message' })
 
   const $t: I18nObject<Locale, Message>['$t'] = (path, variable) => {
     return translate(currentMessage(), path, variable)

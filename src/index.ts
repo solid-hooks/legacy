@@ -13,7 +13,7 @@ export type { StoreObject } from './store'
 export { $watch, $watchOnce } from './watch'
 export type { WatchCallback, WatchOptions, WatchObject } from './watch'
 
-export { $deferred, $selector } from './selector'
+export { $selector } from './selector'
 export type { SelectorObject, SelectorObjectOptions } from './selector'
 
-export { $$, $effect, $instantEffect, $renderEffect } from './alias'
+export { $$, $effect, $instantEffect, $renderEffect, $deferred } from './alias'

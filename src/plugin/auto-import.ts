@@ -45,12 +45,12 @@ export const $autoImport: ImportFn = d => d
           '$trackStore',
           '$watch',
           '$watchOnce',
-          '$deferred',
           '$selector',
           '$$',
           '$effect',
           '$instantEffect',
           '$renderEffect',
+          '$deferred',
         ],
       },
       {
@@ -92,7 +92,6 @@ export const $autoImport: ImportFn = d => d
         imports: [
           '$state',
           'StateProvider',
-          'deepClone',
         ],
       },
       {

@@ -6,7 +6,7 @@ import type { FilterPattern, Plugin } from 'vite'
 export interface I18nPluginOptions {
   /**
    * message files path include pattern
-   * @example 'locales/*.yml'
+   * @example './src/i18n/locales/*.yml'
    */
   include: FilterPattern
   /**

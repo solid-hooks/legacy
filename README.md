@@ -330,7 +330,7 @@ export default defineConfig({
   plugins: [
     // ...
     I18nPlugin({
-      include: 'i18n/locales/*.yml',
+      include: './src/i18n/locales/*.yml',
       transformMessage: content => parse(content),
       // generate yml for https://github.com/lokalise/i18n-ally/wiki/Custom-Framework
       generateConfigYml: true,

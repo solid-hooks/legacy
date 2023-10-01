@@ -8,6 +8,7 @@ import {
   createMemo,
   createRoot,
   getOwner,
+  mergeProps,
   on,
   runWithOwner,
   useContext,
@@ -17,7 +18,7 @@ import type { StoreObject } from '../store'
 import { $store, $trackStore } from '../store'
 import { $watch } from '../watch'
 import type { GetterOrActionObject, StateFunction, StateObject, StateSetup, StateUtils } from './types'
-import { createActions, deepClone } from './utils'
+import { createActions } from './utils'
 
 const GLOBAL_$STATE = createContext<{
   owner: Owner | null
@@ -129,7 +130,7 @@ export function $state<
     if (_m.has(name)) {
       return _m.get(name)
     }
-    function mount(result: State | StateObject<State, Getter, Action>, msg: string) {
+    function attach(result: State | StateObject<State, Getter, Action>, msg: string) {
       _m.set(name, result)
       log(msg)
       // @ts-expect-error for GC
@@ -137,11 +138,11 @@ export function $state<
       return result
     }
     return !ctx.owner
-      ? mount(
+      ? attach(
         createRoot(() => build(stateName, log)),
         DEV ? '<StateProvider /> is not set, fallback to use createRoot' : '',
       )
-      : runWithOwner(ctx.owner, () => mount(
+      : runWithOwner(ctx.owner, () => attach(
         build(stateName, log),
         DEV ? 'mount to <StateProvider />' : '',
       ))
@@ -189,7 +190,8 @@ function setupObject<
     const key = $persist?.key ?? stateName
     const initialState = typeof $init === 'function' ? $init() : $init
     const _store = $store(
-      Array.isArray(initialState) ? initialState : deepClone(initialState),
+      // eslint-disable-next-line solid/reactivity
+      Array.isArray(initialState) ? initialState : mergeProps(initialState),
       stateName,
     ) as StoreObject<State>
 

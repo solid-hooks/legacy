@@ -1,4 +1,4 @@
-import { createComputed, createEffect, createRenderEffect, untrack } from 'solid-js'
+import { createComputed, createDeferred, createEffect, createRenderEffect, untrack } from 'solid-js'
 
 /**
  * normal effect
@@ -24,3 +24,10 @@ export const $instantEffect = createComputed
  * alias for {@link untrack}
  */
 export const $$ = untrack
+/**
+ * defer update notification until browser idle
+ *
+ * alias for {@link createDeferred}
+ */
+
+export const $deferred = createDeferred
