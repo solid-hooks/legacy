@@ -344,12 +344,6 @@ see more at [`dev/`](/dev) and [`test`](/test/i18n.test.ts)
 
 ## `solid-dollar/utils`
 
-### `$idle`
-
-wrapper for `window.requestIdleCallback`, with cleanup
-
-fallback to `window.requestAnimationFrame` or execute it directly
-
 ### `$emits`
 
 util for child component event emitting, auto handle optional prop
@@ -489,22 +483,6 @@ classes generator, [clsx](https://github.com/lukeed/clsx) like but smaller(178B 
 ### `$tick`
 
 vue-like next tick, [reference](https://github.com/solidjs-use/solidjs-use/blob/main/packages/solid-to-vue/src/scheduler.ts)
-
-### `$runWithOwner`
-
-wrapper for `runWithOwner` + `getOwner`
-
-the [official use case](https://www.solidjs.com/docs/latest/api#runwithowner) can transfer to:
-
-```ts
-const run = $runWithOwn(() => {
-  const foo = useContext(FooContext)
-  createEffect(() => {
-    console.log(foo)
-  })
-})
-setTimeout(() => run, 1000)
-```
 
 ### `$app`
 
