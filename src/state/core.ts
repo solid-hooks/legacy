@@ -212,6 +212,13 @@ function setupObject<
         log('persist state:', serializedState)
       }
     }
+    let dep: () => State
+    const getDeps = () => {
+      if (!dep) {
+        dep = $trackStore(_store())
+      }
+      return dep
+    }
     const utilFn: StateUtils<State> = {
       $patch: (state) => {
         _store.$(
@@ -223,7 +230,7 @@ function setupObject<
             ),
         )
       },
-      $reset: (resetPersist) => {
+      $reset: () => {
         if (Array.isArray(initialState)) {
           log('cannot reset, type of initial value is Store')
           return
@@ -231,16 +238,14 @@ function setupObject<
         _store.$(
           reconcile(initialState, { key: stateName, merge: true }),
         )
-        if (resetPersist && $persist && $persist.enable) {
-          storage.removeItem(key)
-          persistItems(initialState, true)
-        }
       },
-      $subscribe: (callback, options) => $watch(
-        $trackStore(_store()),
-        s => callback(unwrap(s)),
-        options,
-      ),
+      $subscribe: (callback, options) => {
+        return $watch(
+          getDeps(),
+          s => callback(unwrap(s)),
+          options,
+        )
+      },
     }
     log('initial state:', unwrap(_store()))
 
@@ -254,16 +259,16 @@ function setupObject<
         persistItems(unwrap(_store()), true)
       }
       createComputed(on(
-        $trackStore(_store()),
+        getDeps(),
         state => persistItems(unwrap(state)),
         { defer: true },
       ))
     }
 
-    const result = {} as Readonly<Getter>
+    const getters = {} as Readonly<Getter>
     for (const [key, getter] of Object.entries($getters?.(_store()) || {})) {
       // @ts-expect-error assign
-      result[key] = getter.length === 0
+      getters[key] = getter.length === 0
         // eslint-disable-next-line solid/reactivity
         ? createMemo(getter)
         : getter
@@ -272,7 +277,7 @@ function setupObject<
     return Object.assign(
       () => _store(),
       utilFn,
-      result,
+      getters,
       {
         $: createActions($actions?.(_store, utilFn)),
       },

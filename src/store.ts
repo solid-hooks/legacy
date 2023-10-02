@@ -7,6 +7,9 @@ import { createStore } from 'solid-js/store'
  */
 export type StoreObject<T extends object> = {
   (): Store<T>
+  /**
+   * store setter function
+   */
   $: SetStoreFunction<T>
 }
 

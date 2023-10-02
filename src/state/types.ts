@@ -14,9 +14,8 @@ export type StateUtils<State> = {
   $patch: (state: Partial<State> | ((state: State) => void)) => void
   /**
    * reset state
-   * @param resetPersist whether to also reset persist
    */
-  $reset: (resetPersist?: boolean) => void
+  $reset: () => void
   /**
    * subscribe to state, return {@link WatchObject}
    */
@@ -78,7 +77,9 @@ export type StateGetter<
   State extends object,
   Getter extends GetterOrActionObject,
 > = (state: State) => Getter
-export type GetterOrActionObject = Record<string, (...args: any[]) => void>
+type AnyFunction = (...args: any[]) => any
+
+export type GetterOrActionObject = Record<string, AnyFunction>
 
 /**
  * persist options for {@link $state}
@@ -145,3 +146,25 @@ export interface Serializer<State> {
 }
 
 export type StateFunction<T> = (stateName: string, log: (...args: any[]) => void) => T
+
+type PickState<A> = {
+  [K in keyof A]: A[K] extends {
+    __virtual_type: 'signal' | 'store' | 'resource' | 'selector'
+  }
+    ? A[K]
+    : never
+}
+type PickGetter<A> = {
+  [K in keyof A]: A[K] extends { __virtual_type: 'memo' } ? A[K] : never
+}
+type PickAction<A> = {
+  [K in keyof A]: A[K] extends AnyFunction
+    ? A[K] extends { __virtual_type: any }
+      ? never
+      : A[K]
+    : never
+}
+export type StateFunctionObject<A> = PickGetter<A> & {
+  (): PickState<A>
+  $: PickAction<A>
+}

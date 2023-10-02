@@ -1,17 +1,12 @@
-import type { Setter } from 'solid-js'
 import { createResource, createSignal } from 'solid-js'
 import type { UseStore } from 'idb-keyval'
 import { clear, createStore as createIDBStore, del, get, set } from 'idb-keyval'
+import type { SignalObject } from '../signal'
 
 /**
  * type of {@link useIDB}
  */
-export type IDBObject<T> = {
-  (): T | undefined
-  /**
-   * setter function
-   */
-  $: Setter<T | undefined>
+export type IDBObject<T> = Omit<SignalObject<T | undefined>, '$signal'> & {
   /**
    * delete item
    */
