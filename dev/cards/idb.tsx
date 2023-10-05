@@ -1,18 +1,16 @@
 import { $idb } from '../../src/utils'
 
-const { useIDB, clearAll } = $idb<{ time: number; extra: string }>({ name: 'test', onError: console.error })
+const { useIDB, clearAll } = $idb({ name: 'test' })
 
 export default function ShowIDB() {
-  const time = useIDB('time')
-  const extra = useIDB('extra')
+  const time = useIDB<number>('time')
+  const extra = useIDB<string>('extra')
   const cb = () => {
     time.$(new Date().getTime())
   }
   const cbExtra = () => {
     extra.$('extra')
-    // console.log('extra', extra())
   }
-  cb()
   return (
     <>
       <div>{time()}</div>
