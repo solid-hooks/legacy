@@ -26,7 +26,7 @@ export type ContextObject<
  */
 export function $ctx<T, N extends string>(name: N, fn: () => T): ContextObject<N, T> {
   const _name = name.charAt(0).toUpperCase() + name.slice(1)
-  const tag = `$ctx::${name}`
+  const tag = `$ctx-${name}`
   const ctx = createContext<T>(undefined, { name: tag })
   return {
     [`${_name}Provider`]: (props: FlowProps) => createComponent(ctx.Provider, {

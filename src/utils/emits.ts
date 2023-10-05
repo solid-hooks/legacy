@@ -99,6 +99,7 @@ export function $emits<
       properties[`$${e}`]?.(...args)
     },
     useEmits: (e, value, { postSet, ...options } = {}) => $(value, {
+      name: `$emits-${e}`,
       ...options,
       postSet(newValue) {
         // @ts-expect-error emit

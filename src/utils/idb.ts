@@ -78,7 +78,9 @@ export function $idb(
     key: string,
     initialValue?: T,
   ): IDBObject<T> => {
-    const [val, setVal] = createSignal(initialValue)
+    const [val, setVal] = createSignal(initialValue, {
+      name: `$idb-${name}-${key}`,
+    })
 
     let unchanged = true
 

@@ -118,7 +118,7 @@ export function $state<
   setup: StateSetup<State, Getter, Action, Paths> | StateFunction<State>,
   _log?: boolean,
 ): () => State | StateObject<State, Getter, Action> {
-  const stateName = `$state::${name}`
+  const stateName = `$state-${name}`
   const log = (...args: any[]) => DEV && _log && console.log(`[${stateName}]`, ...args)
   let build = typeof setup === 'function' ? setup : setupObject(setup)
 

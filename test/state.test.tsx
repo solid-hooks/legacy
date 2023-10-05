@@ -160,7 +160,7 @@ describe('test state', () => {
       </div>
     ))
 
-    const key = '$state::test-persist'
+    const key = '$state-test-persist'
     const p = getByTestId('value')
     const incrementBtn = getByTestId('increment')
     const decrementBtn = getByTestId('decrement')
@@ -231,7 +231,7 @@ describe('test state', () => {
       </div>
     ))
 
-    const key = '$state::test-persist-optional'
+    const key = '$state-test-persist-optional'
     const p = getByTestId('value')
     const incrementBtn = getByTestId('increment')
     const decrementBtn = getByTestId('decrement')

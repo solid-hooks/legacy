@@ -31,7 +31,11 @@ export type RefObject<T> = {
 */
 export function $ref<T, P extends Path<T>>(data: T, path: P, options?: SignalOptions<PathValue<T, P>>): RefObject<PathValue<T, P>> {
   const { equals, ...op } = options || {}
-  const [track, trigger] = createSignal(undefined, { equals: false, ...op })
+  const [track, trigger] = createSignal(undefined, {
+    equals: false,
+    name: `$ref-${path}`,
+    ...op,
+  })
   const get = () => pathGet(data, path)
   const set = (value: any) => pathSet(data, path, value)
 

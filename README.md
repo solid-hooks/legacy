@@ -525,7 +525,7 @@ await clearAll()
 
 object style [createContextProvider](https://github.com/solidjs-community/solid-primitives/tree/main/packages/context#createcontextprovider)
 
-if use context outside provider, throw Error when DEV
+if use context outside provider, throw `Error` when DEV
 
 ```ts
 const { useDate, DateProvider } = $ctx('date', () => new Date())
