@@ -16,22 +16,6 @@ code,
   font-family: monospace;
 }
 
-.m-1 {
-  margin: 0.25rem;
-}
-
-.bg-rose-300 {
-  background-color: #f56565;
-}
-
-.hover\:bg-slate-300:hover {
-  background-color: #6f7b8c;
-}
-
-.text-white {
-  color: #fff;
-}
-
 .flex {
   display: flex;
   width: 90vw;

@@ -105,7 +105,6 @@
     "dev": "vite serve dev --open",
     "build": "node scripts/update-auto-import.js && eslint src/plugin/auto-import.ts --fix && tsup",
     "test": "vitest --run",
-    "test:bench": "vitest bench --run",
     "release": "pnpm test && pnpm lint && pnpm build && bumpp --all && npm publish",
     "lint": "pnpm lint:code && pnpm lint:types",
     "lint:code": "eslint --ignore-path .gitignore --max-warnings 0 src/**/*.{js,ts,tsx,jsx} --fix",

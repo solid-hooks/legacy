@@ -109,12 +109,9 @@ export const $autoImport: ImportFn = d => d
       {
         from: 'solid-dollar/utils',
         imports: [
-          '$idleCallback',
           '$model',
-          '$cx',
           '$ctx',
           '$tick',
-          '$runWithOwner',
           '$idb',
           '$app',
           '$emits',

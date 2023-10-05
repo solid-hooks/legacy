@@ -1,6 +1,6 @@
 import { $, $watch, noReturn } from '../../src'
 import type { EmitProps } from '../../src/utils'
-import { $ctx, $cx, $emits } from '../../src/utils'
+import { $ctx, $emits } from '../../src/utils'
 
 const { useTest, TestProvider } = $ctx('test', () => new Date())
 type Emits = {
@@ -37,11 +37,6 @@ export default function Basic() {
   return (
     <TestProvider>
       <button
-        class={$cx(
-          'bg-rose-300 text-white',
-          { 'hover:bg-slate-300': true },
-          count() === 2 && 'm-1',
-        )}
         onClick={() => count.$(c => c + 1)}
       >
         increase

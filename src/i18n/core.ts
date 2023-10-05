@@ -1,5 +1,5 @@
 import type { FlowProps, Owner } from 'solid-js'
-import { DEV, createComponent, createContext, createResource, createRoot, getOwner, runWithOwner, useContext } from 'solid-js'
+import { DEV, createComponent, createContext, createRoot, getOwner, runWithOwner, useContext } from 'solid-js'
 import { $ } from '../signal'
 import type { I18nObject, I18nOptions, MessageType } from './types'
 import { parseMessage, translate } from './utils'
@@ -155,11 +155,11 @@ export function $i18n<
     return !ctx.owner
       ? mount(
         createRoot(build),
-        DEV ? '<StateProvider /> is not set, fallback to use createRoot' : '',
+        DEV ? '<I18nProvider /> is not set, fallback to use createRoot' : '',
       )
       : runWithOwner(ctx.owner, () => mount(
         build(),
-        DEV ? 'mount to <StateProvider />' : '',
+        DEV ? 'mount to <I18nProvider />' : '',
       ))
   }
 }
@@ -178,9 +178,7 @@ export function I18nProvider(props: FlowProps) {
     },
   })
 }
-/**
- * @internal
- */
+
 function createI18n<
   Locale extends string = string,
   Message extends MessageType<Locale> = any,
@@ -192,7 +190,7 @@ function createI18n<
   const {
     message,
     parseKey,
-    defaultLocale,
+    defaultLocale = navigator?.language,
     datetimeFormats,
     numberFormats,
   } = option
@@ -215,7 +213,7 @@ function createI18n<
     for (const [key, config] of Object.entries(datetimeFormat || {})) {
       obj[key] = typeof config === 'function'
         ? config
-        : new Intl.DateTimeFormat([l, 'en-US'], config as any)
+        : new Intl.DateTimeFormat(l, config)
     }
     datetimeFormatMap.set(l, obj)
   }
@@ -226,40 +224,42 @@ function createI18n<
     for (const [key, config] of Object.entries(numberFormat || {})) {
       obj[key] = typeof config === 'function'
         ? config
-        : new Intl.NumberFormat([l, 'en-US'], config)
+        : new Intl.NumberFormat(l, config)
     }
     numberFormatMap.set(l, obj)
   }
-  const locale = $(defaultLocale || navigator?.language || availiableLocales[0] || 'en')
+  const currentMessage = $<Record<string, any>>({}, { name: '$i18n-message' })
 
-  const [currentMessage] = createResource(locale, async (l) => {
-    document?.querySelector('html')?.setAttribute('lang', l)
-    if (!messageMap.has(l)) {
-      throw new Error(`unsupported locale: ${l}, availiable: [${availiableLocales}]`)
-    }
+  const locale = $(defaultLocale || availiableLocales[0] || 'en', {
+    name: '$i18n-locale',
+    postSet: async (l: string) => {
+      document?.querySelector('html')?.setAttribute('lang', l)
+      if (!messageMap.has(l)) {
+        throw new Error(`unsupported locale: ${l}, availiable: [${availiableLocales}]`)
+      }
+      const msg = messageMap.get(l)
+      currentMessage.$(typeof msg === 'function' ? (await msg()).default : msg)
+    },
+  })
 
-    const msg = messageMap.get(l)
-    return typeof msg === 'function'
-      ? (await msg() as { default: any }).default
-      : msg
-  }, { name: '$18n-message' })
+  // const [currentMessage] = createResource(locale, updateMessage, { name: '$18n-message' })
 
   const $t: I18nObject<Locale, Message>['$t'] = (path, variable) => {
-    return translate(currentMessage(), path, variable)
+    return translate(currentMessage(), path as any, variable)
   }
 
   const $n: I18nObject<Locale, Message>['$n'] = (num, type, l) => {
     const _ = numberFormatMap.get(l || locale())?.[type]
     return typeof _ === 'function'
       ? _(num)
-      : _?.format(num) || num.toLocaleString([locale(), 'en'])
+      : _?.format(num) || num.toLocaleString(locale())
   }
 
   const $d: I18nObject<Locale, Message>['$d'] = (date, type, l) => {
     const _ = datetimeFormatMap.get(l || locale())?.[type]
     return typeof _ === 'function'
       ? _(date)
-      : _?.format(date) || date.toLocaleString([locale(), 'en'])
+      : _?.format(date) || date.toLocaleString(locale())
   }
 
   return {
