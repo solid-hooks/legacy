@@ -49,15 +49,17 @@ export function $resource<T, S, R = unknown>(
 ): ResourceObject<T, R>
 export function $resource<T, S, R = unknown>(
   fetcher: ResourceFetcher<S, T, R>,
-  options: (InitializedResourceOptions<T, S> | ResourceOptions<NoInfer<T>, S>) & Partial<SourceOption<S>> = {},
+  { $, ...otherOptions }: (InitializedResourceOptions<T, S> | ResourceOptions<NoInfer<T>, S>) & Partial<SourceOption<S>> = {},
 ) {
-  const { $, ...otherOptions } = options
-  const [data, { mutate, refetch }] = createResource<T, S, R>($, fetcher, otherOptions)
+  // @ts-expect-error conditional params
+  const [data, { mutate, refetch }] = createResource(...(
+    $ ? [$, fetcher, otherOptions] : [fetcher, otherOptions]
+  ))
   // @ts-expect-error assign
   // eslint-disable-next-line solid/reactivity
   data.$mutate = mutate
   // @ts-expect-error assign
   // eslint-disable-next-line solid/reactivity
   data.$refetch = refetch
-  return data
+  return data as any
 }
