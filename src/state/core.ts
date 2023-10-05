@@ -20,13 +20,12 @@ import { $watch } from '../watch'
 import type { GetterOrActionObject, StateFunction, StateObject, StateSetup, StateUtils } from './types'
 import { createActions } from './utils'
 
-const GLOBAL_$STATE = createContext<{
+type GlobalStateContext = {
   owner: Owner | null
   map: Map<string, any>
-}>({
-  owner: null,
-  map: new Map(),
-})
+}
+
+const GLOBAL_$STATE = createContext<GlobalStateContext>({ owner: null, map: new Map() })
 /**
  * initialize global state with setup object
  * @param name state name

@@ -461,25 +461,6 @@ export default defineConfig({
 })
 ```
 
-### `$cx`
-
-classes generator, [clsx](https://github.com/lukeed/clsx) like but smaller(178B minified), flat deepth is 2
-
-```tsx
-<div class={$cx(
-  'bg-rose-400 font-serif',
-  'text-white',
-  `hover:(
-    bg-slate-400
-    font-medium
-  )`,
-  count() === 2 && 'm-1',
-  null,
-  { 'enabled': true, 'disabled': false, 'm-1': 0, 'm-2': null },
-)}
-/>
-```
-
 ### `$tick`
 
 vue-like next tick, [reference](https://github.com/solidjs-use/solidjs-use/blob/main/packages/solid-to-vue/src/scheduler.ts)

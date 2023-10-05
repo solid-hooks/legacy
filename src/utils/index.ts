@@ -1,8 +1,6 @@
 export { $model } from './model'
 export type { ModelParam, ModelDirective } from './model'
 
-export { $cx } from './cx'
-
 export { $ctx } from './ctx'
 export type { ContextObject } from './ctx'
 
