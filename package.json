@@ -117,6 +117,7 @@
   },
   "dependencies": {
     "@solid-primitives/deep": "^0.2.3",
+    "klona": "^2.0.6",
     "object-standard-path": "^0.3.0"
   },
   "devDependencies": {
