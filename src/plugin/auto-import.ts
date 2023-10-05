@@ -92,6 +92,7 @@ export const $autoImport: ImportFn = d => d
         imports: [
           '$state',
           'StateProvider',
+          'deepClone',
         ],
       },
       {

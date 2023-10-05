@@ -8,7 +8,6 @@ import {
   createMemo,
   createRoot,
   getOwner,
-  mergeProps,
   on,
   runWithOwner,
   useContext,
@@ -18,7 +17,7 @@ import type { StoreObject } from '../store'
 import { $store, $trackStore } from '../store'
 import { $watch } from '../watch'
 import type { GetterOrActionObject, StateFunction, StateObject, StateSetup, StateUtils } from './types'
-import { createActions } from './utils'
+import { createActions, deepClone } from './utils'
 
 type GlobalStateContext = {
   owner: Owner | null
@@ -189,8 +188,7 @@ function setupObject<
     const key = $persist?.key ?? stateName
     const initialState = typeof $init === 'function' ? $init() : $init
     const _store = $store(
-      // eslint-disable-next-line solid/reactivity
-      Array.isArray(initialState) ? initialState : mergeProps(initialState),
+      Array.isArray(initialState) ? initialState : deepClone(initialState),
       stateName,
     ) as StoreObject<State>
 
@@ -231,18 +229,19 @@ function setupObject<
       },
       $reset: () => {
         if (Array.isArray(initialState)) {
-          log('cannot reset, type of initial value is Store')
+          DEV && log('cannot reset, type of initial value is Store')
           return
         }
         _store.$(
           reconcile(initialState, { key: stateName, merge: true }),
         )
       },
-      $subscribe: (callback, options) => {
+      $subscribe: (callback, options = {}) => {
+        const { path, ...op } = options
         return $watch(
-          getDeps(),
-          s => callback(unwrap(s)),
-          options,
+          path ? () => pathGet(_store(), path) : getDeps(),
+          s => callback(unwrap(s) as any),
+          op,
         )
       },
     }

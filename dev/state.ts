@@ -4,6 +4,9 @@ import { $ } from '../src'
 export const useInfoState = $state('info', {
   $init: {
     test: 1,
+    deep: {
+      data: 'test',
+    },
   },
   $getters: state => ({
     doubleValue() {

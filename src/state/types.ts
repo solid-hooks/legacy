@@ -19,7 +19,12 @@ export type StateUtils<State> = {
   /**
    * subscribe to state, return {@link WatchObject}
    */
-  $subscribe: (callback: (value: State) => Cleanupable, options?: WatchOptions<State>) => WatchObject
+  $subscribe: <T extends Path<State>>(
+    callback: (value: T extends undefined ? State : PathValue<State, T>) => Cleanupable,
+    options?: WatchOptions<State> & {
+      path?: T
+    }
+  ) => WatchObject
 }
 
 /**
@@ -146,25 +151,3 @@ export interface Serializer<State> {
 }
 
 export type StateFunction<T> = (stateName: string, log: (...args: any[]) => void) => T
-
-type PickState<A> = {
-  [K in keyof A]: A[K] extends {
-    __virtual_type: 'signal' | 'store' | 'resource' | 'selector'
-  }
-    ? A[K]
-    : never
-}
-type PickGetter<A> = {
-  [K in keyof A]: A[K] extends { __virtual_type: 'memo' } ? A[K] : never
-}
-type PickAction<A> = {
-  [K in keyof A]: A[K] extends AnyFunction
-    ? A[K] extends { __virtual_type: any }
-      ? never
-      : A[K]
-    : never
-}
-export type StateFunctionObject<A> = PickGetter<A> & {
-  (): PickState<A>
-  $: PickAction<A>
-}

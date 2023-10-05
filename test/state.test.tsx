@@ -8,12 +8,13 @@ import { $tick } from '../src/utils'
 describe('test state', () => {
   test('$state()', async () => {
     const callback = vi.fn()
+    const deepCallback = vi.fn()
     const cacheCount = vi.fn()
     const useState = createRoot(() => $state('test-utils', {
-      $init: { test: 1, foo: 'bar' },
+      $init: { deep: { test: 1 }, foo: 'bar' },
       $getters: state => ({
         doubleValue() {
-          return state.test * 2
+          return state.deep.test * 2
         },
         getLarger(num: number) {
           cacheCount()
@@ -22,15 +23,15 @@ describe('test state', () => {
           for (let i = 2; i <= num; i++) {
             value = i
           }
-          return state.test + value
+          return state.deep.test + value
         },
       }),
       $actions: state => ({
         double() {
-          state.$('test', test => test * 2)
+          state.$('deep', 'test', test => test * 2)
         },
         plus(num: number) {
-          state.$('test', test => test + num)
+          state.$('deep', 'test', test => test + num)
         },
       }),
     }))
@@ -39,8 +40,10 @@ describe('test state', () => {
 
     await $tick()
     createRoot(() => state.$subscribe(callback, { defer: true }))
-    expect(state().test).toBe(1)
+    createRoot(() => state.$subscribe(deepCallback, { path: 'deep.test' }))
+    expect(state().deep.test).toBe(1)
     expect(state.doubleValue()).toBe(2)
+    expect(deepCallback).toHaveBeenCalledWith(1)
 
     const value = createRoot(() => $memo(state.getLarger(1e8)))
 
@@ -53,18 +56,20 @@ describe('test state', () => {
     expect(state.getLarger(4)).toBe(5)
 
     state.$.double()
-    expect(state().test).toBe(2)
+    expect(state().deep.test).toBe(2)
     expect(state.doubleValue()).toBe(4)
+    expect(deepCallback).toHaveBeenCalledWith(2)
 
     state.$.plus(200)
-    expect(state().test).toBe(202)
+    expect(state().deep.test).toBe(202)
     expect(state.doubleValue()).toBe(404)
+    expect(deepCallback).toHaveBeenCalledWith(202)
 
     state.$patch({ foo: 'baz' })
     expect(state().foo).toBe('baz')
 
     state.$reset()
-    expect(state().test).toBe(1)
+    expect(state().deep.test).toBe(1)
     expect(state().foo).toBe('bar')
     expect(state.doubleValue()).toBe(2)
 
