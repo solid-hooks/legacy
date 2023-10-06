@@ -1,35 +1,6 @@
 import { createRenderEffect, onCleanup } from 'solid-js'
 import type { SignalObject } from '../signal'
 
-export type ModelParam = [
-  /**
-   * binded signal
-   */
-  signal: SignalObject<any>,
-  config?: {
-    /**
-     * trigger event
-     */
-    event?: keyof HTMLElementEventMap & string
-    /**
-     * event target property
-     */
-    property?: string
-    /**
-     * update signal with event target property
-     * @param eventTargetPropertyValue `event.target[property]`
-     * @returns signal value
-     */
-    updateSignal?: (eventTargetPropertyValue: any) => any
-    /**
-     * update element property with signal
-     * @param signalValue `signal()`
-     * @returns el[property] value
-     */
-    updateProperty?: (signalValue: any) => any
-  },
-]
-
 /**
  * type support for $model
  *
@@ -45,11 +16,12 @@ export type ModelParam = [
  * ```
  */
 export interface ModelDirective {
-  $model: ModelParam
+  $model: SignalObject<any>
 }
 
-export function $model(el: HTMLElement, value: () => ModelParam) {
-  const [val, config] = value()
+export function $model(el: HTMLElement, value: () => SignalObject<any>) {
+  const data = value()
+
   let eventName = 'input'
   let property = 'value'
   if (el instanceof HTMLInputElement && ['checkbox', 'radio'].includes(el.type)) {
@@ -59,16 +31,9 @@ export function $model(el: HTMLElement, value: () => ModelParam) {
     eventName = 'change'
     property = 'value'
   }
-  eventName = config?.event ?? eventName
-  property = config?.property ?? property
-  const fnProperty = config?.updateProperty || (v => v)
-  const fnSignal = config?.updateSignal || (v => v)
-
-  // @ts-expect-error set value
-  createRenderEffect(() => (el[property] = fnSignal(val())))
-  const handleValue = (event: Event) => {
-    // @ts-expect-error set value
-    val.$(fnProperty(event.target[property]))
+  createRenderEffect(() => ((el as any)[property] = data()))
+  const handleValue = ({ target }: Event) => {
+    target && data.$((target as any)[property])
   }
   el.addEventListener(eventName, handleValue)
   onCleanup(() => el.removeEventListener(eventName, handleValue))

@@ -135,18 +135,21 @@ export function $state<
       build = null
       return result
     }
-    return !ctx.owner
-      ? attach(
-        createRoot(() => build(stateName, log)),
-        DEV ? '<StateProvider /> is not set, fallback to use createRoot' : '',
-      )
-      : runWithOwner(ctx.owner, () => attach(
+    return ctx.owner
+      ? runWithOwner(ctx.owner, () => attach(
         build(stateName, log),
         DEV ? 'mount to <StateProvider />' : '',
       ))
+      : attach(
+        createRoot(() => build(stateName, log)),
+        DEV ? '<StateProvider /> is not set, fallback to use createRoot' : '',
+      )
   }
 }
 
+/**
+ * global state provider
+ */
 export function StateProvider(props: FlowProps) {
   const _owner = getOwner()
   if (DEV && !_owner) {
@@ -266,9 +269,7 @@ function setupObject<
       () => _store(),
       utilFn,
       getters,
-      {
-        $: createActions($actions?.(_store, utilFn)),
-      },
+      { $: createActions($actions?.(_store, utilFn)) },
     )
   }
 }

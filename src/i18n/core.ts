@@ -143,7 +143,10 @@ export function $i18n<
     if (_data) {
       return _data as any
     }
-    function mount(result: I18nObject<Locale, Message, NumberKey, DatetimeKey>, msg: string) {
+    function mount(
+      result: I18nObject<Locale, Message, NumberKey, DatetimeKey>,
+      msg: string,
+    ) {
       ctx.data = result
       log?.(msg)
       // @ts-expect-error for GC
@@ -152,17 +155,21 @@ export function $i18n<
       log = null
       return result
     }
-    return !ctx.owner
-      ? mount(
-        createRoot(build),
-        DEV ? '<I18nProvider /> is not set, fallback to use createRoot' : '',
-      )
-      : runWithOwner(ctx.owner, () => mount(
+    return ctx.owner
+      ? runWithOwner(ctx.owner, () => mount(
         build(),
         DEV ? 'mount to <I18nProvider />' : '',
       ))
+      : mount(
+        createRoot(build),
+        DEV ? '<I18nProvider /> is not set, fallback to use createRoot' : '',
+      )
   }
 }
+
+/**
+ * i18n provider
+ */
 export function I18nProvider(props: FlowProps) {
   const _owner = getOwner()
   if (DEV && !_owner) {

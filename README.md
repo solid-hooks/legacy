@@ -386,40 +386,7 @@ simple two-way binding directive for `<input>`, `<textare>`, `<select>`, and oth
 
 ```tsx
 const msg = $('')
-<input type="text" use:$model={[msg]}>
-```
-
-type:
-
-```ts
-export type ModelParam = [
-  /**
-   * binded signal
-   */
-  signal: SignalObject<any>,
-  config?: {
-    /**
-     * trigger event
-     */
-    event?: keyof HTMLElementEventMap & string
-    /**
-     * event target property
-     */
-    property?: string
-    /**
-     * update signal with event target property
-     * @param eventTargetPropertyValue `event.target[property]`
-     * @returns signal value
-     */
-    updateSignal?: (eventTargetPropertyValue: any) => any
-    /**
-     * update element property with signal
-     * @param signalValue `signal()`
-     * @returns el[property] value
-     */
-    updateProperty?: (signalValue: any) => any
-  },
-]
+<input type="text" use:$model={msg}>
 ```
 
 #### typescript support
@@ -451,7 +418,7 @@ export default defineConfig({
   plugins: [
     // ...
     AutoImport({
-      import: [...$autoImport(true)],
+      import: [...$autoImport(true/*directive only*/)],
     }),
   ],
 })

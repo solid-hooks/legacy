@@ -99,7 +99,7 @@ export const $autoImport: ImportFn = d => d
         from: 'solid-dollar/state',
         imports: [
           'InitialState',
-          'PersistOption',
+          'PersistOptions',
           'StateSetup',
           'StateObject',
           'StorageLike',
@@ -122,7 +122,6 @@ export const $autoImport: ImportFn = d => d
       {
         from: 'solid-dollar/utils',
         imports: [
-          'ModelParam',
           'ModelDirective',
           'ContextObject',
           'IDBObject',

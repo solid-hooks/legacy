@@ -7,7 +7,7 @@ export default function ShowDirective() {
   $model
   return (
     <>
-      <input type="text" use:$model={[val]} />
+      <input type="text" use:$model={val} />
       <br />
       {val()}
     </>
