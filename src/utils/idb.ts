@@ -1,7 +1,7 @@
 import type { Setter } from 'solid-js'
-import { createComputed, createSignal, on } from 'solid-js'
 import type { UseStore } from 'idb-keyval'
 import { clear, createStore as createIDBStore, del, get, set } from 'idb-keyval'
+import { $, type SignalObjectOptions } from '../signal'
 
 /**
  * type of {@link useIDB}
@@ -31,7 +31,7 @@ export type IDBOptions = {
   writeDefaults?: boolean
 }
 
-type IDBObjectGenerator = {
+type IDBFactory = {
   /**
    * source {@link UseStore UseStore} of idb-keyval
    */
@@ -44,10 +44,14 @@ type IDBObjectGenerator = {
    * `$()` like wrapper for IndexedDB
    *
    * initial value is undefined, get value at next tick
+   * @param key key in IndexedDB
+   * @param value initial value
+   * @param options options
    */
   useIDB: <T>(
     key: string,
-    initialValue?: T
+    value?: T,
+    options?: SignalObjectOptions<T | undefined>
   ) => IDBObject<T>
 }
 
@@ -57,10 +61,11 @@ type IDBObjectGenerator = {
  * using {@link https://github.com/jakearchibald/idb-keyval idb-keyval}
  *
  * no serializer, be caution when store `Proxy`
+ * @param options options
  */
 export function $idb(
   options: IDBOptions = {},
-): IDBObjectGenerator {
+): IDBFactory {
   const { name = 'kv', writeDefaults = false } = options
   const idb = createIDBStore(name, '$idb')
 
@@ -74,31 +79,33 @@ export function $idb(
   const useIDB = <T>(
     key: string,
     initialValue?: T,
+    { postSet: post, ...options }: SignalObjectOptions<T | undefined> = {},
   ): IDBObject<T> => {
-    const [val, setVal] = createSignal(initialValue, {
-      name: `$idb-${name}-${key}`,
-    })
-
     let unchanged = true
+    const val = $(initialValue, {
+      name: `$idb-${name}-${key}`,
+      ...options,
+      postSet(value) {
+        value !== undefined && set(key, value, idb)
+          .then(() => {
+            unchanged && (unchanged = false)
+            post?.(value)
+          })
+      },
+    }) as unknown as IDBObject<T>
 
       // Determine the initial value
       ; ((writeDefaults ? initialValue : undefined) !== undefined
       // if initializeValue is not undefined, set the initial value to indexeddb
       ? set(key, initialValue, idb)
       // otherwise, get value from indexeddb and set to val
-      : get(key, idb).then(v => unchanged && v !== undefined && setVal(v)))
+      : get(key, idb).then(v => unchanged && v !== undefined && val.$(v)))
 
-    createComputed(on(val, value =>
-      value !== undefined && set(key, value, idb).then(() => setVal(value as any)),
-    ))
-
-    const _del = () => setVal(undefined)
+    const _del = () => val.$(undefined)
     clearCallbackList.push(_del)
 
-    const result = () => val()
-    result.$ = (!unchanged && (unchanged = false), setVal) as any
-    result.$del = () => del(key, idb).then(_del)
-    return result
+    val.$del = () => del(key, idb).then(_del)
+    return val
   }
   return { useIDB, idb, clearAll }
 }
