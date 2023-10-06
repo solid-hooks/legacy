@@ -11,22 +11,28 @@ export type MemoObject<T> = () => (T extends (...args: any) => infer R ? R : T)
  * @param data memo data
  */
 export function $memo<T>(data: T): MemoObject<T>
+/**
+ * object wrapper for {@link createMemo}
+ * @param accessor memo accessor
+ * @param value initial value
+ * @param options memo options
+ */
 export function $memo<T>(
-  data: EffectFunction<T | undefined, T>,
+  accessor: EffectFunction<T | undefined, T>,
   value?: T,
-  option?: MemoOptions<T>
+  options?: MemoOptions<T>
 ): MemoObject<T>
 export function $memo<T>(
   data: T | EffectFunction<T | undefined, T>,
   value?: T,
-  option?: MemoOptions<T>,
+  options?: MemoOptions<T>,
 ): MemoObject<T> {
-  const memo = createMemo(
+  // eslint-disable-next-line solid/reactivity
+  return createMemo(
     typeof data === 'function'
       ? data as EffectFunction<T | undefined, T>
       : () => data,
     value,
-    option,
-  )
-  return memo as MemoObject<T>
+    options,
+  ) as MemoObject<T>
 }

@@ -7,8 +7,8 @@ type App = {
    * Add a Provider to the app. The list of provider will be merged
    * at mount time.
    *
-   * @param provider The provider to add to the list
-   * @param opts The optional options
+   * @param provider provider to add to the list
+   * @param options options
    */
   use<Props>(provider: Component<FlowProps<Props>>, options?: Props): App
 
@@ -49,6 +49,8 @@ function mergeProviders({ app, props = {}, providers }: MergeParams) {
  * Vue's `createApp` like initialization, works in both `.ts` and `.tsx`
  *
  * reference from {@link https://github.com/amoutonbrady/solid-utils#createapp solid-utils}
+ * @param app App component
+ * @param props App params
  * @example
  * ```ts
  * import App from './App'

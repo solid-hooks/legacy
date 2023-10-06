@@ -40,15 +40,23 @@ export type EmitProps<
 export type EmitsObject<EventsMap, E extends Record<string, any>> = {
   /**
    * trigger event
+   * @param event trigger event
+   * @param ...data event data
    */
   emit: <K extends FilterKeys<EventsMap>>(
     event: K,
-    ...args: ParseArray<Required<E>[K]>
+    ...data: ParseArray<Required<E>[K]>
   ) => void
   /**
-   * return a {@link SignalObject} that trigger event after value is set
+   * create a {@link SignalObject} that trigger event after value is set
+   * @param event trigger event
+   * @param value initial value
+   * @param options optoins
    */
-  useEmits: <K extends FilterKeys<EventsMap>, V = ParseArray<Required<E>[K]>>(
+  useEmits: <
+    K extends FilterKeys<EventsMap>,
+    V = ParseArray<Required<E>[K]>,
+  >(
     event: K,
     value: V,
     options?: Omit<SignalObjectOptions<V>, 'defer'>

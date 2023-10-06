@@ -53,7 +53,7 @@ function convertPlural(originalStr: string, configs: string, num: number): strin
 }
 
 // {name}
-const varRegex = /\{([^{}]+)\}(?!\()/g
+const varRegex = /{([^{}]+)}(?!\()/g
 // {num}(1=one test|2-3,5=$ tests|*=$ testss)
 const pluralRegex = /{([\w\d]+)}\(([^()]+)\)/g
 

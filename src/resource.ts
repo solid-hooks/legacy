@@ -27,22 +27,37 @@ type SourceOption<S> = {
 }
 
 /**
- * object wrapper for {@link createResource}
+ * object wrapper for initialized {@link createResource} without signal
  * @param fetcher resource fetcher
- * @param options resource options with optional source (set by `$`)
+ * @param options resource options
  */
 export function $resource<T, R = unknown>(
   fetcher: ResourceFetcher<true, T, R>,
   options: InitializedResourceOptions<NoInfer<T>, true>,
 ): InitializedResourceObject<T, R>
+/**
+ * object wrapper for {@link createResource} without signal
+ * @param fetcher resource fetcher
+ * @param options resource options
+ */
 export function $resource<T, R = unknown>(
   fetcher: ResourceFetcher<true, T, R>,
   options?: ResourceOptions<T, true>,
 ): ResourceObject<T, R>
+/**
+ * object wrapper for initialized {@link createResource} with signal
+ * @param fetcher resource fetcher
+ * @param options resource options with optional source (set by `$`)
+ */
 export function $resource<T, S, R = unknown>(
   fetcher: ResourceFetcher<S, T, R>,
   options: InitializedResourceOptions<NoInfer<T>, S> & SourceOption<S>,
 ): InitializedResourceObject<T, R>
+/**
+ * object wrapper for {@link createResource} with signal
+ * @param fetcher resource fetcher
+ * @param options resource options with optional source (set by `$`)
+ */
 export function $resource<T, S, R = unknown>(
   fetcher: ResourceFetcher<S, T, R>,
   options?: ResourceOptions<T, S> & SourceOption<S>,

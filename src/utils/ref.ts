@@ -14,7 +14,10 @@ export type RefObject<T> = {
 }
 /**
  * `$()` like wrapper to make object props reactive
- *
+ * @param data source object
+ * @param path object access path, support array access
+ * @param options options
+ * @example
  * ```ts
  * const value = {
  *   deep: {
@@ -29,12 +32,16 @@ export type RefObject<T> = {
  * bar() // 'updated'
  * ```
 */
-export function $ref<T, P extends Path<T>>(data: T, path: P, options?: SignalOptions<PathValue<T, P>>): RefObject<PathValue<T, P>> {
-  const { equals, ...op } = options || {}
+export function $ref<T, P extends Path<T>>(
+  data: T,
+  path: P,
+  options: SignalOptions<PathValue<T, P>> = {},
+): RefObject<PathValue<T, P>> {
+  const { equals, ..._options } = options
   const [track, trigger] = createSignal(undefined, {
     equals: false,
     name: `$ref-${path}`,
-    ...op,
+    ..._options,
   })
   const get = () => pathGet(data, path)
   const set = (value: any) => pathSet(data, path, value)

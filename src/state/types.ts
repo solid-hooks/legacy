@@ -68,7 +68,7 @@ export type StateSetup<
   /**
    * persist options for state
    */
-  $persist?: PersistOption<State, Paths>
+  $persist?: PersistOptions<State, Paths>
 }
 
 export type StateAction<
@@ -89,7 +89,7 @@ export type GetterOrActionObject = Record<string, AnyFunction>
 /**
  * persist options for {@link $state}
  */
-export type PersistOption<State extends object, Paths extends Path<State>[] = []> = {
+export type PersistOptions<State extends object, Paths extends Path<State>[] = []> = {
   /**
    * whether to enable persist
    */

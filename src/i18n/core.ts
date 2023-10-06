@@ -18,7 +18,7 @@ const GLOBAL_$I18N = createContext<{
 })
 /**
  * initalize i18n
- * @param options i18n option
+ * @param options i18n options
  * @description
  * to get typesafe i18n:
  * 1. add first type param `Locale` of `$i18n`,
@@ -166,7 +166,7 @@ export function $i18n<
 export function I18nProvider(props: FlowProps) {
   const _owner = getOwner()
   if (DEV && !_owner) {
-    throw new Error('<I18nProvider /> must called inside component')
+    throw new Error('<I18nProvider /> must be set inside component')
   }
   return createComponent(GLOBAL_$I18N.Provider, {
     value: {
@@ -185,16 +185,14 @@ function createI18n<
   NumberKey extends string = string,
   DatetimeKey extends string = string,
 >(
-  option: I18nOptions<Locale, Message, NumberKey, DatetimeKey>,
-): I18nObject<Locale, Message, NumberKey, DatetimeKey> {
-  const {
+  {
     message,
     parseKey,
-    defaultLocale = navigator?.language,
+    defaultLocale = navigator.language as any,
     datetimeFormats,
     numberFormats,
-  } = option
-
+  }: I18nOptions<Locale, Message, NumberKey, DatetimeKey>,
+): I18nObject<Locale, Message, NumberKey, DatetimeKey> {
   assertImportType(Object.values(message)[0], parseKey)
   const {
     availiableLocales,
@@ -230,7 +228,7 @@ function createI18n<
   }
   const currentMessage = $<Record<string, any>>({}, { name: '$i18n-message' })
 
-  const locale = $(defaultLocale || availiableLocales[0] || 'en', {
+  const locale = $<string>(defaultLocale || availiableLocales[0] || 'en', {
     name: '$i18n-locale',
     postSet: async (l: string) => {
       document?.querySelector('html')?.setAttribute('lang', l)
@@ -241,8 +239,6 @@ function createI18n<
       currentMessage.$(typeof msg === 'function' ? (await msg()).default : msg)
     },
   })
-
-  // const [currentMessage] = createResource(locale, updateMessage, { name: '$18n-message' })
 
   const $t: I18nObject<Locale, Message>['$t'] = (path, variable) => {
     return translate(currentMessage(), path as any, variable)

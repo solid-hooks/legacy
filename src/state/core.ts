@@ -150,7 +150,7 @@ export function $state<
 export function StateProvider(props: FlowProps) {
   const _owner = getOwner()
   if (DEV && !_owner) {
-    throw new Error('<StateProvider /> must called inside component')
+    throw new Error('<StateProvider /> must be set inside component')
   }
   return createComponent(GLOBAL_$STATE.Provider, {
     value: {
@@ -210,23 +210,16 @@ function setupObject<
       }
     }
     let dep: () => State
-    const getDeps = () => {
-      if (!dep) {
-        dep = $trackStore(_store())
-      }
-      return dep
-    }
+    const getDeps = () => (!dep && (dep = $trackStore(_store())), dep)
     const utilFn: StateUtils<State> = {
-      $patch: (state) => {
-        _store.$(
-          typeof state === 'function'
-            ? produce(state)
-            : reconcile(
-              Object.assign({}, unwrap(_store()), state),
-              { key: stateName, merge: true },
-            ),
-        )
-      },
+      $patch: state => _store.$(
+        typeof state === 'function'
+          ? produce(state)
+          : reconcile(
+            Object.assign({}, unwrap(_store()), state),
+            { key: stateName, merge: true },
+          ),
+      ),
       $reset: () => {
         if (Array.isArray(initialState)) {
           DEV && log('cannot reset, type of initial value is Store')
@@ -236,14 +229,11 @@ function setupObject<
           reconcile(initialState, { key: stateName, merge: true }),
         )
       },
-      $subscribe: (callback, options = {}) => {
-        const { path, ...op } = options
-        return $watch(
-          path ? () => pathGet(_store(), path) : getDeps(),
-          s => callback(unwrap(s) as any),
-          op,
-        )
-      },
+      $subscribe: (cb, { path, ...options } = {}) => $watch(
+        path ? () => pathGet(_store(), path) : getDeps(),
+        s => cb(unwrap(s) as any),
+        options,
+      ),
     }
     log('initial state:', unwrap(_store()))
 

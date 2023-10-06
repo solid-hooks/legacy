@@ -1,7 +1,7 @@
 export { $state, StateProvider } from './core'
 export type {
   InitialState,
-  PersistOption,
+  PersistOptions,
   StateSetup,
   StateObject,
   StorageLike,

@@ -12,7 +12,6 @@ export function noReturn(cb: () => any): typeof NORETURN {
   cb()
   return NORETURN
 }
-type SignalParam<T> = [value: T, options?: SignalObjectOptions<T>]
 
 type SetterHooks<T> = {
   /**
@@ -71,23 +70,34 @@ function isSignal<T>(val: unknown): val is Signal<T> {
 
 /**
  * object wrapper with setter hooks for {@link createSignal}
- * @param args original signal options or signal
  */
-export function $<T>(...args: []): SignalObject<T | undefined>
-export function $<T>(...args: [Signal<T>]): SignalObject<T>
-export function $<T>(...args: SignalParam<T>): SignalObject<T>
-export function $<T>(...args: [] | [Signal<T>] | SignalParam<T>) {
-  const { preSet, postSet, defer = false, ...options } = args?.[1] || {}
-
+export function $<T>(): SignalObject<T | undefined>
+/**
+ * object wrapper with setter hooks for exist signals
+ * @param existSignal exist Signal array
+ */
+export function $<T>(existSignal: Signal<T>): SignalObject<T>
+/**
+ * object wrapper with setter hooks for {@link createSignal}
+ * @param value initial value
+ * @param options options
+ */
+export function $<T>(value: T, options?: SignalObjectOptions<T>): SignalObject<T>
+export function $<T>(value?: T, {
+  postSet,
+  preSet,
+  defer = false,
+  ...options
+}: SignalObjectOptions<T> = {}) {
   const _pre = (value: T) => {
     const ret = preSet?.(value)
     return (!preSet || ret === NORETURN) ? value : ret as T
   }
 
-  const [val, set] = (args.length && isSignal<T>(args[0]))
-    ? args[0]
+  const [val, set] = (value && isSignal<T>(value))
+    ? value
     // eslint-disable-next-line solid/reactivity
-    : createSignal(defer ? args[0] as T : _pre(args[0] as T), options)
+    : createSignal(defer ? value as T : _pre(value as T), options)
 
   const _set = (v: any) => set(_pre(
     typeof v === 'function'

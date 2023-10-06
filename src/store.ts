@@ -15,19 +15,19 @@ export type StoreObject<T extends object> = {
 
 /**
  * object wrapper for {@link createStore}
- * @param data initial value
+ * @param value initial value
  * @param name store name
  */
 export function $store<T extends object>(
-  data: T,
+  value: T,
   name?: string,
 ): StoreObject<T>
 /**
  * object wrapper for {@link createStore}
- * @param data exist store
+ * @param existStore exist store
  */
 export function $store<T extends object>(
-  data: [Store<T>, SetStoreFunction<T>],
+  existStore: [Store<T>, SetStoreFunction<T>],
 ): StoreObject<T>
 export function $store<T extends object>(
   data: any,
@@ -42,7 +42,7 @@ export function $store<T extends object>(
 
 /**
  * accessor wrapper for {@link trackStore}
- * @param store tracked store
+ * @param store Store or {@link StoreObject}
  */
 export function $trackStore<T extends object>(store: Store<T> | StoreObject<T>) {
   return () => trackStore(typeof store === 'function' ? store() : store)

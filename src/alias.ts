@@ -25,7 +25,7 @@ export const $instantEffect = createComputed
  */
 export const $$ = untrack
 /**
- * defer update notification until browser idle
+ * defer update notification until browser is idle
  *
  * alias for {@link createDeferred}
  */

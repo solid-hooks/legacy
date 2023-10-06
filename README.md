@@ -231,10 +231,6 @@ to get typesafe i18n:
 or separately define `datetimeFormats`/`numberFormats`
 with manually type declartion using type `DatetimeFormats`/`NumberFormats`
 
-#### `$i18nContext`
-
-`$i18n` with context and provider
-
 #### variable syntax
 
 `{variable}`

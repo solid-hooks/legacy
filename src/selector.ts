@@ -14,7 +14,6 @@ export type SelectorObject<T, U = T> = SignalObject<T> & {
 }
 
 export type SelectorObjectOptions<T, U = T> = SignalObjectOptions<T> & {
-  selectorName?: string
   selectorEqual?: EqualityCheckerFunction<T, U>
 }
 
@@ -34,11 +33,12 @@ export type SelectorObjectOptions<T, U = T> = SignalObjectOptions<T> & {
  */
 export function $selector<T, U = T>(
   value: T | Accessor<T> | SignalObject<T>,
-  options: SelectorObjectOptions<T, U> = {},
+  { selectorEqual, ...options }: SelectorObjectOptions<T, U> = {},
 ): SelectorObject<T, U> {
-  const { selectorEqual, selectorName, ...op } = options
-  const _ = (typeof value === 'function' ? value : $(value, op)) as SelectorObject<T, U>
-  const change = createSelector<T, U>(_, selectorEqual, { name: selectorName })
+  const _ = (typeof value === 'function' ? value : $(value, options)) as SelectorObject<T, U>
+  const change = createSelector<T, U>(_, selectorEqual, {
+    name: options.name ? `$selector-${options.name}` : undefined,
+  })
   _.$bind = change
   return _
 }

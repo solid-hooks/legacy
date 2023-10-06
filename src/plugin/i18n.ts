@@ -20,9 +20,9 @@ export interface I18nPluginOptions {
    */
   transformMessage: (content: string, id: string) => any
   /**
-   * whether to generate yml for {@link https://github.com/lokalise/i18n-ally/wiki/Custom-Framework i18n-ally plugin}
+   * whether to generate config yml for {@link https://github.com/lokalise/i18n-ally/wiki/Custom-Framework VSCode i18n Ally plugin}
    *
-   * if type is string, generate the file to target dir
+   * if type is string, generate the file to target **dir**
    */
   generateConfigYml?: boolean | string
 }
@@ -50,8 +50,8 @@ monopoly: true`.replace(/\r\n?/g, '\n')
   }
 }
 
-export function I18nPlugin(option: I18nPluginOptions): Plugin {
-  const { include, exclude, generateConfigYml, transformMessage } = option
+export function I18nPlugin(options: I18nPluginOptions): Plugin {
+  const { include, exclude, generateConfigYml, transformMessage } = options
 
   if (generateConfigYml) {
     generateYml(typeof generateConfigYml === 'string' ? generateConfigYml : undefined)

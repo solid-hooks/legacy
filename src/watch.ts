@@ -65,7 +65,6 @@ export function $watchOnce<T>(deps: Accessor<T>, cb: WatchCallback<T>) {
  * @param deps Accessor that need to be watch
  * @param fn {@link WatchCallback callback function}
  * @param options options
- * @returns void
  */
 export function $watch<T>(
   deps: Accessor<T> | AccessorArray<T> | SignalObject<T>,
