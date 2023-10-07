@@ -116,7 +116,8 @@
     "solid-js": "^1.7.12"
   },
   "dependencies": {
-    "@solid-primitives/deep": "^0.2.3",
+    "@solid-primitives/deep": "^0.2.4",
+    "@subframe7536/type-utils": "^0.1.1",
     "klona": "^2.0.6",
     "object-standard-path": "^0.3.0"
   },
@@ -124,13 +125,13 @@
     "@solidjs/testing-library": "^0.8.4",
     "@subframe7536/eslint-config": "^0.2.9",
     "bumpp": "^9.2.0",
-    "eslint": "^8.50.0",
+    "eslint": "^8.51.0",
     "idb-keyval": "^6.2.1",
     "jsdom": "^22.1.0",
     "tsup": "^7.2.0",
     "tsup-preset-solid": "^2.1.0",
     "typescript": "^5.2.2",
-    "vite": "^4.4.9",
+    "vite": "^4.4.11",
     "vite-plugin-solid": "^2.7.0",
     "vitest": "0.34.2",
     "vitest-indexeddb": "^0.0.0",

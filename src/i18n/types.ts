@@ -1,4 +1,5 @@
 import type { Path } from 'object-standard-path'
+import type { StringKeys } from '@subframe7536/type-utils'
 import type { SignalObject } from '../signal'
 
 export type MessageType<Locale extends string> = Record<Locale, Record<string, any>> | Record<string, () => Promise<unknown>>
@@ -29,7 +30,7 @@ export type I18nOptions<
   /**
    * default locale, fallback to navigator?.language, 'en'
    */
-  defaultLocale?: keyof Message & string
+  defaultLocale?: StringKeys<Message>
   /**
    * convert matched file path to key,
    * only effect when `message` is imported by `import.meta.glob`

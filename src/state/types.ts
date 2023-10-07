@@ -1,5 +1,6 @@
 import type { Path, PathValue } from 'object-standard-path'
 import type { SetStoreFunction, Store } from 'solid-js/store'
+import type { AnyFunction } from '@subframe7536/type-utils'
 import type { Cleanupable, WatchObject, WatchOptions } from '../watch'
 import type { StoreObject } from '../store'
 
@@ -82,7 +83,6 @@ export type StateGetter<
   State extends object,
   Getter extends GetterOrActionObject,
 > = (state: State) => Getter
-type AnyFunction = (...args: any[]) => any
 
 export type GetterOrActionObject = Record<string, AnyFunction>
 
@@ -150,4 +150,4 @@ export interface Serializer<State> {
   read: (value: string) => State
 }
 
-export type StateFunction<T> = (stateName: string, log: (...args: any[]) => void) => T
+export type StateFunction<T> = (stateName: string, log: AnyFunction<void>) => T

@@ -95,11 +95,11 @@ export function $idb(
     }) as unknown as IDBObject<T>
 
       // Determine the initial value
-      ; ((writeDefaults ? initialValue : undefined) !== undefined
+      ; (writeDefaults ? initialValue : undefined) !== undefined
       // if initializeValue is not undefined, set the initial value to indexeddb
       ? set(key, initialValue, idb)
       // otherwise, get value from indexeddb and set to val
-      : get(key, idb).then(v => unchanged && v !== undefined && val.$(v)))
+      : get(key, idb).then(v => unchanged && v !== undefined && val.$(v))
 
     const _del = () => val.$(undefined)
     clearCallbackList.push(_del)

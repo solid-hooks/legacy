@@ -1,61 +1,51 @@
+import type { ParseFunction, ParseParameters, StringKeys } from '@subframe7536/type-utils'
 import type { SignalObject, SignalObjectOptions } from '../signal'
 import { $ } from '../signal'
 
 type FilterKeys<T> = keyof T extends `$${infer EventName}`
   ? EventName
   : never
-type ParseKey<T> = T extends Record<string, any> ? {
+type ParseKey<T extends Record<string, any>> = {
   [K in keyof T as `$${K & string}`]: T[K]
-} : never
-
-type ParseArray<T, P = [T]> = T extends any[]
-  ? T['length'] extends 1
-    ? T[0] extends null | undefined
-      ? []
-      : [data: T[0]]
-    : T['length'] extends 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10
-      ? T
-      : [data: T] // ParseArray<string[]> => [data: string[]]
-  : T extends number | bigint | string | symbol | boolean | object
-    ? ParseArray<P>
-    : []
-
-type ParseFunction<P> = P extends Function
-  ? P
-  : (...args: ParseArray<P>) => void
-
+}
+type FilterOneParameterEvents<
+  Events extends Record<string, any>,
+  EventKeys extends string = StringKeys<Events>,
+> = {
+  [K in EventKeys]: ParseParameters<Required<Events>[K]>['length'] extends 1 ? K : never
+}[EventKeys]
 /**
  * utility type for function emitting
  */
 export type EmitProps<
-  E extends Record<string, any>,
-  P extends Record<string, any> = {},
-> = ParseKey<{
-  [K in keyof E]: ParseFunction<E[K]>
-}> & P
+  Events extends Record<string, any>,
+  Props extends Record<string, any> = {},
+> = Props & ParseKey<{
+  [K in keyof Events]: ParseFunction<Events[K]>
+}>
 
 /**
  * type for {@link $emits}
  */
-export type EmitsObject<EventsMap, E extends Record<string, any>> = {
+export type EmitsObject<PropsWithFn, Events extends Record<string, any>> = {
   /**
    * trigger event
    * @param event trigger event
    * @param ...data event data
    */
-  emit: <K extends FilterKeys<EventsMap>>(
+  emit: <K extends FilterKeys<PropsWithFn>>(
     event: K,
-    ...data: ParseArray<Required<E>[K]>
+    ...data: ParseParameters<Required<Events>[K]>
   ) => void
   /**
    * create a {@link SignalObject} that trigger event after value is set
-   * @param event trigger event
+   * @param event trigger event (only events with one parameter allowed)
    * @param value initial value
    * @param options optoins
    */
   useEmits: <
-    K extends FilterKeys<EventsMap>,
-    V = ParseArray<Required<E>[K]>,
+    K extends FilterOneParameterEvents<Events, FilterKeys<PropsWithFn>>,
+    V = ParseParameters<Required<Events>[K]>[0],
   >(
     event: K,
     value: V,
@@ -65,7 +55,7 @@ export type EmitsObject<EventsMap, E extends Record<string, any>> = {
 
 /**
  * util for child component event emitting, auto handle optional prop
- * @param properties conponents props
+ * @param props conponents props
  * @example
  * ```tsx
  * type Emits = {
@@ -98,20 +88,20 @@ export type EmitsObject<EventsMap, E extends Record<string, any>> = {
  * ```
  */
 export function $emits<
-  E extends Record<string, any>,
-  EventsMap = EmitProps<E>,
->(properties: EventsMap): EmitsObject<EventsMap, E> {
+  Events extends Record<string, any>,
+  PropsWithEmitFn = EmitProps<Events>,
+>(props: PropsWithEmitFn): EmitsObject<PropsWithEmitFn, Events> {
   return {
     emit: (e, ...args) => {
       // @ts-expect-error access $... and call it
-      properties[`$${e}`]?.(...args)
+      props[`$${e}`]?.(...args)
     },
     useEmits: (e, value, { postSet, ...options } = {}) => $(value, {
       name: `$emits-${e}`,
       ...options,
       postSet(newValue) {
         // @ts-expect-error emit
-        properties[`$${e}`]?.(newValue)
+        props[`$${e}`]?.(newValue)
         postSet?.(newValue)
       },
       defer: true,
