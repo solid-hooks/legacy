@@ -16,7 +16,7 @@ import { produce, reconcile, unwrap } from 'solid-js/store'
 import type { StoreObject } from '../store'
 import { $store, $trackStore } from '../store'
 import { $watch } from '../watch'
-import type { GetterOrActionObject, StateFunction, StateObject, StateSetup, StateUtils } from './types'
+import type { ActionObject, GetterObject, StateFunction, StateObject, StateSetup, StateUtils } from './types'
 import { createActions, deepClone } from './utils'
 
 type GlobalStateContext = {
@@ -87,8 +87,8 @@ const GLOBAL_$STATE = createContext<GlobalStateContext>({ owner: null, map: new 
  */
 export function $state<
   State extends object = Record<string, any>,
-  Getter extends GetterOrActionObject = {},
-  Action extends GetterOrActionObject = {},
+  Getter extends GetterObject = {},
+  Action extends ActionObject = {},
   Paths extends Path<State>[] = [],
 >(
   name: string,
@@ -110,8 +110,8 @@ export function $state<
 ): () => State
 export function $state<
   State extends object = Record<string, any>,
-  Getter extends GetterOrActionObject = {},
-  Action extends GetterOrActionObject = {},
+  Getter extends GetterObject = {},
+  Action extends GetterObject = {},
   Paths extends Path<State>[] = [],
 >(
   name: string,
@@ -168,8 +168,8 @@ export function StateProvider(props: FlowProps) {
 
 function setupObject<
   State extends object = Record<string, any>,
-  Getter extends GetterOrActionObject = {},
-  Action extends GetterOrActionObject = {},
+  Getter extends GetterObject = {},
+  Action extends GetterObject = {},
   Paths extends Path<State>[] = [],
 >(
   setup: StateSetup<State, Getter, Action, Paths>,

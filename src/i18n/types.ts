@@ -2,7 +2,9 @@ import type { Path } from 'object-standard-path'
 import type { StringKeys } from '@subframe7536/type-utils'
 import type { SignalObject } from '../signal'
 
-export type MessageType<Locale extends string> = Record<Locale, Record<string, any>> | Record<string, () => Promise<unknown>>
+export type MessageType<Locale extends string> =
+  | Record<Locale, Record<string, any>>
+  | Record<string, () => Promise<unknown>>
 
 export type I18nOptions<
   Locale extends string = string,

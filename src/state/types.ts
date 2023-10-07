@@ -33,8 +33,8 @@ export type StateUtils<State> = {
  */
 export type StateObject<
   State,
-  Getter = GetterOrActionObject,
-  Action = GetterOrActionObject,
+  Getter = GetterObject,
+  Action = ActionObject,
 > = Getter & StateUtils<State> & (() => State) & {
   /**
    * action records
@@ -45,8 +45,8 @@ export type InitialState<State extends object> = State | (() => State | [Store<S
 
 export type StateSetup<
   State extends object,
-  Getter extends GetterOrActionObject,
-  Action extends GetterOrActionObject,
+  Getter extends GetterObject,
+  Action extends ActionObject,
   Paths extends Path<State>[],
 > = {
   /**
@@ -74,17 +74,18 @@ export type StateSetup<
 
 export type StateAction<
   State extends object,
-  Return extends GetterOrActionObject,
+  Return extends ActionObject,
 > = (
   stateObject: StoreObject<State>,
   utils: StateUtils<State>
 ) => Return
 export type StateGetter<
   State extends object,
-  Getter extends GetterOrActionObject,
+  Getter extends GetterObject,
 > = (state: State) => Getter
 
-export type GetterOrActionObject = Record<string, AnyFunction>
+export type GetterObject = Record<string, AnyFunction>
+export type ActionObject = Record<string, AnyFunction<void>>
 
 /**
  * persist options for {@link $state}

@@ -1,27 +1,23 @@
 import { batch, untrack } from 'solid-js'
 import { klona } from 'klona'
-import type { GetterOrActionObject } from './types'
+import type { ActionObject } from './types'
 
 /**
  * alias for {@link klona}
  */
 export const deepClone = klona
 
-function batchAction<T extends (...args: any) => any>(fn: T): T {
-  return ((...args) => batch(() => untrack(() => fn(...args)))) as T
-}
-
 /**
  * @internal
- */
-export function createActions<T extends GetterOrActionObject>(functions?: T): T {
+*/
+export function createActions<T extends ActionObject>(functions?: T): T {
   if (!functions) {
     return {} as T
   }
-  const actions: T = { ...functions }
+  const actions = {}
   for (const [name, fn] of Object.entries(functions)) {
     // @ts-expect-error assign
-    actions[name] = batchAction(fn)
+    actions[name] = (...args) => batch(() => untrack(() => fn(...args)))
   }
-  return actions
+  return actions as T
 }
