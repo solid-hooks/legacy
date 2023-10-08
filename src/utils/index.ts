@@ -16,3 +16,5 @@ export type { EmitProps, EmitsObject } from './emits'
 
 export { $ref } from './ref'
 export type { RefObject } from './ref'
+
+export { $listenDocument, $listenWindow, $listenEvent, $listenEventMap } from './eventListener'

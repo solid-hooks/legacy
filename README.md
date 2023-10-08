@@ -501,3 +501,7 @@ bar() // 'str'
 bar.$('updated') // 'update'
 bar() // 'updated'
 ```
+
+### `$listenEvent` / `$listenEventMap` / `$listenDocument` / `listenWindow`
+
+aliases and shortcuts of [@solid-primitives/event-listener](https://github.com/solidjs-community/solid-primitives/tree/main/packages/event-listener)

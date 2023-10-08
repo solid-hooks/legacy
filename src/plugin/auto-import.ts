@@ -114,6 +114,10 @@ export const $autoImport: ImportFn = d => d
           '$app',
           '$emits',
           '$ref',
+          '$listenDocument',
+          '$listenWindow',
+          '$listenEvent',
+          '$listenEventMap',
         ],
       },
       {

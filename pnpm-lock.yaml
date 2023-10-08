@@ -8,6 +8,9 @@ dependencies:
   '@solid-primitives/deep':
     specifier: ^0.2.4
     version: 0.2.4(solid-js@1.7.12)
+  '@solid-primitives/event-listener':
+    specifier: ^2.3.0
+    version: 2.3.0(solid-js@1.7.12)
   '@subframe7536/type-utils':
     specifier: ^0.1.1
     version: 0.1.1
@@ -842,6 +845,15 @@ packages:
       solid-js: ^1.6.12
     dependencies:
       '@solid-primitives/memo': 1.3.5(solid-js@1.7.12)
+      solid-js: 1.7.12
+    dev: false
+
+  /@solid-primitives/event-listener@2.3.0(solid-js@1.7.12):
+    resolution: {integrity: sha512-0DS7DQZvCExWSpurVZC9/wjI8RmkhuOtWOy6Pp1Woq9ElMT9/bfjNpkwXsOwisLpcTqh9eUs17kp7jtpWcC20w==}
+    peerDependencies:
+      solid-js: ^1.6.12
+    dependencies:
+      '@solid-primitives/utils': 6.2.1(solid-js@1.7.12)
       solid-js: 1.7.12
     dev: false
 

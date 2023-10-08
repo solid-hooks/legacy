@@ -117,6 +117,7 @@
   },
   "dependencies": {
     "@solid-primitives/deep": "^0.2.4",
+    "@solid-primitives/event-listener": "^2.3.0",
     "@subframe7536/type-utils": "^0.1.1",
     "klona": "^2.0.6",
     "object-standard-path": "^0.3.0"
