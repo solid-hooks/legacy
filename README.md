@@ -311,6 +311,7 @@ load on demand:
 export const useI18n = $i18n({
   message: import.meta.glob('./locales/*.yml'),
   parseKey: path => path.slice(10, -5),
+  // other options...
 })
 ```
 to convert yml, setup built-in vite plugin
@@ -322,9 +323,7 @@ import { parse } from 'yaml'
 import { I18nPlugin } from 'solid-dollar/plugin'
 
 export default defineConfig({
-  // ...
   plugins: [
-    // ...
     I18nPlugin({
       include: './src/i18n/locales/*.yml',
       transformMessage: content => parse(content),
@@ -416,7 +415,6 @@ import { $autoImport } from 'solid-dollar/plugin'
 
 export default defineConfig({
   plugins: [
-    // ...
     AutoImport({
       import: [...$autoImport(true/*directive only*/)],
     }),

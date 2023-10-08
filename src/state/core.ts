@@ -24,7 +24,7 @@ type GlobalStateContext = {
   map: Map<string, any>
 }
 
-const GLOBAL_$STATE = createContext<GlobalStateContext>({ owner: null, map: new Map() })
+const $STATE_CTX = createContext<GlobalStateContext>({ owner: null, map: new Map() })
 /**
  * initialize global state with setup object
  * @param name state name
@@ -123,7 +123,7 @@ export function $state<
   let build = typeof setup === 'function' ? setup : setupObject(setup)
 
   return () => {
-    const ctx = useContext(GLOBAL_$STATE)
+    const ctx = useContext($STATE_CTX)
     const _m = ctx.map
     if (_m.has(name)) {
       return _m.get(name)
@@ -155,7 +155,7 @@ export function StateProvider(props: FlowProps) {
   if (DEV && !_owner) {
     throw new Error('<StateProvider /> must be set inside component')
   }
-  return createComponent(GLOBAL_$STATE.Provider, {
+  return createComponent($STATE_CTX.Provider, {
     value: {
       owner: _owner!,
       map: new Map(),
@@ -261,7 +261,7 @@ function setupObject<
       // @ts-expect-error assign
       getters[key] = getter.length === 0
         // eslint-disable-next-line solid/reactivity
-        ? createMemo(getter)
+        ? createMemo(getter, undefined, { name: `${stateName}-${getter.name}` })
         : getter
     }
 

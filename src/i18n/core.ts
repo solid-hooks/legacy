@@ -9,7 +9,7 @@ function assertImportType(value: any, fn: I18nOptions['parseKey']) {
     throw new Error('parseKey must be set when use import.meta.glob as message')
   }
 }
-const GLOBAL_$I18N = createContext<{
+const $I18N_CTX = createContext<{
   owner: Owner | null
   data: I18nObject<any, any, any, any> | null
 }>({
@@ -114,11 +114,9 @@ const GLOBAL_$I18N = createContext<{
  * import { I18nPlugin } from 'solid-dollar/plugin'
  *
  * export default defineConfig({
- *   // ...
  *   plugins: [
- *     // ...
  *     I18nPlugin({
- *       include: 'i18n/locales/*.yml',
+ *       include: './src/i18n/locales/*.yml',
  *       transformMessage: content => parse(content),
  *       // generate yml for https://github.com/lokalise/i18n-ally/wiki/Custom-Framework
  *       generateConfigYml: true,
@@ -138,7 +136,7 @@ export function $i18n<
   let build = () => createI18n(options)
   let log = DEV && console.log
   return () => {
-    const ctx = useContext(GLOBAL_$I18N)
+    const ctx = useContext($I18N_CTX)
     const _data = ctx.data
     if (_data) {
       return _data as any
@@ -175,7 +173,7 @@ export function I18nProvider(props: FlowProps) {
   if (DEV && !_owner) {
     throw new Error('<I18nProvider /> must be set inside component')
   }
-  return createComponent(GLOBAL_$I18N.Provider, {
+  return createComponent($I18N_CTX.Provider, {
     value: {
       owner: _owner!,
       data: null,
