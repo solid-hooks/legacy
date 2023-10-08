@@ -1,19 +1,14 @@
 import { type Path, type PathValue, pathGet, pathSet } from 'object-standard-path'
 import type { SignalOptions } from 'solid-js'
 import { createSignal } from 'solid-js'
+import type { SignalObject } from '../signal'
 
 /**
  * type of {@link $ref}
  */
-export type RefObject<T> = {
-  (): T
-  /**
-   * setter function
-   */
-  $: (value: T | ((prev: T) => T)) => T
-}
+export type RefObject<T> = SignalObject<T>
 /**
- * `$()` like wrapper to make object props reactive
+ * `$()` like wrapper to make plain object props reactive
  * @param data source object
  * @param path object access path, support array access
  * @param options options
@@ -32,31 +27,32 @@ export type RefObject<T> = {
  * bar() // 'updated'
  * ```
 */
-export function $ref<T, P extends Path<T>>(
+export function $ref<T extends object, P extends Path<T>>(
   data: T,
   path: P,
   options: SignalOptions<PathValue<T, P>> = {},
 ): RefObject<PathValue<T, P>> {
-  const { equals, ..._options } = options
+  const { equals, internal, name } = options
   const [track, trigger] = createSignal(undefined, {
     equals: false,
-    name: `$ref-${path}`,
-    ..._options,
+    name: name ? `$ref-${name}[${path}]` : undefined,
+    internal,
   })
   const get = () => pathGet(data, path)
   const set = (value: any) => pathSet(data, path, value)
 
-  const result = () => {
+  // eslint-disable-next-line solid/reactivity
+  const result = (() => {
     track()
     return get()
-  }
-  result.$ = (...[arg]: any[]) => {
+  }) as RefObject<PathValue<T, P>>
+  result.$ = (arg?) => {
     const _ = typeof arg === 'function' ? (arg as any)(get()) : arg
     const _equals = typeof equals === 'function'
       ? equals(get(), _)
       : equals === undefined
         ? get() === _
-        : !!equals
+        : equals
     if (!_equals) {
       set(_)
       trigger()

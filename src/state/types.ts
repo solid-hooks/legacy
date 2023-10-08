@@ -20,9 +20,9 @@ export type StateUtils<State> = {
   /**
    * subscribe to state, return {@link WatchObject}
    */
-  $subscribe: <T extends Path<State>>(
-    callback: (value: T extends undefined ? State : PathValue<State, T>) => Cleanupable,
-    options?: WatchOptions<State> & {
+  $subscribe: <T extends Path<State>, S = T extends undefined ? State : PathValue<State, T>>(
+    callback: (value: S) => Cleanupable,
+    options?: WatchOptions<S> & {
       path?: T
     }
   ) => WatchObject

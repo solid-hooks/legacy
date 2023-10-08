@@ -1,6 +1,6 @@
 import { createEffect, createRoot } from 'solid-js'
 import { describe, expect, test, vi } from 'vitest'
-import { $ref, $tick } from '../src/utils'
+import { $ref } from '../src/utils'
 
 describe('test $ref', () => {
   test('basic', () => {
@@ -35,8 +35,6 @@ describe('test $ref', () => {
     createRoot(() => createEffect(() => fn(bar())))
 
     bar.$(2)
-
-    await $tick()
     expect(fn).toBeCalledWith(2)
   })
 })

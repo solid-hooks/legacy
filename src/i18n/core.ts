@@ -1,6 +1,6 @@
 import type { FlowProps, Owner } from 'solid-js'
-import { DEV, createComponent, createContext, createRoot, getOwner, runWithOwner, useContext } from 'solid-js'
-import { $ } from '../signal'
+import { DEV, createComponent, createContext, createEffect, createRoot, createSignal, getOwner, on, runWithOwner, useContext } from 'solid-js'
+import type { SignalObject } from '../signal'
 import type { I18nObject, I18nOptions, MessageType } from './types'
 import { parseMessage, translate } from './utils'
 
@@ -193,7 +193,7 @@ function createI18n<
   {
     message,
     parseKey,
-    defaultLocale = navigator.language as any,
+    defaultLocale = navigator.language || 'en' as any,
     datetimeFormats,
     numberFormats,
   }: I18nOptions<Locale, Message, NumberKey, DatetimeKey>,
@@ -231,43 +231,45 @@ function createI18n<
     }
     numberFormatMap.set(l, obj)
   }
-  const currentMessage = $<Record<string, any>>({}, { name: '$i18n-message' })
+  const [curMsg, setCurMsg] = createSignal<Record<string, any>>({}, { name: '$i18n-message' })
 
-  const locale = $<string>(defaultLocale || availiableLocales[0] || 'en', {
-    name: '$i18n-locale',
-    postSet: async (l: string) => {
-      document?.querySelector('html')?.setAttribute('lang', l)
-      if (!messageMap.has(l)) {
-        throw new Error(`unsupported locale: ${l}, availiable: [${availiableLocales}]`)
-      }
-      const msg = messageMap.get(l)
-      currentMessage.$(typeof msg === 'function' ? (await msg()).default : msg)
-    },
-  })
+  const [loc, setLoc] = createSignal(defaultLocale, { name: '$i18n-locale' })
+  // @ts-expect-error assign
+  loc.$ = setLoc
+  createEffect(on(loc, (l) => {
+    document?.querySelector('html')?.setAttribute('lang', l)
+    if (!messageMap.has(l)) {
+      throw new Error(`unsupported locale: ${l}, availiable: [${availiableLocales}]`)
+    }
+    const msg = messageMap.get(l)!
+    typeof msg === 'function'
+      ? msg().then((val: { default: any }) => setCurMsg(val.default))
+      : setCurMsg(msg as Record<string, any>)
+  }))
 
   const $t: I18nObject<Locale, Message>['$t'] = (path, variable) => {
-    return translate(currentMessage(), path as any, variable)
+    return translate(curMsg(), path as any, variable)
   }
 
   const $n: I18nObject<Locale, Message>['$n'] = (num, type, l) => {
-    const _ = numberFormatMap.get(l || locale())?.[type]
+    const _ = numberFormatMap.get(l || loc())?.[type]
     return typeof _ === 'function'
       ? _(num)
-      : _?.format(num) || num.toLocaleString(locale())
+      : _?.format(num) || num.toLocaleString(loc())
   }
 
   const $d: I18nObject<Locale, Message>['$d'] = (date, type, l) => {
-    const _ = datetimeFormatMap.get(l || locale())?.[type]
+    const _ = datetimeFormatMap.get(l || loc())?.[type]
     return typeof _ === 'function'
       ? _(date)
-      : _?.format(date) || date.toLocaleString(locale())
+      : _?.format(date) || date.toLocaleString(loc())
   }
 
   return {
     $t,
     $n,
     $d,
-    locale,
+    locale: loc as SignalObject<any>,
     availiableLocales,
   }
 }

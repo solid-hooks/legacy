@@ -4,7 +4,7 @@ import type { SignalObject } from '../signal'
 
 export type MessageType<Locale extends string> =
   | Record<Locale, Record<string, any>>
-  | Record<string, () => Promise<unknown>>
+  | Record<string, () => Promise<{ default: any }>>
 
 export type I18nOptions<
   Locale extends string = string,
@@ -30,7 +30,7 @@ export type I18nOptions<
    */
   message: Message
   /**
-   * default locale, fallback to navigator?.language, 'en'
+   * default locale, fallback to `navigator?.language, 'en'`
    */
   defaultLocale?: StringKeys<Message>
   /**

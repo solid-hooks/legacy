@@ -213,7 +213,10 @@ function setupObject<
       }
     }
     let dep: () => State
-    const getDeps = () => (!dep && (dep = $trackStore(_store())), dep)
+    const getDeps = () => {
+      !dep && (dep = $trackStore(_store()))
+      return dep
+    }
     const utilFn: StateUtils<State> = {
       $patch: state => _store.$(
         typeof state === 'function'
@@ -233,7 +236,7 @@ function setupObject<
         )
       },
       $subscribe: (cb, { path, ...options } = {}) => $watch(
-        path ? () => pathGet(_store(), path) : getDeps(),
+        path ? () => pathGet(_store(), path) : getDeps() as any,
         s => cb(unwrap(s) as any),
         options,
       ),

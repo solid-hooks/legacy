@@ -34,14 +34,6 @@ console.log(data()) // 0
 console.log(data.$(1)) // 1
 
 console.log(data()) // 1
-
-console.log(data.$signal) // original signal
-
-const hooks = $('hello', {
-  preSet: v => v + ' hooks',
-  postSet: newV => console.log(newV)
-})
-// log: 'hello hooks'
 ```
 
 #### `$$`
@@ -494,7 +486,7 @@ const { useDate, DateProvider } = $ctx('date', () => new Date())
 
 ### `$ref`
 
-`$()` like wrapper to make object props reactive
+`$()` like wrapper to make plain object props reactive
 
 ```ts
 const value = {

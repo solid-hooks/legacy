@@ -1,6 +1,6 @@
-import { $, $watch, noReturn } from '../../src'
+import { $, $watch } from '../../src'
 import type { EmitProps } from '../../src/utils'
-import { $ctx, $emits } from '../../src/utils'
+import { $ctx, $emits, $ref } from '../../src/utils'
 
 const { useTest, TestProvider } = $ctx('test', () => new Date())
 type Emits = {
@@ -8,7 +8,9 @@ type Emits = {
   update: [d1: string, d2?: string, d3?: string]
   optional?: { test: number }
 }
-
+const FOO = {
+  bar: 1,
+}
 function Child(props: EmitProps<Emits, { num: number }>) {
   const { emit, useEmits } = $emits<Emits>(props)
   const v = useEmits('var', 1)
@@ -26,21 +28,23 @@ function Child(props: EmitProps<Emits, { num: number }>) {
 }
 
 export default function Basic() {
-  const count = $<number>(1, {
-    preSet: v => noReturn(() => console.log('pre set', v)),
-    postSet: v => console.log('post set:', v),
-  })
+  const count = $(1)
+  const refObj = $ref(FOO, 'bar')
   $watch(count, (currentCount, oldCount) => {
     console.log('watch current value:', currentCount)
     console.log('watch old value:', oldCount)
+    console.log('object ref:', refObj())
   }, { defer: true })
   return (
     <TestProvider>
       <button
-        onClick={() => count.$(c => c + 1)}
+        onClick={() => (count.$(c => c + 1), refObj.$(data => data * 2))}
       >
         increase
       </button>
+      <br />
+      object ref:
+      {refObj()}
       <div>{count()}</div>
       <Child num={count()}
         $update={console.log}

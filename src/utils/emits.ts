@@ -1,6 +1,6 @@
 import type { ParseFunction, ParseParameters, StringKeys } from '@subframe7536/type-utils'
-import type { SignalObject, SignalObjectOptions } from '../signal'
-import { $ } from '../signal'
+import { type SignalOptions, createEffect, createSignal, on } from 'solid-js'
+import type { SignalObject } from '../signal'
 
 type FilterKeys<T> = keyof T extends `$${infer EventName}`
   ? EventName
@@ -49,7 +49,7 @@ export type EmitsObject<PropsWithFn, Events extends Record<string, any>> = {
   >(
     event: K,
     value: V,
-    options?: Omit<SignalObjectOptions<V>, 'defer'>
+    options?: SignalOptions<V>
   ) => SignalObject<V>
 }
 
@@ -96,15 +96,18 @@ export function $emits<
       // @ts-expect-error access $... and call it
       props[`$${e}`]?.(...args)
     },
-    useEmits: (e, value, { postSet, ...options } = {}) => $(value, {
-      name: `$emits-${e}`,
-      ...options,
-      postSet(newValue) {
+    useEmits: (e, value, options) => {
+      const [val, setVal] = createSignal(value, {
+        name: `$emits-${e}`,
+        ...options,
+      })
+      createEffect(on(val, (value) => {
         // @ts-expect-error emit
-        props[`$${e}`]?.(newValue)
-        postSet?.(newValue)
-      },
-      defer: true,
-    }),
+        props[`$${e}`]?.(value)
+      }, { defer: true }))
+      // @ts-expect-error assign
+      val.$ = setVal
+      return val as any
+    },
   }
 }

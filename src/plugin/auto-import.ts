@@ -37,8 +37,6 @@ export const $autoImport: ImportFn = d => d
         from: 'solid-dollar',
         imports: [
           '$',
-          'NORETURN',
-          'noReturn',
           '$memo',
           '$resource',
           '$store',
@@ -57,7 +55,6 @@ export const $autoImport: ImportFn = d => d
         from: 'solid-dollar',
         imports: [
           'SignalObject',
-          'SignalObjectOptions',
           'MemoObject',
           'ResourceObject',
           'InitializedResourceObject',

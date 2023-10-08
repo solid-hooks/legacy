@@ -1,17 +1,12 @@
-import type { Setter } from 'solid-js'
+import { type SignalOptions, createComputed, createSignal, on } from 'solid-js'
 import type { UseStore } from 'idb-keyval'
 import { clear, createStore as createIDBStore, del, get, set } from 'idb-keyval'
-import { $, type SignalObjectOptions } from '../signal'
+import type { SignalObject } from '../signal'
 
 /**
  * type of {@link useIDB}
  */
-export type IDBObject<T> = {
-  (): T | undefined
-  /**
-   * setter function
-   */
-  $: Setter<T | undefined>
+export type IDBObject<T> = SignalObject<T | undefined> & {
   /**
    * delete item
    */
@@ -51,7 +46,7 @@ type IDBFactory = {
   useIDB: <T>(
     key: string,
     value?: T,
-    options?: SignalObjectOptions<T | undefined>
+    options?: SignalOptions<T | undefined>
   ) => IDBObject<T>
 }
 
@@ -79,33 +74,34 @@ export function $idb(
   const useIDB = <T>(
     key: string,
     initialValue?: T,
-    { postSet: post, ...options }: SignalObjectOptions<T | undefined> = {},
+    { name, ...options }: SignalOptions<T | undefined> = {},
   ): IDBObject<T> => {
     let unchanged = true
-    const val = $(initialValue, {
+    const [val, setVal] = createSignal(initialValue, {
       name: `$idb-${name}-${key}`,
       ...options,
-      postSet(value) {
-        value !== undefined && set(key, value, idb)
-          .then(() => {
-            unchanged && (unchanged = false)
-            post?.(value)
-          })
-      },
-    }) as unknown as IDBObject<T>
+    })
 
       // Determine the initial value
       ; (writeDefaults ? initialValue : undefined) !== undefined
       // if initializeValue is not undefined, set the initial value to indexeddb
       ? set(key, initialValue, idb)
       // otherwise, get value from indexeddb and set to val
-      : get(key, idb).then(v => unchanged && v !== undefined && val.$(v))
+      : get(key, idb).then(v => unchanged && v !== undefined && setVal(v))
 
-    const _del = () => val.$(undefined)
+    const _del = () => setVal(undefined)
     clearCallbackList.push(_del)
 
+    createComputed(on(val, (value) => {
+      value !== undefined && set(key, value, idb)
+        .then(() => unchanged && (unchanged = false))
+    }, { defer: !writeDefaults }))
+
+    // @ts-expect-error assign
+    val.$ = setVal
+    // @ts-expect-error assign
     val.$del = () => del(key, idb).then(_del)
-    return val
+    return val as IDBObject<T>
   }
   return { useIDB, idb, clearAll }
 }

@@ -8,7 +8,7 @@ export type Cleanupable = void | (() => void)
  * {@link $watch} callback function
  * @param value current value
  * @param oldValue previous value
- * @description when using `options.filter`, `oldValue` will fail to filter
+
  */
 export type WatchCallback<S> = (
   value: S,
@@ -25,6 +25,8 @@ export type WatchOptions<T> = OnOptions & {
   triggerFn?: (fn: WatchCallback<T>) => WatchCallback<T>
   /**
    * function for filter value
+   *
+   * @alert `oldValue` in {@link WatchCallback} will fail to filter
    */
   filterFn?: (newValue: T, times: number) => boolean
 }
@@ -55,9 +57,12 @@ export type WatchObject = {
 /**
  * wrapper for {@link createReaction}
  */
-export function $watchOnce<T>(deps: Accessor<T>, cb: WatchCallback<T>) {
+export function $watchOnce<T>(deps: Accessor<T>, cb: WatchCallback<T>, name?: string) {
   const old = deps()
-  return createReaction(() => cb(deps(), old))(deps)
+  return createReaction(
+    () => cb(deps(), old),
+    { name: name ? `$watchOnce-${name}` : undefined },
+  )(deps)
 }
 
 /**
