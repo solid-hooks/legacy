@@ -1,7 +1,6 @@
 import {
   createEventListener,
   createEventListenerMap,
-  createEventSignal,
   makeEventListener,
 } from '@solid-primitives/event-listener'
 

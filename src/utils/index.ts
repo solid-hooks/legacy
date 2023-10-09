@@ -17,4 +17,7 @@ export type { EmitProps, EmitsObject } from './emits'
 export { $ref } from './ref'
 export type { RefObject } from './ref'
 
-export { $listenDocument, $listenWindow, $listenEvent, $listenEventMap } from './eventListener'
+export { $listenDocument, $listenWindow, $listenEvent, $listenEventMap } from './event-listener'
+
+export { $signal, NORETURN, noReturn } from './signal-hooks'
+export type { SignalHooksObject, SignalHooksObjectOptions } from './signal-hooks'

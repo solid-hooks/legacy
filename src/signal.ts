@@ -12,7 +12,7 @@ export type SignalObject<T> = {
   $: Setter<T>
 }
 
-function isSignal<T>(val: unknown): val is Signal<T> {
+export function isSignal<T>(val: unknown): val is Signal<T> {
   return (
     Array.isArray(val)
     && val.length === 2
@@ -22,22 +22,22 @@ function isSignal<T>(val: unknown): val is Signal<T> {
 }
 
 /**
- * object wrapper with setter hooks for {@link createSignal}
+ * object wrapper for {@link createSignal}
  */
 export function $<T>(): SignalObject<T | undefined>
 /**
- * object wrapper with setter hooks for exist signals
+ * object wrapper for exist signals
  * @param existSignal exist Signal array
  */
 export function $<T>(existSignal: Signal<T>): SignalObject<T>
 /**
- * object wrapper with setter hooks for {@link createSignal}
+ * object wrapper for {@link createSignal}
  * @param value initial value
  * @param options options
  */
 export function $<T>(value: T, options?: SignalOptions<T>): SignalObject<T>
 export function $<T>(value?: T, options: SignalOptions<T> = {}) {
-  const [val, set] = (value && isSignal<T>(value))
+  const [val, set] = isSignal<T>(value)
     ? value
     // eslint-disable-next-line solid/reactivity
     : createSignal(value as T, options)

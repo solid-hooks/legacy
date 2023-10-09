@@ -37,6 +37,7 @@ export const $autoImport: ImportFn = d => d
         from: 'solid-dollar',
         imports: [
           '$',
+          'isSignal',
           '$memo',
           '$resource',
           '$store',
@@ -118,6 +119,9 @@ export const $autoImport: ImportFn = d => d
           '$listenWindow',
           '$listenEvent',
           '$listenEventMap',
+          '$signal',
+          'NORETURN',
+          'noReturn',
         ],
       },
       {
@@ -130,6 +134,8 @@ export const $autoImport: ImportFn = d => d
           'EmitProps',
           'EmitsObject',
           'RefObject',
+          'SignalHooksObject',
+          'SignalHooksObjectOptions',
         ],
         type: true,
       },
