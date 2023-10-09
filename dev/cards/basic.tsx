@@ -43,8 +43,7 @@ export default function Basic() {
         increase
       </button>
       <br />
-      object ref:
-      {refObj()}
+      object ref: {refObj()}
       <div>{count()}</div>
       <Child num={count()}
         $update={console.log}

@@ -335,8 +335,6 @@ see more at [`dev/`](/dev) and [`test`](/test/i18n.test.ts)
 
 util for child component event emitting, auto handle optional prop
 
-#### example
-
 ```tsx
 type Emits = {
   var: number
@@ -455,23 +453,24 @@ create function to generate `$()` like IndexedDB wrapper, using [idb-keyval](htt
 
 no serializer, be caution when store `Proxy`
 
-#### install
-
 ```ts
-pnpm add -D idb-keyval
+const foo = $idb('foo', 'initial value')
+console.log(foo()) // get value
+foo.$('test') // set value
+await foo.$del() // delete key
 ```
 
-#### example
+#### `$idbRecord`
+
+reactive IndexedDB record list
 
 ```ts
-const { useIDB, idb, clearAll } = $idb({ name: 'dbName' })
+const record = $idbRecord<string, string>('image')
 
-const foo = useIDB('foo', 'initial value')
-
-foo.$('test')
-
-await foo.$del()
-await clearAll()
+record.$('first', 'data:...') // set record
+record.$('first') // set current key
+record.$() // get current key
+console.log(record()) // get current value
 ```
 
 ### `$ctx`

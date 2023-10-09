@@ -1,53 +1,39 @@
-import { type SignalOptions, createComputed, createSignal, on } from 'solid-js'
+import { createComputed, createSignal, on } from 'solid-js'
+import type { Setter, SignalOptions } from 'solid-js'
 import type { UseStore } from 'idb-keyval'
-import { clear, createStore as createIDBStore, del, get, set } from 'idb-keyval'
-import type { SignalObject } from '../signal'
+import { createStore, del, get, set } from 'idb-keyval'
 
+export const useIDBStore = createStore
 /**
- * type of {@link useIDB}
+ * type of {@link $idb}
  */
-export type IDBObject<T> = SignalObject<T | undefined> & {
+export type IDBObject<T> = {
+  (): T
   /**
-   * delete item
+   * setter, update at next tick
+    */
+  $: Setter<T>
+  /**
+   * delete item, set value to `null`
    */
   $del: () => Promise<void>
 }
 
 export type IDBOptions = {
   /**
-   * IndexedDB store name, like scope for key-values
-   *
-   * @default 'kv'
-   */
-  name?: string
-  /**
    * whether to cover default value on init
+   * @default true
    */
   writeDefaults?: boolean
-}
-
-type IDBFactory = {
   /**
-   * source {@link UseStore UseStore} of idb-keyval
+   * trigger on error
+   * @default console.error
    */
-  idb: UseStore
+  onError?: (err: unknown) => void
   /**
-   * delete all key-values
+   * custom {@link UseStore}
    */
-  clearAll: () => Promise<void>
-  /**
-   * `$()` like wrapper for IndexedDB
-   *
-   * initial value is undefined, get value at next tick
-   * @param key key in IndexedDB
-   * @param value initial value
-   * @param options options
-   */
-  useIDB: <T>(
-    key: string,
-    value?: T,
-    options?: SignalOptions<T | undefined>
-  ) => IDBObject<T>
+  customStore?: UseStore
 }
 
 /**
@@ -58,50 +44,118 @@ type IDBFactory = {
  * no serializer, be caution when store `Proxy`
  * @param options options
  */
-export function $idb(
-  options: IDBOptions = {},
-): IDBFactory {
-  const { name = 'kv', writeDefaults = false } = options
-  const idb = createIDBStore(name, '$idb')
+export function $idb<T>(
+  key: string,
+  value?: T,
+  options: SignalOptions<T | undefined> & IDBOptions = {},
+): IDBObject<T> {
+  const {
+    writeDefaults = true,
+    onError = console.error,
+    customStore,
+    name,
+    ..._options
+  } = options
+  const [val, setVal] = createSignal(value, {
+    name: name || `$idb-${key}`,
+    ..._options,
+  })
+  let isUpdated = false
+  const read = async () => {
+    if (isUpdated) {
+      return
+    }
+    try {
+      const existValue = await get(key, customStore)
+      if (existValue !== undefined) {
+        setVal(existValue)
+        return
+      }
+      value !== undefined
+        && writeDefaults
+        && await set(key, value, customStore)
+    } catch (err) {
+      onError(err)
+    }
+  }
+  read()
 
-  const clearCallbackList: (() => void)[] = []
+  createComputed(on(
+    val as any,
+    (data: T) => data !== null && set(key, data, customStore).catch(onError),
+    { defer: !writeDefaults },
+  ))
 
-  const clearAll = async () => {
-    await clear(idb)
-    clearCallbackList.forEach(c => c())
+  // @ts-expect-error assign
+  val.$ = (data) => {
+    !isUpdated && (isUpdated = true)
+    return setVal(data)
+  }
+  // @ts-expect-error assign
+  val.$del = () => del(key, customStore)
+    .then(() => setVal(null as any))
+    .catch(onError)
+  return val as IDBObject<T>
+}
+
+/**
+ * type of {@link $idbRecord}
+ */
+export type IDBRecord<K extends IDBValidKey, V> = {
+  (): V | undefined
+  $: {
+    /**
+     * get current key
+     */
+    (): IDBValidKey
+    /**
+     * change key, update at next tick
+     */
+    (currentKey: K): void
+    /**
+     * set key value, update at next tick, signal will not change
+     */
+    (currentKey: K, data: V): void
+  }
+}
+
+/**
+ * reactive IndexedDB record list
+ * @param name db name
+ * @param initialValue default value, will not write to IndexedDB
+ * @param onError trigger on error
+ */
+export function $idbRecord<Key extends IDBValidKey, Value>(
+  name: string,
+  initialValue?: Value,
+  onError: (err: unknown) => void = console.error,
+): IDBRecord<Key, Value> {
+  const idb = createStore(`$idb-${name}`, 'record')
+  const [val, setVal] = createSignal<Value | undefined>(
+    initialValue,
+    { name: `$idb-record-${name}` },
+  )
+  let currentKey: IDBValidKey
+  const handleValue = async (key: IDBValidKey, data?: Value) => {
+    try {
+      if (data) {
+        await set(key, data, idb)
+        return
+      }
+      const _data = await get<Value>(key, idb)
+      _data !== undefined && setVal(_data as any)
+    } catch (err) {
+      onError(err)
+    }
+  }
+  // @ts-expect-error assign
+  val.$ = (key?: IDBValidKey, data?: Value) => {
+    if (!key) {
+      return currentKey
+    }
+    currentKey = key
+    handleValue(key, data)
   }
 
-  const useIDB = <T>(
-    key: string,
-    initialValue?: T,
-    { name, ...options }: SignalOptions<T | undefined> = {},
-  ): IDBObject<T> => {
-    let unchanged = true
-    const [val, setVal] = createSignal(initialValue, {
-      name: `$idb-${name}-${key}`,
-      ...options,
-    })
-
-      // Determine the initial value
-      ; (writeDefaults ? initialValue : undefined) !== undefined
-      // if initializeValue is not undefined, set the initial value to indexeddb
-      ? set(key, initialValue, idb)
-      // otherwise, get value from indexeddb and set to val
-      : get(key, idb).then(v => unchanged && v !== undefined && setVal(v))
-
-    const _del = () => setVal(undefined)
-    clearCallbackList.push(_del)
-
-    createComputed(on(val, (value) => {
-      value !== undefined && set(key, value, idb)
-        .then(() => unchanged && (unchanged = false))
-    }, { defer: !writeDefaults }))
-
-    // @ts-expect-error assign
-    val.$ = setVal
-    // @ts-expect-error assign
-    val.$del = () => del(key, idb).then(_del)
-    return val as IDBObject<T>
-  }
-  return { useIDB, idb, clearAll }
+  return val as IDBRecord<Key, Value>
 }

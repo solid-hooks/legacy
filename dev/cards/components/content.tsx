@@ -17,12 +17,10 @@ export default function Content() {
   return (
     <>
       <div>
-        source:
-        {info().test}
+        source: {info().test}
       </div>
       <div>
-        deep data:
-        {pathGet(info(), 'deep.data')}
+        deep data: {pathGet(info(), 'deep.data')}
       </div>
       <div>{`is watching: ${isWatching()}`}</div>
       <button onClick={handleClick}>sync</button>

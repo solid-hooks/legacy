@@ -4,6 +4,7 @@
     "@typescript-eslint/explicit-member-accessibility": "off",
     "@typescript-eslint/no-namespace": "off",
     "no-sequences": "off",
-    "accessor-pairs": "off"
+    "accessor-pairs": "off",
+    "react/jsx-one-expression-per-line": "off"
   }
 }
