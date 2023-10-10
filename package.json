@@ -120,8 +120,7 @@
     "@solid-primitives/event-listener": "^2.3.0",
     "@subframe7536/type-utils": "^0.1.1",
     "klona": "^2.0.6",
-    "object-standard-path": "^0.3.0",
-    "tiny-lru": "^11.2.2"
+    "object-standard-path": "^0.3.0"
   },
   "devDependencies": {
     "@solidjs/testing-library": "^0.8.4",

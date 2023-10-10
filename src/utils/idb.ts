@@ -2,7 +2,6 @@ import { createComputed, createSignal, on, onCleanup } from 'solid-js'
 import type { Setter, SignalOptions } from 'solid-js'
 import type { UseStore } from 'idb-keyval'
 import { createStore, del, get, set } from 'idb-keyval'
-import { lru } from 'tiny-lru'
 
 export const useIDBStore = createStore
 /**
@@ -126,9 +125,14 @@ type IDBRecordOptions = {
    */
   onError?: (err: unknown) => void
   /**
-   * enable LRU cache and set max size
+   * cache instance
    */
-  maxCacheSize?: number
+  cache?: {
+    has: (key: IDBValidKey) => boolean
+    clear: () => void
+    get: (key: IDBValidKey) => any
+    set: (key: IDBValidKey, data: any) => any
+  }
 }
 
 /**
@@ -142,14 +146,13 @@ export function $idbRecord<Key extends IDBValidKey, Value>(
   initialValue?: Value,
   options: IDBRecordOptions = {},
 ): IDBRecord<Key, Value> {
-  const { maxCacheSize, onError = console.error } = options
+  const { cache, onError = console.error } = options
   const idb = createStore(`$idb-${name}`, 'record')
   const [val, setVal] = createSignal<Value | undefined>(
     initialValue,
     { name: `$idb-record-${name}` },
   )
   let currentKey: IDBValidKey
-  const cache = maxCacheSize ? lru<Value>(maxCacheSize) : null
   onCleanup(() => cache?.clear())
   const handleValue = async (key: IDBValidKey, data?: Value) => {
     try {
