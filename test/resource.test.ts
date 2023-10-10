@@ -5,10 +5,7 @@ import { $tick } from '../src/utils'
 describe('$resource', () => {
   test('returns a resource object with mutate and refetch functions', async () => {
     const fetcher = (source: string) => Promise.resolve(`${source} data`)
-    const options = {
-      $: 'source',
-    }
-    const obj = $resource(fetcher, options)
+    const obj = $resource('source', fetcher)
     expect(obj()).toBe(undefined)
     expect(obj.loading).toBe(true)
     expect(obj.state).toBe('pending')
