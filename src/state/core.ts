@@ -150,7 +150,7 @@ export function $state<
 /**
  * global state provider
  */
-export function StateProvider(props: FlowProps) {
+export function GlobalStateProvider(props: FlowProps) {
   const _owner = getOwner()
   if (DEV && !_owner) {
     throw new Error('<StateProvider /> must be set inside component')
