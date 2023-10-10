@@ -7,7 +7,7 @@ export type { ContextObject } from './ctx'
 export { $tick } from './tick'
 
 export { $idb, $idbRecord, useIDBStore } from './idb'
-export type { IDBObject, IDBOptions, IDBRecord } from './idb'
+export type { IDBObject, IDBOptions, IDBRecord, IDBRecordOptions } from './idb'
 
 export { $app } from './app'
 

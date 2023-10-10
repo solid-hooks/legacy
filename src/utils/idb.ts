@@ -60,9 +60,9 @@ export function $idb<T>(
     name: name || `$idb-${key}`,
     ..._options,
   })
-  let isUpdated = false
+  let unChanged: 1 | null = 1
   const read = async () => {
-    if (isUpdated) {
+    if (!unChanged) {
       return
     }
     try {
@@ -88,7 +88,7 @@ export function $idb<T>(
 
   // @ts-expect-error assign
   val.$ = (data) => {
-    !isUpdated && (isUpdated = true)
+    unChanged && (unChanged = null)
     return setVal(data)
   }
   // @ts-expect-error assign
@@ -118,7 +118,12 @@ export type IDBRecord<K extends IDBValidKey, V> = {
     (currentKey: K, data: V): void
   }
 }
-type IDBRecordOptions = {
+
+export type IDBRecordOptions<K extends IDBValidKey> = {
+  /**
+   * default record key
+   */
+  defaultKey?: K
   /**
    * trigger on error
    * @default console.error
@@ -128,10 +133,10 @@ type IDBRecordOptions = {
    * cache instance
    */
   cache?: {
-    has: (key: IDBValidKey) => boolean
+    has: (key: K) => boolean
     clear: () => void
-    get: (key: IDBValidKey) => any
-    set: (key: IDBValidKey, data: any) => any
+    get: (key: K) => any
+    set: (key: K, data: any) => any
   }
 }
 
@@ -143,20 +148,21 @@ type IDBRecordOptions = {
  */
 export function $idbRecord<Key extends IDBValidKey, Value>(
   name: string,
-  initialValue?: Value,
-  options: IDBRecordOptions = {},
+  options: IDBRecordOptions<Key> = {},
 ): IDBRecord<Key, Value> {
-  const { cache, onError = console.error } = options
+  const { defaultKey, cache, onError = console.error } = options
   const idb = createStore(`$idb-${name}`, 'record')
   const [val, setVal] = createSignal<Value | undefined>(
-    initialValue,
+    undefined,
     { name: `$idb-record-${name}` },
   )
-  let currentKey: IDBValidKey
+  let currentKey: Key | undefined = defaultKey
+  let unChanged: 1 | null = 1
   onCleanup(() => cache?.clear())
-  const handleValue = async (key: IDBValidKey, data?: Value) => {
+  const handleValue = async (key: Key, data?: Value) => {
     try {
       if (data) {
+        unChanged && (unChanged = null)
         await set(key, data, idb)
         return
       }
@@ -173,8 +179,9 @@ export function $idbRecord<Key extends IDBValidKey, Value>(
       onError(err)
     }
   }
+  currentKey && unChanged && handleValue(currentKey)
   // @ts-expect-error assign
-  val.$ = (key?: IDBValidKey, data?: Value) => {
+  val.$ = (key?: Key, data?: Value) => {
     if (!key) {
       return currentKey
     }
