@@ -30,60 +30,7 @@ const $STATE_CTX = createContext<GlobalStateContext>({ owner: null, map: new Map
  * @param name state name
  * @param setup state setup object
  * @param _log whether to enable log when dev, default is `false`
- * @example
- * ```tsx
- * const useTestState = $state('test', {
- *   $init: { value: 1 },
- *   $getter: state => ({
- *     // without param, will auto wrapped with `createMemo`
- *     doubleValue() {
- *       return state.value * 2
- *     },
- *   }),
- *   $action: stateObj => ({
- *     double(num: number) {
- *       stateObj.$('value', value => value * 2 * number)
- *     },
- *     plus(num: number) {
- *       stateObj.$('value', value => value + num)
- *     },
- *   }),
- *   $persist: {
- *     enable: true,
- *     storage: localStorage,
- *     path: ['test'] // type safe, support array
- *   },
- * }, true) // set true to enable DEV log
- *
- * // usage
- * const state = useTestState()
- * render(() => (
- *   <StateProvider> // optional
- *     state: <p>{state().value}</p>
- *     getter: <p>{state.doubleValue()}</p>
- *     action: <button onClick={state.$.double}>double</button>
- *     action: <button onClick={() => state.$.plus(2)}>plus 2</button>
- *   </StateProvider>
- * ))
- *
- * // use produce()
- * state.$patch((state) => {
- *   state().test = 3
- * })
- * // use reconcile()
- * state.$patch({
- *   test: 2
- * })
- *
- * // watch
- * const { pause, resume, isWatching } = state.$subscribe(
- *   (state) => console.log(state),
- *   { defer: true },
- * )
- *
- * // reset
- * state.$reset()
- * ```
+ * @see https://github.com/subframe7536/solid-dollar#state
  */
 export function $state<
   State extends object = Record<string, any>,

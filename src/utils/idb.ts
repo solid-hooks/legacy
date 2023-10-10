@@ -3,6 +3,9 @@ import type { Setter, SignalOptions } from 'solid-js'
 import type { UseStore } from 'idb-keyval'
 import { createStore, del, get, set } from 'idb-keyval'
 
+/**
+ * alias for idb-keyval {@link createStore}
+ */
 export const useIDBStore = createStore
 /**
  * type of {@link $idb}
@@ -42,11 +45,14 @@ export type IDBOptions = {
  * using {@link https://github.com/jakearchibald/idb-keyval idb-keyval}
  *
  * no serializer, be caution when store `Proxy`
+ * @param key target key
+ * @param defaultValue default value
  * @param options options
+ * @see https://github.com/subframe7536/solid-dollar#idb
  */
 export function $idb<T>(
   key: string,
-  value?: T,
+  defaultValue?: T,
   options: SignalOptions<T | undefined> & IDBOptions = {},
 ): IDBObject<T> {
   const {
@@ -56,7 +62,7 @@ export function $idb<T>(
     name,
     ..._options
   } = options
-  const [val, setVal] = createSignal(value, {
+  const [val, setVal] = createSignal(defaultValue, {
     name: name || `$idb-${key}`,
     ..._options,
   })
@@ -71,9 +77,9 @@ export function $idb<T>(
         setVal(existValue)
         return
       }
-      value !== undefined
+      defaultValue !== undefined
         && writeDefaults
-        && await set(key, value, customStore)
+        && await set(key, defaultValue, customStore)
     } catch (err) {
       onError(err)
     }
@@ -143,8 +149,8 @@ export type IDBRecordOptions<K extends IDBValidKey> = {
 /**
  * reactive IndexedDB record list
  * @param name db name
- * @param initialValue default value, will not write to IndexedDB
- * @param onError trigger on error
+ * @param options options
+ * @see https://github.com/subframe7536/solid-dollar#idbRecord
  */
 export function $idbRecord<Key extends IDBValidKey, Value>(
   name: string,

@@ -51,29 +51,7 @@ function mergeProviders({ app, props = {}, providers }: MergeParams) {
  * reference from {@link https://github.com/amoutonbrady/solid-utils#createapp solid-utils}
  * @param app App component
  * @param props App params
- * @example
- * ```ts
- * import App from './App'
- *
- * createApp(App)
- *   .use(RouterProvider)
- *   .use(I18nProvider, { dict })
- *   .use(GlobalStoreProvider)
- *   .mount('#app')
- * ```
- * is equal to:
- * ```tsx
- * render(
- *   <RouterProvider>
- *     <I18nProvider dict={dict}>
- *       <GlobalStoreProvider>
- *         <App />
- *       </GlobalStoreProvider>
- *     </I18nProvider>
- *   </RouterProvider>,
- *   document.querySelector('#app')
- * )
- * ```
+ * @see https://github.com/subframe7536/solid-dollar#app
  */
 export function $app<AppProps extends Record<string, any> = {}>(
   app: (props?: AppProps) => JSX.Element,

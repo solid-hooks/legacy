@@ -8,7 +8,7 @@ import { $ } from './signal'
  */
 export type SelectorObject<T, U = T> = SignalObject<T> & {
   /**
-   * bind value
+   * bind value, call {@link createSelector}
    */
   $bind: (k: U) => boolean
 }
@@ -18,18 +18,8 @@ export type SelectorObjectOptions<T, U = T> = SignalOptions<T> & {
 }
 
 /**
- * object wrapper for {@link createSelector}, return {@link SignalObject}
- * @example
- * ```tsx
- * const activeId = $selector(0)
- * activeId.$(1)
- *
- * <For each={list()}>
- *   {item => <li classList={{ active: activeId.$bind(item.id) }}>
- *     {item.name}
- *    </li>}
- * </For>
- * ```
+ * object wrapper for {@link createSelector}
+ * @see https://github.com/subframe7536/solid-dollar#selector
  */
 export function $selector<T, U = T>(
   value: T | SignalObject<T>,

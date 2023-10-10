@@ -1,5 +1,6 @@
-import type { Setter, Signal, SignalOptions } from 'solid-js'
+import type { Signal, SignalOptions } from 'solid-js'
 import { batch, createComputed, createSignal, on, untrack } from 'solid-js'
+import type { SignalObject } from '../signal'
 import { isSignal } from '../signal'
 
 /**
@@ -49,16 +50,11 @@ export type SignalHooksObjectOptions<T> =
 /**
  * type of {@link $signal}
  */
-export type SignalHooksObject<T> = {
-  (): T
-  /**
-   * setter function
-   */
-  $: Setter<T>
+export type SignalHooksObject<T> = SignalObject<T> & {
   /**
    * original getter and untracked setter
    */
-  $signal: Signal<T>
+  $source: Signal<T>
 }
 
 /**
@@ -106,6 +102,6 @@ export function $signal<T>(value?: T, {
   // @ts-expect-error assign
   val.$ = _set
   // @ts-expect-error assign
-  val.$signal = [val, (arg: any) => untrack(() => set(arg))]
+  val.$source = [val, (arg: any) => untrack(() => set(arg))]
   return val
 }

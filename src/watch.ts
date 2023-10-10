@@ -8,7 +8,6 @@ export type Cleanupable = void | (() => void)
  * {@link $watch} callback function
  * @param value current value
  * @param oldValue previous value
-
  */
 export type WatchCallback<S> = (
   value: S,
@@ -70,6 +69,7 @@ export function $watchOnce<T>(deps: Accessor<T>, cb: WatchCallback<T>, name?: st
  * @param deps Accessor that need to be watch
  * @param fn {@link WatchCallback callback function}
  * @param options options
+ * @see https://github.com/subframe7536/solid-dollar#watch
  */
 export function $watch<T>(
   deps: Accessor<T> | AccessorArray<T> | SignalObject<T>,

@@ -7,7 +7,7 @@ import { createMemo } from 'solid-js'
 export type MemoObject<T> = () => (T extends (...args: any) => infer R ? R : T)
 
 /**
- * object wrapper for {@link createMemo}
+ * object wrapper for {@link createMemo}, auto wrap with accessor
  * @param data memo data
  */
 export function $memo<T>(data: T): MemoObject<T>

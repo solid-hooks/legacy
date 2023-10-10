@@ -12,21 +12,7 @@ export type RefObject<T> = SignalObject<T>
  * @param data source object
  * @param path object access path, support array access
  * @param options options
- * @example
- * ```ts
- * const value = {
- *   deep: {
- *     data: 'str',
- *   },
- * }
- *
- * const bar = $reactive(value, 'deep.data')
- *
- * bar() // 'str'
- * bar.$('updated') // 'update'
- * bar() // 'updated'
- * ```
-*/
+ */
 export function $ref<T extends object, P extends Path<T>>(
   data: T,
   path: P,

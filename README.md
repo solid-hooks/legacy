@@ -27,13 +27,12 @@ pnpm add solid-dollar
 object wrapper for `createSignal`
 
 ```ts
+import { $ } from 'solid-dollar'
+
 const data = $(0)
 
 console.log(data()) // 0
-
-console.log(data.$(1)) // 1
-
-console.log(data()) // 1
+console.log(data.$(1)) // set value
 ```
 
 #### `$$`
@@ -45,6 +44,8 @@ console.log(data()) // 1
 object wrapper for `createMemo`
 
 ```ts
+import { $, $memo } from 'solid-dollar'
+
 const test = $('test')
 const memoByValue = $memo(`value: ${test()}`)
 ```
@@ -53,13 +54,12 @@ const memoByValue = $memo(`value: ${test()}`)
 
 object wrapper for `createResource`
 
-```tsx
+```ts
+import { $, $resource } from 'solid-dollar'
+
 const fetcher = (source: string) => Promise.resolve(`${source} data`)
-const data = $resource(fetcher, {
-  /**
-   * source signal
-   */
-  $: $('source'),
+const source = $('source')
+const data = $resource(source, fetcher, {
   initialValue: 'test'
 })
 
@@ -82,6 +82,8 @@ data.$refetch()
 pausable and filterable `createEffect(on())`
 
 ```ts
+import { $watch } from 'solid-dollar'
+
 const str = $('old')
 const callback = console.log
 function filter(newValue: string, times: number) {
@@ -118,6 +120,15 @@ run effect instantly, alias for `createComputed`
 
 object wrapper for `createStore`, return `$()` like object
 
+```ts
+import { $store } from 'solid-dollar'
+
+const store = $store({ test: { deep: 1 } })
+
+store() // { test: { deep: 1 } }
+store.$('test', 'deep', 2) // set value
+```
+
 #### `$trackStore`
 
 Accessor wrapper for [`trackStore`](https://github.com/solidjs-community/solid-primitives/tree/main/packages/deep#trackstore)
@@ -131,6 +142,8 @@ defer update notification until browser idle, alias for `createDeferred`
 object wrapper for `createSelector`
 
 ```tsx
+import { $selector } from 'solid-dollar'
+
 const activeId = $selector(0)
 activeId.$(1)
 
@@ -154,6 +167,8 @@ support run without provider (fallback to `createRoot`)
 inspired by `pinia` & `zustand`
 
 ```tsx
+import { $state, GlobalStateProvider } from 'solid-dollar/state'
+
 const useTestState = $state('test', {
   $init: { value: 1 },
   $getter: state => ({
@@ -180,12 +195,12 @@ const useTestState = $state('test', {
 // usage
 const state = useTestState()
 render(() => (
-  <StateProvider> {/* optional */}
+  <GlobalStateProvider> {/* optional */}
     state: <p>{state().value}</p>
     getter: <p>{state.$.doubleValue()}</p>
     action: <button onClick={state.double}>double</button>
     action: <button onClick={() => state.plus(2)}>plus 2</button>
-  </StateProvider>
+  </GlobalStateProvider>
 ))
 
 // use produce()
@@ -252,6 +267,8 @@ $t('plural', { var: 5 }) // at a few days ago
 #### example
 
 ```tsx
+import { $i18n, I18nProvider } from 'solid-dollar/i18n'
+
 const en = { t: '1', deep: { t: '{name}' }, plural: '{day}' }
 const zh = { t: '2', deep: { t: '{name}' }, plural: '{day}(0=zero|1=one)' }
 export const useI18n = $i18n({
@@ -336,13 +353,17 @@ see more at [`dev/`](/dev) and [`test`](/test/i18n.test.ts)
 util for child component event emitting, auto handle optional prop
 
 ```tsx
+import { $emits } from 'solid-dollar/utils'
+
 type Emits = {
   var: number
   update: [d1: string, d2?: string, d3?: string]
   optional?: { test: number }
 }
 
-function Child(props: EmitProps<Emits, { num: number }>) {
+type BaseProps = { num: number }
+
+function Child(props: EmitProps<Emits, BaseProps>) {
   const { emit, useEmits } = $emits<Emits>(props)
 
   // auto emit after setter, inspird by `defineModel` in Vue
@@ -371,9 +392,11 @@ function Father() {
 
 ### `$model`
 
-simple two-way binding directive for `<input>`, `<textare>`, `<select>`, and others (customable)
+simple two-way binding directive for `<input>`, `<textare>`, `<select>`
 
 ```tsx
+import { $ } from 'solid-dollar'
+
 const msg = $('')
 <input type="text" use:$model={msg}>
 ```
@@ -382,7 +405,7 @@ const msg = $('')
 
 env.d.ts:
 ```ts
-import { ModelDirective } from 'solid-dollar'
+import { ModelDirective } from 'solid-dollar/utils'
 
 declare module 'solid-js' {
   namespace JSX {
@@ -398,6 +421,7 @@ export { }
 use with [`unplugin-auto-import`](https://github.com/antfu/unplugin-auto-import)
 
 vite.config.ts
+
 ```ts
 import { defineConfig } from 'vite'
 import AutoImport from 'unplugin-auto-import/vite'
@@ -414,13 +438,14 @@ export default defineConfig({
 
 ### `$tick`
 
-vue-like next tick, [reference](https://github.com/solidjs-use/solidjs-use/blob/main/packages/solid-to-vue/src/scheduler.ts)
+vue-like next tick, reference from [solidjs-use](https://github.com/solidjs-use/solidjs-use/blob/main/packages/solid-to-vue/src/scheduler.ts)
 
 ### `$app`
 
 Vue's `createApp` like initialization, works in both `.ts` and `.tsx`
 
 ```ts
+import { $app } from 'solid-dollar/utils'
 import App from './App'
 
 $app(App)
@@ -445,7 +470,7 @@ render(
 )
 ```
 
-reference from [solid-utls](https://github.com/amoutonbrady/solid-utils#createapp)
+reference from [solid-utils](https://github.com/amoutonbrady/solid-utils#createapp)
 
 ### `$idb`
 
@@ -454,7 +479,9 @@ create function to generate `$()` like IndexedDB wrapper, using [idb-keyval](htt
 no serializer, be caution when store `Proxy`
 
 ```ts
-const foo = $idb('foo', 'initial value')
+import { $idb } from 'solid-dollar/utils'
+
+const foo = $idb('foo', 'default value')
 console.log(foo()) // get value
 foo.$('test') // set value
 await foo.$del() // delete key
@@ -465,9 +492,11 @@ await foo.$del() // delete key
 reactive IndexedDB record list
 
 ```ts
-const record = $idbRecord<string, string>('image')
+import { $idbRecord } from 'solid-dollar/utils'
 
-record.$('first', 'data:...') // set record
+const record = $idbRecord<string, string>('image', { cache: new LRU(10) })
+
+record.$('first', 'data:,') // set record
 record.$('first') // set current key
 record.$() // get current key
 console.log(record()) // get current value
@@ -477,10 +506,33 @@ console.log(record()) // get current value
 
 object style [createContextProvider](https://github.com/solidjs-community/solid-primitives/tree/main/packages/context#createcontextprovider)
 
-if use context outside provider, throw `Error` when DEV
+```ts
+import { $ctx } from 'solid-dollar/utils'
+
+const { useDate, DateProvider } = $ctx('date', () => new Date())
+```
+
+### `$signal`
+
+signal object with preSet and postSet hooks
 
 ```ts
-const { useDate, DateProvider } = $ctx('date', () => new Date())
+import { $signal, noReturn, NORETURN } from 'solid-dollar/utils'
+
+const hooks = $('hello', {
+  preSet: v => v + ' hooks', // change the set value
+  postSet: newV => console.log(newV)
+})
+// hello hooks
+console.log(hooks.$source) // orignal Signal Array: [hooks, setHooks]
+
+const logPreSetHooks = $(1, {
+  // preSet: v => noReturn(() => console.log(v))
+  preSet: v => {
+    console.log(v)
+    return NORETURN
+  }
+})
 ```
 
 ### `$ref`
@@ -488,6 +540,8 @@ const { useDate, DateProvider } = $ctx('date', () => new Date())
 `$()` like wrapper to make plain object props reactive
 
 ```ts
+import { $ref } from 'solid-dollar/utils'
+
 const value = {
   deep: {
     data: 'str',

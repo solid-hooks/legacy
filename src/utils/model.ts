@@ -2,18 +2,7 @@ import { createRenderEffect, onCleanup } from 'solid-js'
 import type { SignalObject } from '../signal'
 
 /**
- * type support for $model
- *
- * @example
- * ```ts
- * import type { ModelDirective } from "solid-dollar/utils";
- * declare module 'solid-js' {
- *   namespace JSX {
- *     interface Directives extends ModelDirective {}
- *   }
- * }
- * export { }
- * ```
+ * type support for {@link $model}
  */
 export interface ModelDirective {
   $model: SignalObject<any>

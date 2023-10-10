@@ -56,36 +56,7 @@ export type EmitsObject<PropsWithFn, Events extends Record<string, any>> = {
 /**
  * util for child component event emitting, auto handle optional prop
  * @param props conponents props
- * @example
- * ```tsx
- * type Emits = {
- *   var: number
- *   update: [d1: string, d2?: string, d3?: string]
- *   optional?: { test: number }
- * }
- *
- * function Child(props: EmitProps<Emits, { num: number }>) {
- *   const { emit, useEmits } = $emits<Emits>(props)
- *   const var = useEmits('var', 1)
- *   const handleClick = () => {
- *     var.$(v => v + 1)
- *     emit('update', `emit from child: ${props.num}`, 'second')
- *     emit('optional', { test: 1 })
- *   }
- *   return (<div>
- *     child:
- *     {props.num}
- *     <button onClick={handleClick}>+</button>
- *   </div>)
- * }
- * function Father() {
- *   const count = $('init')
- *   return <Child num={count()}
- *     $update={console.log}
- *     $var={e => console.log('useEmits:', e)}
- *   />
- * }
- * ```
+ * @see https://github.com/subframe7536/solid-dollar#emits
  */
 export function $emits<
   Events extends Record<string, any>,
