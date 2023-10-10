@@ -1,7 +1,8 @@
-import { createComputed, createSignal, on } from 'solid-js'
+import { createComputed, createSignal, on, onCleanup } from 'solid-js'
 import type { Setter, SignalOptions } from 'solid-js'
 import type { UseStore } from 'idb-keyval'
 import { createStore, del, get, set } from 'idb-keyval'
+import { lru } from 'tiny-lru'
 
 export const useIDBStore = createStore
 /**
@@ -107,7 +108,7 @@ export type IDBRecord<K extends IDBValidKey, V> = {
     /**
      * get current key
      */
-    (): IDBValidKey
+    (): K
     /**
      * change key, update at next tick
      */
@@ -117,6 +118,17 @@ export type IDBRecord<K extends IDBValidKey, V> = {
      */
     (currentKey: K, data: V): void
   }
+}
+type IDBRecordOptions = {
+  /**
+   * trigger on error
+   * @default console.error
+   */
+  onError?: (err: unknown) => void
+  /**
+   * enable LRU cache and set max size
+   */
+  maxCacheSize?: number
 }
 
 /**
@@ -128,22 +140,32 @@ export type IDBRecord<K extends IDBValidKey, V> = {
 export function $idbRecord<Key extends IDBValidKey, Value>(
   name: string,
   initialValue?: Value,
-  onError: (err: unknown) => void = console.error,
+  options: IDBRecordOptions = {},
 ): IDBRecord<Key, Value> {
+  const { maxCacheSize, onError = console.error } = options
   const idb = createStore(`$idb-${name}`, 'record')
   const [val, setVal] = createSignal<Value | undefined>(
     initialValue,
     { name: `$idb-record-${name}` },
   )
   let currentKey: IDBValidKey
+  const cache = maxCacheSize ? lru<Value>(maxCacheSize) : null
+  onCleanup(() => cache?.clear())
   const handleValue = async (key: IDBValidKey, data?: Value) => {
     try {
       if (data) {
         await set(key, data, idb)
         return
       }
+      if (cache?.has(key)) {
+        setVal(cache.get(key) as any)
+        return
+      }
       const _data = await get<Value>(key, idb)
-      _data !== undefined && setVal(_data as any)
+      if (_data !== undefined) {
+        cache?.set(key, _data)
+        setVal(_data as any)
+      }
     } catch (err) {
       onError(err)
     }
