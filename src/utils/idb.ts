@@ -4,17 +4,13 @@ import type { UseStore } from 'idb-keyval'
 import { createStore, del, get, set } from 'idb-keyval'
 
 /**
- * alias for idb-keyval {@link createStore}
- */
-export const useIDBStore = createStore
-/**
  * type of {@link $idb}
  */
 export type IDBObject<T> = {
   (): T
   /**
    * setter, update at next tick
-    */
+   */
   $: Setter<T>
   /**
    * delete item, set value to `null`
@@ -36,7 +32,7 @@ export type IDBOptions = {
   /**
    * custom {@link UseStore}
    */
-  customStore?: UseStore
+  customStore?: UseStore | Parameters<typeof createStore>
 }
 
 /**
@@ -62,6 +58,10 @@ export function $idb<T>(
     name,
     ..._options
   } = options
+  const _store = Array.isArray(customStore)
+    ? createStore(...customStore)
+    : customStore
+
   const [val, setVal] = createSignal(defaultValue, {
     name: name || `$idb-${key}`,
     ..._options,
@@ -72,14 +72,14 @@ export function $idb<T>(
       return
     }
     try {
-      const existValue = await get(key, customStore)
+      const existValue = await get(key, _store)
       if (existValue !== undefined) {
         setVal(existValue)
         return
       }
       defaultValue !== undefined
         && writeDefaults
-        && await set(key, defaultValue, customStore)
+        && await set(key, defaultValue, _store)
     } catch (err) {
       onError(err)
     }
@@ -88,7 +88,7 @@ export function $idb<T>(
 
   createComputed(on(
     val as any,
-    (data: T) => data !== null && set(key, data, customStore).catch(onError),
+    (data: T) => data !== null && set(key, data, _store).catch(onError),
     { defer: !writeDefaults },
   ))
 
