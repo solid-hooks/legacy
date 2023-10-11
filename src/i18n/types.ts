@@ -55,7 +55,7 @@ export type I18nOptions<
    *     custom: n => n + '.00'
    *   },
    * }
-  */
+   */
   numberFormats?: NumberFormats<Locale, NumberKey>
   /**
    * date formatters config,

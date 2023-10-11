@@ -34,12 +34,10 @@ type MergeParams = {
 
 function mergeProviders({ app, props = {}, providers }: MergeParams) {
   return providers.reduce(
-    (application, { provider, opts = {} }) =>
-      () => createComponent(provider, {
+    (application, { provider, opts = {} }) => () =>
+      createComponent(provider, {
         ...opts,
-        get children() {
-          return application()
-        },
+        get children() { return application() },
       }),
     () => createComponent(app, props),
   )

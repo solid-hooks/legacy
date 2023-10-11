@@ -6,12 +6,12 @@ type Capitalize<S extends string> = S extends `${infer F}${infer R}` ? `${Upperc
 export type ContextObject<
   N extends string,
   T,
-  Props extends Record<string, unknown> | undefined,
+  Props extends Record<string, unknown> = {},
   P extends string = Capitalize<N>,
 > = {
   [K in `${P}Provider`]: (props: FlowProps<Props>) => JSXElement
 } & {
-  [K in `use${P}`]: () => T
+  [K in `use${P}Context`]: () => T
 }
 
 /**
@@ -21,17 +21,17 @@ export type ContextObject<
  * @param name context name
  * @param fn setup context function
  */
-export function $ctx<T, N extends string>(
+export function defineContext<T, N extends string>(
   name: N,
   fn: () => T,
-): ContextObject<N, T, undefined>
+): ContextObject<N, T>
 /**
  * object style {@link https://github.com/solidjs-community/solid-primitives/tree/main/packages/context#createcontextprovider createContextProvider}
  *
  * @param name context name
  * @param fn setup context function
  */
-export function $ctx<T, Props extends Record<string, unknown>, N extends string>(
+export function defineContext<T, Props extends Record<string, unknown>, N extends string>(
   name: N,
   fn: (props: Props) => T,
 ): ContextObject<N, T | undefined, Props>
@@ -42,12 +42,12 @@ export function $ctx<T, Props extends Record<string, unknown>, N extends string>
  * @param fn setup context function
  * @param defaultValue fallback value when context is not provided
  */
-export function $ctx<T, Props extends Record<string, unknown>, N extends string>(
+export function defineContext<T, Props extends Record<string, unknown>, N extends string>(
   name: N,
   fn: (props: Props) => T,
   defaultValue: T,
 ): ContextObject<N, T, Props>
-export function $ctx<T, Props extends Record<string, unknown>, N extends string>(
+export function defineContext<T, Props extends Record<string, unknown>, N extends string>(
   name: N,
   fn: (props?: Props) => T,
   defaultValue?: T,
@@ -62,7 +62,7 @@ export function $ctx<T, Props extends Record<string, unknown>, N extends string>
         return props.children
       },
     }),
-    [`use${_name}`]: () => {
+    [`use${_name}Context`]: () => {
       const _ctx = useContext(ctx)
       if (DEV && !defaultValue && _ctx === undefined) {
         throw new Error(`[${tag}]: provider is not set!`)

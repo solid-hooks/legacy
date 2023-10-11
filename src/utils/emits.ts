@@ -1,6 +1,6 @@
 import type { ParseFunction, ParseParameters, StringKeys } from '@subframe7536/type-utils'
-import { type SignalOptions, createEffect, createSignal, on } from 'solid-js'
-import type { SignalObject } from '../signal'
+import { type SignalOptions, createEffect, on } from 'solid-js'
+import { $, type SignalObject } from '../signal'
 
 type FilterKeys<T> = keyof T extends `$${infer EventName}`
   ? EventName
@@ -25,17 +25,17 @@ export type EmitProps<
 }>
 
 /**
- * type for {@link $emits}
+ * type for {@link defineEmits}
  */
-export type EmitsObject<PropsWithFn, Events extends Record<string, any>> = {
+export type EmitsObject<PropsWithEmits, Emits extends Record<string, any>> = {
   /**
    * trigger event
    * @param event trigger event
    * @param ...data event data
    */
-  emit: <K extends FilterKeys<PropsWithFn>>(
+  emit: <K extends FilterKeys<PropsWithEmits>>(
     event: K,
-    ...data: ParseParameters<Required<Events>[K]>
+    ...data: ParseParameters<Required<Emits>[K]>
   ) => void
   /**
    * create a {@link SignalObject} that trigger event after value is set
@@ -43,9 +43,9 @@ export type EmitsObject<PropsWithFn, Events extends Record<string, any>> = {
    * @param value initial value
    * @param options optoins
    */
-  useEmits: <
-    K extends FilterOneParameterEvents<Events, FilterKeys<PropsWithFn>>,
-    V = ParseParameters<Required<Events>[K]>[0],
+  $emit: <
+    K extends FilterOneParameterEvents<Emits, FilterKeys<PropsWithEmits>>,
+    V = ParseParameters<Required<Emits>[K]>[0],
   >(
     event: K,
     value: V,
@@ -56,19 +56,19 @@ export type EmitsObject<PropsWithFn, Events extends Record<string, any>> = {
 /**
  * util for child component event emitting, auto handle optional prop
  * @param props conponents props
- * @see https://github.com/subframe7536/solid-dollar#emits
+ * @see https://github.com/subframe7536/solid-dollar#useEmits
  */
-export function $emits<
-  Events extends Record<string, any>,
-  PropsWithEmitFn = EmitProps<Events>,
->(props: PropsWithEmitFn): EmitsObject<PropsWithEmitFn, Events> {
+export function defineEmits<
+  Emits extends Record<string, any>,
+  PropsWithEmits = EmitProps<Emits>,
+>(props: PropsWithEmits): EmitsObject<PropsWithEmits, Emits> {
   return {
     emit: (e, ...args) => {
       // @ts-expect-error access $... and call it
       props[`$${e}`]?.(...args)
     },
-    useEmits: (e, value, options) => {
-      const [val, setVal] = createSignal(value, {
+    $emit: (e, value, options) => {
+      const val = $(value, {
         name: `$emits-${e}`,
         ...options,
       })
@@ -76,9 +76,7 @@ export function $emits<
         // @ts-expect-error emit
         props[`$${e}`]?.(value)
       }, { defer: true }))
-      // @ts-expect-error assign
-      val.$ = setVal
-      return val as any
+      return val
     },
   }
 }

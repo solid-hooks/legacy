@@ -47,7 +47,7 @@ export function $state<
  * @param name state name
  * @param setup state setup function
  * @param _log whether to enable log when dev, default is `false`
-*/
+ */
 export function $state<
   State extends object = Record<string, any>,
 >(

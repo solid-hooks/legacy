@@ -9,7 +9,7 @@ export const deepClone = klona
 
 /**
  * @internal
-*/
+ */
 export function createActions<T extends ActionObject>(functions?: T): T {
   if (!functions) {
     return {} as T

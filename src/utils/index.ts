@@ -1,17 +1,17 @@
 export { $model } from './model'
 export type { ModelDirective } from './model'
 
-export { $ctx } from './ctx'
+export { defineContext } from './ctx'
 export type { ContextObject } from './ctx'
 
 export { $tick } from './tick'
 
-export { $idb, $idbRecord, useIDBStore } from './idb'
+export { $idb, $idbRecord } from './idb'
 export type { IDBObject, IDBOptions, IDBRecord, IDBRecordOptions } from './idb'
 
 export { $app } from './app'
 
-export { $emits } from './emits'
+export { defineEmits } from './emits'
 export type { EmitProps, EmitsObject } from './emits'
 
 export { $ref } from './ref'

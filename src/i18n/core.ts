@@ -27,7 +27,7 @@ export function $i18n<
   Message extends MessageType<Locale> = any,
   NumberKey extends string = string,
   DatetimeKey extends string = string,
-  >(
+>(
   options: I18nOptions<Locale, Message, NumberKey, DatetimeKey>,
 ): () => I18nObject<Locale, Message, NumberKey, DatetimeKey> {
   let build = () => createI18n(options)

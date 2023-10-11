@@ -25,5 +25,5 @@ export const $listenEvent = createEventListener
  * listen events map on reactive `EventTarget`
  *
  * alias for {@link createEventListenerMap}
-*/
+ */
 export const $listenEventMap = createEventListenerMap
