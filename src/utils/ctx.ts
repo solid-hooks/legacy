@@ -20,6 +20,7 @@ export type ContextObject<
  * if use context outside provider, throw `Error` when DEV
  * @param name context name
  * @param fn setup context function
+ * @see https://github.com/subframe7536/solid-dollar#defineContext
  */
 export function defineContext<T, N extends string>(
   name: N,
@@ -30,6 +31,7 @@ export function defineContext<T, N extends string>(
  *
  * @param name context name
  * @param fn setup context function
+ * @see https://github.com/subframe7536/solid-dollar#defineContext
  */
 export function defineContext<T, Props extends Record<string, unknown>, N extends string>(
   name: N,
@@ -41,6 +43,7 @@ export function defineContext<T, Props extends Record<string, unknown>, N extend
  * @param name context name
  * @param fn setup context function
  * @param defaultValue fallback value when context is not provided
+ * @see https://github.com/subframe7536/solid-dollar#defineContext
  */
 export function defineContext<T, Props extends Record<string, unknown>, N extends string>(
   name: N,

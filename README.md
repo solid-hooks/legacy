@@ -142,16 +142,21 @@ defer update notification until browser idle, alias for `createDeferred`
 object wrapper for `createSelector`
 
 ```tsx
+import { For } from 'solid-js'
 import { $selector } from 'solid-dollar'
 
 const activeId = $selector(0)
 activeId.$(1)
 
-<For each={list()}>
-  {item => <li classList={{ active: activeId.$bind(item.id) }}>
-    {item.name}
-   </li>}
-</For>
+return (
+  <For each={list()}>
+    {item => (
+      <li classList={{ active: activeId.$bind(item.id) }}>
+        {item.name}
+      </li>
+    )}
+  </For>
+)
 ```
 
 ---
@@ -214,7 +219,7 @@ state.$patch({
 
 // watch
 const { pause, resume, isWatching } = state.$subscribe(
-  (state) => console.log(state),
+  state => console.log(state),
   { defer: true },
 )
 
@@ -267,6 +272,7 @@ $t('plural', { var: 5 }) // at a few days ago
 #### example
 
 ```tsx
+import { For } from 'solid-js'
 import { $i18n, I18nProvider } from 'solid-dollar/i18n'
 
 const en = { t: '1', deep: { t: '{name}' }, plural: '{day}' }
@@ -298,21 +304,24 @@ export const useI18n = $i18n({
 // usage
 const { $t, $d, $n, availiableLocales, locale } = useI18n()
 
-<I18nProvider>{/* optional */}
-  <select onChange={e => locale.$(e.target.value)}>
-    <For each={availiableLocales}>
-      {l => <option selected={l === locale()}>{l}</option>}
-    </For>
-  </select>
-  <div>{$t('t')}</div>
-  <br />
-  <div>{$t('t.deep', { name: 'test' })}</div>
-  <div>{$t('plural', { day: 1 })}</div>
-  <div>{$d(new Date())}</div>
-  <div>{$d(new Date(), 'long')}</div>
-  <div>{$d(new Date(), 'long', 'en')}</div>
-  <div>{$n(100, 'currency')}</div>
-</I18nProvider>
+return (
+
+  <I18nProvider>{/* optional */}
+    <select onChange={e => locale.$(e.target.value)}>
+      <For each={availiableLocales}>
+        {l => <option selected={l === locale()}>{l}</option>}
+      </For>
+    </select>
+    <div>{$t('t')}</div>
+    <br />
+    <div>{$t('t.deep', { name: 'test' })}</div>
+    <div>{$t('plural', { day: 1 })}</div>
+    <div>{$d(new Date())}</div>
+    <div>{$d(new Date(), 'long')}</div>
+    <div>{$d(new Date(), 'long', 'en')}</div>
+    <div>{$n(100, 'currency')}</div>
+  </I18nProvider>
+)
 ```
 
 load on demand:
@@ -348,12 +357,12 @@ see more at [`dev/`](/dev) and [`test`](/test/i18n.test.ts)
 
 ## `solid-dollar/utils`
 
-### `$emits`
+### `defineEmits`
 
 util for child component event emitting, auto handle optional prop
 
 ```tsx
-import { $emits } from 'solid-dollar/utils'
+import { defineEmits } from 'solid-dollar/utils'
 
 type Emits = {
   var: number
@@ -364,29 +373,34 @@ type Emits = {
 type BaseProps = { num: number }
 
 function Child(props: EmitProps<Emits, BaseProps>) {
-  const { emit, useEmits } = $emits<Emits>(props)
+  const { emit, $emit } = defineEmits<Emits>(props)
 
-  // auto emit after setter, inspird by `defineModel` in Vue
-  const var = useEmits('var', 1)
+  // auto emit after value changing, inspird by `defineModel` in Vue
+  const variable = $emit('var', 1)
   const handleClick = () => {
-    var.$(v => v + 1)
+    variable.$(v => v + 1)
 
     // manully emit
     emit('update', `emit from child: ${props.num}`, 'second')
     emit('optional', { test: 1 })
   }
-  return (<div>
-    child:
-    {props.num}
-    <button onClick={handleClick}>+</button>
-  </div>)
+  return (
+    <div>
+      child:
+      {props.num}
+      <button onClick={handleClick}>+</button>
+    </div>
+  )
 }
 function Father() {
   const count = $('init')
-  return <Child num={count()}
-    $update={console.log}
-    $var={e => console.log('useEmits:', e)}
-  />
+  return (
+    <Child
+      num={count()}
+      $update={console.log}
+      $var={e => console.log('useEmits:', e)}
+    />
+  )
 }
 ```
 
@@ -398,7 +412,8 @@ simple two-way binding directive for `<input>`, `<textare>`, `<select>`
 import { $ } from 'solid-dollar'
 
 const msg = $('')
-<input type="text" use:$model={msg}>
+
+return <input type="text" use:$model={msg} />
 ```
 
 #### typescript support
@@ -430,7 +445,7 @@ import { $autoImport } from 'solid-dollar/plugin'
 export default defineConfig({
   plugins: [
     AutoImport({
-      import: [...$autoImport(true/*directive only*/)],
+      import: [...$autoImport(true/* directive only */)],
     }),
   ],
 })
@@ -502,14 +517,25 @@ record.$() // get current key
 console.log(record()) // get current value
 ```
 
-### `$ctx`
+### `defineContext`
 
 object style [createContextProvider](https://github.com/solidjs-community/solid-primitives/tree/main/packages/context#createcontextprovider)
 
-```ts
-import { $ctx } from 'solid-dollar/utils'
+if default value is not defined and use context outside provider, throw `Error` when DEV
 
-const { useDate, DateProvider } = $ctx('date', () => new Date())
+```ts
+import { defineContext } from 'solid-dollar/utils'
+
+const { useDateContext, DateProvider } = defineContext(
+  'date',
+  () => new Date()
+)
+
+const { useDateContext, DateProvider } = defineContext(
+  'date',
+  (args: { date: string }) => new Date(args.date),
+  { date: '2000-01-01' }
+)
 ```
 
 ### `$signal`
@@ -517,10 +543,10 @@ const { useDate, DateProvider } = $ctx('date', () => new Date())
 signal object with preSet and postSet hooks
 
 ```ts
-import { $signal, noReturn, NORETURN } from 'solid-dollar/utils'
+import { $signal, NORETURN, noReturn } from 'solid-dollar/utils'
 
 const hooks = $('hello', {
-  preSet: v => v + ' hooks', // change the set value
+  preSet: v => `${v} hooks`, // change the set value
   postSet: newV => console.log(newV)
 })
 // hello hooks
@@ -528,7 +554,7 @@ console.log(hooks.$source) // orignal Signal Array: [hooks, setHooks]
 
 const logPreSetHooks = $(1, {
   // preSet: v => noReturn(() => console.log(v))
-  preSet: v => {
+  preSet: (v) => {
     console.log(v)
     return NORETURN
   }
