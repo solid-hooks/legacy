@@ -1,6 +1,6 @@
 import { $, $watch } from '../../src'
 import type { EmitProps } from '../../src/utils'
-import { $ref, defineContext, defineEmits } from '../../src/utils'
+import { $reactive, defineContext, defineEmits } from '../../src/utils'
 
 const { useTestContext, TestProvider } = defineContext('test', (_props?: { test: number }) => new Date())
 type Emits = {
@@ -30,7 +30,7 @@ function Child(props: EmitProps<Emits, { num: number }>) {
 
 export default function Basic() {
   const count = $(1)
-  const refObj = $ref(FOO, 'bar')
+  const refObj = $reactive(FOO, 'bar')
   $watch(count, (currentCount, oldCount) => {
     console.log('watch current value:', currentCount)
     console.log('watch old value:', oldCount)

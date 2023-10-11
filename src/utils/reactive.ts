@@ -4,20 +4,21 @@ import { createSignal } from 'solid-js'
 import type { SignalObject } from '../signal'
 
 /**
- * type of {@link $ref}
+ * type of {@link $reactive}
  */
-export type RefObject<T> = SignalObject<T>
+export type ReactiveObject<T> = SignalObject<T>
 /**
  * `$()` like wrapper to make plain object props reactive
  * @param data source object
  * @param path object access path, support array access
  * @param options options
+ * @see https://github.com/subframe7536/solid-dollar#reactive
  */
-export function $ref<T extends object, P extends Path<T>>(
+export function $reactive<T extends object, P extends Path<T>>(
   data: T,
   path: P,
   options: SignalOptions<PathValue<T, P>> = {},
-): RefObject<PathValue<T, P>> {
+): ReactiveObject<PathValue<T, P>> {
   const { equals, internal, name } = options
   const [track, trigger] = createSignal(undefined, {
     equals: false,
@@ -31,7 +32,7 @@ export function $ref<T extends object, P extends Path<T>>(
   const result = (() => {
     track()
     return get()
-  }) as RefObject<PathValue<T, P>>
+  }) as ReactiveObject<PathValue<T, P>>
   result.$ = (arg?) => {
     const _ = typeof arg === 'function' ? (arg as any)(get()) : arg
     const _equals = typeof equals === 'function'

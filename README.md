@@ -561,12 +561,12 @@ const logPreSetHooks = $(1, {
 })
 ```
 
-### `$ref`
+### `$reactive`
 
 `$()` like wrapper to make plain object props reactive
 
 ```ts
-import { $ref } from 'solid-dollar/utils'
+import { $reactive } from 'solid-dollar/utils'
 
 const value = {
   deep: {
@@ -574,7 +574,7 @@ const value = {
   },
 }
 
-const bar = $ref(value, 'deep.data')
+const bar = $reactive(value, 'deep.data')
 
 bar() // 'str'
 bar.$('updated') // 'update'

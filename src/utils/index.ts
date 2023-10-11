@@ -14,8 +14,8 @@ export { $app } from './app'
 export { defineEmits } from './emits'
 export type { EmitProps, EmitsObject } from './emits'
 
-export { $ref } from './ref'
-export type { RefObject } from './ref'
+export { $reactive } from './reactive'
+export type { ReactiveObject } from './reactive'
 
 export { $listenDocument, $listenWindow, $listenEvent, $listenEventMap } from './event-listener'
 
