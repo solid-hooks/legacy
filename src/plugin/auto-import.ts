@@ -115,7 +115,7 @@ export const $autoImport: ImportFn = directiveOnly => directiveOnly ? [
       '$idbRecord',
       '$app',
       'defineEmits',
-      '$ref',
+      '$reactive',
       '$listenDocument',
       '$listenWindow',
       '$listenEvent',
@@ -136,7 +136,7 @@ export const $autoImport: ImportFn = directiveOnly => directiveOnly ? [
       'IDBRecordOptions',
       'EmitProps',
       'EmitsObject',
-      'RefObject',
+      'ReactiveObject',
       'SignalHooksObject',
       'SignalHooksObjectOptions'
     ],

@@ -1,5 +1,5 @@
 import { $state } from '../src/state'
-import { $ } from '../src'
+import { $signal } from '../src/utils'
 
 export const useInfoState = $state('info', {
   $init: {
@@ -32,7 +32,7 @@ export const useInfoState = $state('info', {
 }, true)
 
 export const useCustomState = $state('custom', (name, log) => {
-  return $(1, {
+  return $signal(1, {
     postSet(newValue) {
       log('$state with custom function:', { name, newValue })
     },

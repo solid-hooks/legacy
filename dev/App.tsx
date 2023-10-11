@@ -10,7 +10,7 @@ type Prop = ParentProps<{ title: string }>
 
 function Card(props: Prop) {
   return (
-    <div class='card'>
+    <div class="card">
       <h4>{props.title}</h4>
       {props.children}
     </div>
@@ -26,7 +26,7 @@ function App() {
     'IndexedDB': <ShowIDB />,
   }
   return (
-    <div class='flex'>
+    <div class="flex">
       <For each={Object.entries(components)}>
         {([title, component]) => <Card title={title}>{component}</Card>}
       </For>
