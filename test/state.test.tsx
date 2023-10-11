@@ -1,12 +1,12 @@
 import { fireEvent, render } from '@solidjs/testing-library'
-import { describe, expect, test, vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { createRoot } from 'solid-js'
 import { $memo } from '../src'
 import { $state } from '../src/state'
 import { $tick } from '../src/utils'
 
 describe('test state', () => {
-  test('$state()', async () => {
+  it('$state()', async () => {
     const callback = vi.fn()
     const deepCallback = vi.fn()
     const cacheCount = vi.fn()
@@ -76,7 +76,7 @@ describe('test state', () => {
     await $tick()
     expect(callback).toHaveBeenCalledTimes(4)
   })
-  test('should successfully use nest $state()', async () => {
+  it('should successfully use nest $state()', async () => {
     const initialState = { count: 0 }
     const useState = $state('test-nest', {
       $init: initialState,
@@ -127,7 +127,7 @@ describe('test state', () => {
     unmount()
   })
 
-  test('should persist state to storage', async () => {
+  it('should persist state to storage', async () => {
     const initialState = { count: 0 }
     const kv = new Map()
     const useState = $state('test-persist', {
@@ -187,7 +187,7 @@ describe('test state', () => {
     expect(kv.get(key)).toBe('{"count":2}')
     expect(newP.innerHTML).toBe('2')
   })
-  test('should persist state to storage by paths', async () => {
+  it('should persist state to storage by paths', async () => {
     const initialState = {
       persist: { count: 0 },
       nonePersist: ['test', 'test1'],

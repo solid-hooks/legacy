@@ -1,8 +1,8 @@
 import { $, $watch } from '../../src'
 import type { EmitProps } from '../../src/utils'
-import { $ctx, $emits, $ref } from '../../src/utils'
+import { $ref, defineContext, defineEmits } from '../../src/utils'
 
-const { useTest, TestProvider } = $ctx('test', () => new Date())
+const { useTestContext, TestProvider } = defineContext('test', (_props?: { test: number }) => new Date())
 type Emits = {
   var: number
   update: [d1: string, d2?: string, d3?: string]
@@ -12,19 +12,20 @@ const FOO = {
   bar: 1,
 }
 function Child(props: EmitProps<Emits, { num: number }>) {
-  const { emit, useEmits } = $emits<Emits>(props)
-  const v = useEmits('var', 1)
+  const { emit, $emit } = defineEmits<Emits>(props)
+  const v = $emit('var', 1)
   const handleClick = () => {
     v.$(v() + 1)
     emit('update', `emit from child: ${props.num}`, '[second param]')
     emit('optional', { test: 1 })
   }
-  console.log('$ctx:', useTest())
-  return (<div>
-    child:
-    {props.num}
-    <button onClick={handleClick}>+</button>
-  </div>)
+  console.log('$ctx:', useTestContext())
+  return (
+    <div>
+      child: {props.num}
+      <button onClick={handleClick}>+</button>
+    </div>
+  )
 }
 
 export default function Basic() {
@@ -45,9 +46,10 @@ export default function Basic() {
       <br />
       object ref: {refObj()}
       <div>{count()}</div>
-      <Child num={count()}
+      <Child
+        num={count()}
         $update={console.log}
-        $var={e => console.log('useEmits:', e)}
+        $var={e => console.log('emit on $var:', e)}
       />
     </TestProvider>
   )

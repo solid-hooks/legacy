@@ -1,9 +1,9 @@
 import { createEffect, createRoot } from 'solid-js'
-import { describe, expect, test, vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { $ref } from '../src/utils'
 
 describe('test $ref', () => {
-  test('basic', () => {
+  it('basic', () => {
     const value = {
       data: 1,
     }
@@ -13,7 +13,7 @@ describe('test $ref', () => {
     expect(value.data).toBe(4)
     expect(bar()).toBe(4)
   })
-  test('deep prop', () => {
+  it('deep prop', () => {
     const value = {
       deep: {
         data: 'str',
@@ -26,7 +26,7 @@ describe('test $ref', () => {
     expect(value.deep.data).toBe(updatedString)
     expect(bar()).toBe(updatedString)
   })
-  test('effect', async () => {
+  it('effect', async () => {
     const value = {
       data: 1,
     }

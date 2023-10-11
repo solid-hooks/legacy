@@ -103,11 +103,11 @@
   },
   "scripts": {
     "dev": "vite serve dev --open",
-    "build": "node scripts/update-auto-import.js && eslint src/plugin/auto-import.ts --fix && tsup",
+    "build": "node scripts/update-auto-import.js && tsup",
     "test": "vitest --run",
     "release": "pnpm test && pnpm lint && pnpm build && bumpp --all && npm publish",
     "lint": "pnpm lint:code && pnpm lint:types",
-    "lint:code": "eslint --ignore-path .gitignore --max-warnings 0 src/**/*.{js,ts,tsx,jsx} --fix",
+    "lint:code": "eslint --max-warnings 0 src/**/*.{js,ts,tsx,jsx} --fix",
     "lint:types": "tsc --noEmit",
     "format": "eslint . --fix"
   },
@@ -115,16 +115,16 @@
     "solid-js": "^1.8"
   },
   "dependencies": {
-    "idb-keyval": "^6.2.1",
     "@solid-primitives/deep": "^0.2.4",
     "@solid-primitives/event-listener": "^2.3.0",
     "@subframe7536/type-utils": "^0.1.1",
+    "idb-keyval": "^6.2.1",
     "klona": "^2.0.6",
     "object-standard-path": "^0.3.0"
   },
   "devDependencies": {
     "@solidjs/testing-library": "^0.8.4",
-    "@subframe7536/eslint-config": "^0.2.9",
+    "@subframe7536/eslint-config": "^0.3.4",
     "bumpp": "^9.2.0",
     "eslint": "^8.51.0",
     "idb-keyval": "^6.2.1",

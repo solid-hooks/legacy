@@ -1,9 +1,9 @@
-import { describe, expect, test } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { $resource } from '../src'
 import { $tick } from '../src/utils'
 
 describe('$resource', () => {
-  test('returns a resource object with mutate and refetch functions', async () => {
+  it('returns a resource object with mutate and refetch functions', async () => {
     const fetcher = (source: string) => Promise.resolve(`${source} data`)
     const obj = $resource('source', fetcher)
     expect(obj()).toBe(undefined)

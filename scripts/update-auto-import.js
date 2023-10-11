@@ -75,7 +75,7 @@ const replacedCode = code.replace(/export const \$autoImport: ImportFn = [\s\S]*
 
 writeFileSync(
   'src/plugin/auto-import.ts',
-  `${replacedCode}export const \$autoImport: ImportFn = d => d ? ${directiveOnly} : ${imports}`,
+  `${replacedCode}export const \$autoImport: ImportFn = directiveOnly => directiveOnly ? ${directiveOnly} : ${imports}`.replace(/"/g, '\''),
 )
 
 console.log('update $autoImport')

@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 import { $i18n } from '../src/i18n'
 import { $tick } from '../src/utils'
 
@@ -53,7 +53,7 @@ describe('i18n', () => {
     await $tick()
   }
 
-  test('translation', async () => {
+  it('translation', async () => {
     expect(availiableLocales).toStrictEqual(['en', 'zh'])
     expect($t('text')).toBe('text')
     expect($t('nest.text')).toBe('nest')
@@ -63,7 +63,7 @@ describe('i18n', () => {
     expect($t('text')).toBe('文本')
     expect($t('nest.text')).toBe('嵌套')
   })
-  test('variable', async () => {
+  it('variable', async () => {
     expect($t('var', { name: 'test', num: 1 })).toBe('welcome test, last login: one day ago')
     expect($t('var', { name: 'test', num: 2 })).toBe('welcome test, last login: a few days ago')
     expect($t('var', { name: 'test', num: 3 })).toBe('welcome test, last login: a few days ago')
@@ -76,7 +76,7 @@ describe('i18n', () => {
     expect($t('var', { name: 'test', num: 0 })).toBe('欢迎 test, 上次登录: 0 天前')
     expect($t('var', { name: 'test', num: 4 })).toBe('欢迎 test, 上次登录: 4 天前')
   })
-  test('number', async () => {
+  it('number', async () => {
     expect($n(1, 'currency')).toBe('$1.00')
 
     await changeLocale()
@@ -84,7 +84,7 @@ describe('i18n', () => {
     expect($n(1, 'currency')).toBe('¥1.00')
   })
 
-  test('date', async () => {
+  it('date', async () => {
     const date = new Date('2000-01-01')
     expect($d(date, 'short')).toBe('1/1/00')
     expect($d(date, 'long')).toBe('January 1, 2000')
