@@ -88,7 +88,6 @@ export function $signal<T>(value?: T, {
 
   const [val, set] = (value && isSignal<T>(value))
     ? value
-    // eslint-disable-next-line solid/reactivity
     : createSignal(defer ? value as T : _pre(value as T), options)
 
   const _set = (v: any) => set(_pre(

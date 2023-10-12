@@ -51,10 +51,10 @@ export function $resource(...args: any[]) {
   // @ts-expect-error args
   const [data, { mutate, refetch }] = createResource(...args)
   // @ts-expect-error assign
-  // eslint-disable-next-line solid/reactivity
+
   data.$mutate = mutate
   // @ts-expect-error assign
-  // eslint-disable-next-line solid/reactivity
+
   data.$refetch = refetch
   return data as any
 }

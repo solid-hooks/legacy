@@ -27,7 +27,6 @@ export function $memo<T>(
   value?: T,
   options?: MemoOptions<T>,
 ): MemoObject<T> {
-  // eslint-disable-next-line solid/reactivity
   return createMemo(
     typeof data === 'function'
       ? data as EffectFunction<T | undefined, T>

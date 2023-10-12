@@ -28,7 +28,6 @@ export function $reactive<T extends object, P extends Path<T>>(
   const get = () => pathGet(data, path)
   const set = (value: any) => pathSet(data, path, value)
 
-  // eslint-disable-next-line solid/reactivity
   const result = (() => {
     track()
     return get()

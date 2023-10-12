@@ -210,7 +210,6 @@ function setupObject<
     for (const [key, getter] of Object.entries($getters?.(_store()) || {})) {
       // @ts-expect-error assign
       getters[key] = getter.length === 0
-        // eslint-disable-next-line solid/reactivity
         ? createMemo(getter, undefined, { name: `${stateName}-${getter.name}` })
         : getter
     }

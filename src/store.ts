@@ -35,7 +35,6 @@ export function $store<T extends object>(
 ): StoreObject<T> {
   const [store, setStore] = Array.isArray(data)
     ? data
-    // eslint-disable-next-line solid/reactivity
     : createStore<T>(data, { name })
   const result = () => store
   result.$ = setStore

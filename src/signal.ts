@@ -39,7 +39,6 @@ export function $<T>(value: T, options?: SignalOptions<T>): SignalObject<T>
 export function $<T>(value?: T, options: SignalOptions<T> = {}) {
   const [val, set] = isSignal<T>(value)
     ? value
-    // eslint-disable-next-line solid/reactivity
     : createSignal(value as T, options)
 
   // @ts-expect-error assign

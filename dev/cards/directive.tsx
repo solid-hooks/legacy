@@ -9,7 +9,7 @@ export default function ShowDirective() {
     <>
       <input type="text" use:$model={val} />
       <br />
-      {val()}
+      test: {val()}
     </>
   )
 }

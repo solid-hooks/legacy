@@ -14,7 +14,6 @@ describe('test signal', () => {
     expect(bar()).toBe(4)
   })
   it('$(createSignal(string))', () => {
-    // eslint-disable-next-line solid/reactivity
     const x = $(createSignal('str'))
     expect(x()).toBe('str')
     expect(x.$('test modify')).toBe('test modify')

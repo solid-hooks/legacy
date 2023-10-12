@@ -20,6 +20,7 @@ export default function ShowI18n() {
       <div>{`${$t('nest[0].description')}:`}</div>
       <div>{$t('plural', { name: 'test', num: ~~(info().test % 8) })}</div>
       <br />
+      Date:
       <div>{$d(new Date(), 'custom')}</div>
       <div>{$d(new Date(), 'long')}</div>
       <div>{$d(new Date(), 'long', 'en')}</div>
