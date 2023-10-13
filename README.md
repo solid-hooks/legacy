@@ -303,7 +303,7 @@ export const useI18n = $i18n({
   },
 })
 // usage
-const { $t, $d, $n, availiableLocales, locale } = useI18n()
+const { $t, $d, $n, availiableLocales, locale } = useI18n(/* optional scope */)
 
 return (
   <I18nProvider>{/* optional */}

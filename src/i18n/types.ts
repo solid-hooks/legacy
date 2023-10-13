@@ -150,7 +150,13 @@ export type I18nObjectReturn<
   NumberKey extends string = string,
   DatetimeKey extends string = string,
 > = {
+  /**
+   * get I18nObject
+   */
   (): I18nObject<Locale, Message, NumberKey, DatetimeKey>
+  /**
+   * get I18nObject with scope translator
+   */
   <Scope extends Path<Message[Locale]>>(
     scope: StringFallback<Scope>
   ): I18nObject<
