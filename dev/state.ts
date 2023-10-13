@@ -1,5 +1,7 @@
+import { getOwner } from 'solid-js'
 import { $state } from '../src/state'
 import { $signal } from '../src/utils'
+import { $memo } from '../src'
 
 export const useInfoState = $state('info', {
   $init: {
@@ -32,9 +34,13 @@ export const useInfoState = $state('info', {
 }, true)
 
 export const useCustomState = $state('custom', (name, log) => {
-  return $signal(1, {
+  const plain = $signal(1, {
     postSet(newValue) {
       log('$state with custom function:', { name, newValue })
     },
   })
+  const plus2 = $memo(plain() + 2)
+  const owner = getOwner()
+  console.log(owner)
+  return { plain, plus2 }
 })

@@ -139,7 +139,7 @@ function setupObject<
     const initialState = typeof $init === 'function' ? $init() : $init
     const _store = $store(
       Array.isArray(initialState) ? initialState : deepClone(initialState),
-      stateName,
+      { name: stateName },
     ) as StoreObject<State>
 
     const persistItems = (state: State, isInital = false) => {

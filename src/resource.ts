@@ -6,10 +6,15 @@ import type { SignalObject } from './signal'
 type AddPrefix$ToKeys<T extends Record<string, any>> = {
   [K in keyof T as `$${string & K}`]: T[K];
 }
-type BaseResourceObject<T, R, Is, Actions = ResourceActions<Is extends true ? T : (T | undefined), R>> =
-  (Is extends true ? InitializedResource<T> : Resource<T>) & AddPrefix$ToKeys<{
-    [K in keyof Actions]: Actions[K]
-  }>
+type BaseResourceObject<
+  T,
+  R,
+  Is,
+  Actions = ResourceActions<Is extends true ? T : (T | undefined), R>,
+> = (Is extends true ? InitializedResource<T> : Resource<T>)
+& AddPrefix$ToKeys<{
+  [K in keyof Actions]: Actions[K]
+}>
 /**
  * type of {@link $resource} with initalized value
  */
@@ -51,10 +56,8 @@ export function $resource(...args: any[]) {
   // @ts-expect-error args
   const [data, { mutate, refetch }] = createResource(...args)
   // @ts-expect-error assign
-
   data.$mutate = mutate
   // @ts-expect-error assign
-
   data.$refetch = refetch
   return data as any
 }

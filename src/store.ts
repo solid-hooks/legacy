@@ -1,6 +1,7 @@
 import { trackStore } from '@solid-primitives/deep'
 import type { SetStoreFunction, Store } from 'solid-js/store'
 import { createStore } from 'solid-js/store'
+import type { BaseOptions } from 'solid-js/types/reactive/signal'
 
 /**
  * type of {@link $store}
@@ -16,11 +17,11 @@ export type StoreObject<T extends object> = {
 /**
  * object wrapper for {@link createStore}
  * @param value initial value
- * @param name store name
+ * @param options base options
  */
 export function $store<T extends object>(
   value: T,
-  name?: string,
+  options?: BaseOptions,
 ): StoreObject<T>
 /**
  * object wrapper for {@link createStore}
@@ -31,11 +32,11 @@ export function $store<T extends object>(
 ): StoreObject<T>
 export function $store<T extends object>(
   data: any,
-  name?: string,
+  options?: BaseOptions,
 ): StoreObject<T> {
   const [store, setStore] = Array.isArray(data)
     ? data
-    : createStore<T>(data, { name })
+    : createStore<T>(data, options)
   const result = () => store
   result.$ = setStore
   return result

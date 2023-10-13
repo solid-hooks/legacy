@@ -3,7 +3,7 @@ import { useCustomState, useInfoState } from '../../state'
 
 export default function Content() {
   const info = useInfoState()
-  const plain = useCustomState()
+  const { plain } = useCustomState()
   const start = new Date().getTime()
   const { pause, resume, isWatching } = info.$subscribe(state => console.log('watching info:', state))
   info.$subscribe(state => console.log('deep path data:', state), { path: 'deep.data' })

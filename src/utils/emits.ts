@@ -69,7 +69,7 @@ export function defineEmits<
     },
     $emit: (e, value, options) => {
       const val = $(value, {
-        name: `$emits-${e}`,
+        name: `$emit-${e}`,
         ...options,
       })
       createEffect(on(val, (value) => {
