@@ -2,4 +2,4 @@ test: test
 asd: asd
 plural: 'welcome {name}, last login: {num}(1=one day|2-3,5=a few days|*=$ days) ago'
 nest:
-  - description: sync with global state
+  description: sync with global state

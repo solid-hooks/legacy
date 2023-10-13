@@ -7,17 +7,17 @@ describe('i18n', () => {
     text: 'text',
     var: 'welcome {name}, last login: {num}(1=one day|2-4,6=a few days|*=$ days) ago',
     nest: {
-      text: 'nest',
+      text: 'nest {value}',
     },
     useless: 'useless',
-  }
+  } as const
   const zh = {
     text: '文本',
     var: '欢迎 {name}, 上次登录: {num} 天前',
     nest: {
-      text: '嵌套',
+      text: '嵌套 {value}',
     },
-  }
+  } as const
   const useI18n = $i18n({
     message: { en, zh },
     defaultLocale: 'en',
@@ -43,7 +43,7 @@ describe('i18n', () => {
     },
   })
   const { availiableLocales, locale, $t, $d, $n } = useI18n()
-
+  const { $t: $scopeTranslate } = useI18n('nest')
   beforeEach(() => {
     locale.$('en')
   })
@@ -56,12 +56,12 @@ describe('i18n', () => {
   it('translation', async () => {
     expect(availiableLocales).toStrictEqual(['en', 'zh'])
     expect($t('text')).toBe('text')
-    expect($t('nest.text')).toBe('nest')
+    expect($scopeTranslate('text', { value: 1 })).toBe('nest 1')
 
     await changeLocale()
 
     expect($t('text')).toBe('文本')
-    expect($t('nest.text')).toBe('嵌套')
+    expect($t('nest.text', { value: 1 })).toBe('嵌套 1')
   })
   it('variable', async () => {
     expect($t('var', { name: 'test', num: 1 })).toBe('welcome test, last login: one day ago')

@@ -275,8 +275,9 @@ $t('plural', { var: 5 }) // at a few days ago
 import { For } from 'solid-js'
 import { $i18n, I18nProvider } from 'solid-dollar/i18n'
 
-const en = { t: '1', deep: { t: '{name}' }, plural: '{day}' }
-const zh = { t: '2', deep: { t: '{name}' }, plural: '{day}(0=zero|1=one)' }
+// use `as const` to make parameters typesafe
+const zh = { t: '1', deep: { t: '{name}' }, plural: '{day}' } as const
+const en = { t: '2', deep: { t: '{name}' }, plural: '{day}(0=zero|1=one)' } as const
 export const useI18n = $i18n({
   message: { 'en': en, 'zh-CN': zh },
   defaultLocale: 'en',
@@ -305,7 +306,6 @@ export const useI18n = $i18n({
 const { $t, $d, $n, availiableLocales, locale } = useI18n()
 
 return (
-
   <I18nProvider>{/* optional */}
     <select onChange={e => locale.$(e.target.value)}>
       <For each={availiableLocales}>
@@ -314,6 +314,7 @@ return (
     </select>
     <div>{$t('t')}</div>
     <br />
+    {/* typesafe parameters */}
     <div>{$t('t.deep', { name: 'test' })}</div>
     <div>{$t('plural', { day: 1 })}</div>
     <div>{$d(new Date())}</div>

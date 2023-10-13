@@ -2,4 +2,4 @@ test: 测试
 asd: 阿松大
 plural: '欢迎 {name}，上次登陆: {num}(0=今天|*=$ 天前)'
 nest:
-  - description: 和 global state 同步
+  description: 和 global state 同步

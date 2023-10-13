@@ -2,8 +2,8 @@ import type { FlowProps, Owner } from 'solid-js'
 import { DEV, createComponent, createContext, createEffect, createRoot, createSignal, getOwner, on, runWithOwner, useContext } from 'solid-js'
 import { makeEventListener } from '@solid-primitives/event-listener'
 import type { SignalObject } from '../signal'
-import type { I18nObject, I18nOptions, MessageType } from './types'
-import { parseMessage, translate } from './utils'
+import type { I18nObject, I18nObjectReturn, I18nOptions, MessageType } from './types'
+import { parseMessage, scopeTranslateWrapper, translate } from './utils'
 
 function assertImportType(value: any, fn: I18nOptions['parseKey']) {
   if (typeof value === 'function' && fn === undefined) {
@@ -29,14 +29,14 @@ export function $i18n<
   DatetimeKey extends string = string,
 >(
   options: I18nOptions<Locale, Message, NumberKey, DatetimeKey>,
-): () => I18nObject<Locale, Message, NumberKey, DatetimeKey> {
+): I18nObjectReturn<Locale, Message, NumberKey, DatetimeKey> {
   let build = () => createI18n(options)
   let log = DEV && console.log
-  return () => {
+  return (scope?: any) => {
     const ctx = useContext($I18N_CTX)
     const _data = ctx.data
     if (_data) {
-      return _data as any
+      return scope ? scopeTranslateWrapper(_data, scope) : _data as any
     }
     function mount(
       result: I18nObject<Locale, Message, NumberKey, DatetimeKey>,
@@ -48,7 +48,7 @@ export function $i18n<
       build = null
       // @ts-expect-error for GC
       log = null
-      return result
+      return scope ? scopeTranslateWrapper(result, scope) : result
     }
     return ctx.owner
       ? runWithOwner(ctx.owner, () => mount(
@@ -148,8 +148,8 @@ function createI18n<
       : setCurMsg(msg as Record<string, any>)
   }))
 
-  const $t: I18nObject<Locale, Message>['$t'] = (path, variable) => {
-    return translate(curMsg(), path as any, variable)
+  const $t: I18nObject<Locale, Message>['$t'] = (path, variables?) => {
+    return translate(curMsg(), path as any, variables as Record<string, any>)
   }
 
   const $n: I18nObject<Locale, Message>['$n'] = (num, type, l) => {

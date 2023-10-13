@@ -1,6 +1,14 @@
-import type { Path } from 'object-standard-path'
-import type { StringKeys } from '@subframe7536/type-utils'
+import type { Path, PathValue } from 'object-standard-path'
+import type { Prettify, StringKeys } from '@subframe7536/type-utils'
 import type { SignalObject } from '../signal'
+
+export type StringFallback<T, F = string> = T extends never ? F : T extends '' ? F : T
+
+type ParseMessage<S> = Prettify<
+S extends `${string}{${infer K}}${infer Rest}`
+  ? { [Key in K]: string | number } & ParseMessage<Rest>
+  : {}
+>
 
 export type MessageType<Locale extends string> =
   | Record<Locale, Record<string, any>>
@@ -90,12 +98,15 @@ export type I18nObject<
 > = {
   /**
    * display message, support plural
-   * @param path object path, support nest and []
-   * @param variable message variables, match `{key}` in message
+   * @param path object path
+   * @param variables message variables, match `{key}` in message
    */
-  $t: (
-    path: Path<Message[Locale]> extends '' ? string : Path<Message[Locale]>,
-    variable?: Record<string, string | number>
+  $t: <
+    P extends string = Path<Message[Locale]>,
+    V = ParseMessage<PathValue<Message[Locale], P>>,
+  >(
+    path: StringFallback<P>,
+    ...args: keyof V extends never ? [variables?: Record<string, string | number>] : [variables: V]
   ) => string
   /**
    * localize number
@@ -123,6 +134,31 @@ export type I18nObject<
    * all available locales
    */
   availiableLocales: string[]
+}
+
+export type ScopeMessage<
+  Locale extends string,
+  Message extends Record<string, any>,
+  Scope extends string,
+> = Message extends Function
+  ? Record<string, Record<string, any>>
+  : Record<Locale, PathValue<Message[Locale], Scope>>
+
+export type I18nObjectReturn<
+  Locale extends string = string,
+  Message extends MessageType<Locale> = MessageType<Locale>,
+  NumberKey extends string = string,
+  DatetimeKey extends string = string,
+> = {
+  (): I18nObject<Locale, Message, NumberKey, DatetimeKey>
+  <Scope extends Path<Message[Locale]>>(
+    scope: StringFallback<Scope>
+  ): I18nObject<
+  Locale,
+  ScopeMessage<Locale, Message, Scope>,
+  NumberKey,
+  DatetimeKey
+  >
 }
 
 // reference from https://github.com/intlify/vue-i18n-next/blob/master/packages/core-base/src/types/intl.ts

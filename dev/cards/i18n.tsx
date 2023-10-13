@@ -5,6 +5,7 @@ import { useInfoState } from '../state'
 export default function ShowI18n() {
   const info = useInfoState()
   const { $t, $d, $n, availiableLocales, locale } = useI18n()
+  const { $t: t } = useI18n('nest')
   function changeLocale(target: string) {
     locale.$(target)
   }
@@ -17,7 +18,8 @@ export default function ShowI18n() {
       </select>
       <div>{$t('test')}</div>
       <br />
-      <div>{`${$t('nest[0].description')}:`}</div>
+      <div>{t('description')}:</div>
+      <div>{$t('nest.description')}:</div>
       <div>{$t('plural', { name: 'test', num: ~~(info().test % 8) })}</div>
       <br />
       Date:
