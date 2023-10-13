@@ -303,7 +303,7 @@ export const useI18n = $i18n({
   },
 })
 // usage
-const { $t, $d, $n, availiableLocales, locale } = useI18n(/* optional scope */)
+const { $t, $d, $n, availiableLocales, locale } = useI18n(/* optional typesafe scope */)
 
 return (
   <I18nProvider>{/* optional */}
@@ -364,6 +364,7 @@ util for child component event emitting, auto handle optional prop
 
 ```tsx
 import { defineEmits } from 'solid-dollar/utils'
+import type { EmitProps } from 'solid-dollar/utils'
 
 type Emits = {
   var: number
@@ -454,19 +455,19 @@ export default defineConfig({
 
 ### `$tick`
 
-vue-like next tick, reference from [solidjs-use](https://github.com/solidjs-use/solidjs-use/blob/main/packages/solid-to-vue/src/scheduler.ts)
+`Vue` like `nextTick()`, reference from [solidjs-use](https://github.com/solidjs-use/solidjs-use/blob/main/packages/solid-to-vue/src/scheduler.ts)
 
 ### `$app`
 
-Vue's `createApp` like initialization, works in both `.ts` and `.tsx`
+`Vue` like `createApp()`
 
 ```ts
 import { $app } from 'solid-dollar/utils'
 import App from './App'
 
 $app(App)
-  .use(RouterProvider)
-  .use(I18nProvider, { dict })
+  .use(RouterProvider, { props })
+  .use(I18nProvider)
   .use(GlobalStoreProvider)
   .mount('#app')
 ```
@@ -475,8 +476,8 @@ is equal to:
 
 ```tsx
 render(
-  <RouterProvider>
-    <I18nProvider dict={dict}>
+  <RouterProvider props={props}>
+    <I18nProvider>
       <GlobalStoreProvider>
         <App />
       </GlobalStoreProvider>

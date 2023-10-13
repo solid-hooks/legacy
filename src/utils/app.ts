@@ -18,7 +18,7 @@ type App = {
    *
    * @param domElement HTML Element or selector
    */
-  mount(domElement: HTMLElement | string): ReturnType<typeof render>
+  mount(domElement: string): ReturnType<typeof render>
 }
 
 type Provider<Props extends Record<string, any>> = {
@@ -65,9 +65,9 @@ export function $app<AppProps extends Record<string, any> = {}>(
 
     mount(dom) {
       const application = mergeProviders({ app, props, providers })
-      const root = typeof dom === 'string' ? document.querySelector(dom) : dom
+      const root = document.querySelector(dom)
       if (DEV && !root) {
-        throw new Error('Mounted node is null')
+        throw new Error(`root node "${dom}" is null`)
       }
       return render(application, root!)
     },
