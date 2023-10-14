@@ -3,12 +3,14 @@ import type { Prettify, StringKeys } from '@subframe7536/type-utils'
 import type { SignalObject } from '../signal'
 
 export type StringFallback<T, F = string> = T extends never ? F : T extends '' ? F : T
+type ExtractVariable<S extends string, T extends string | number> =
+  S extends `${infer _}{${infer P}}${infer Rest}`
+    ? Rest extends `(${infer _})${infer _}`
+      ? { [K in P]: number } & ExtractVariable<Rest, T>
+      : { [K in P]: string | number } & ExtractVariable<Rest, T>
+    : {}
 
-type ParseMessage<S> = Prettify<
-S extends `${string}{${infer K}}${infer Rest}`
-  ? { [Key in K]: string | number } & ParseMessage<Rest>
-  : {}
->
+type ParseMessage<S extends string> = Prettify<ExtractVariable<S, string>>
 
 export type MessageType<Locale extends string> =
   | Record<Locale, Record<string, any>>
@@ -103,10 +105,11 @@ export type I18nObject<
    */
   $t: <
     P extends string = Path<Message[Locale]>,
-    V = ParseMessage<PathValue<Message[Locale], P>>,
   >(
     path: StringFallback<P>,
-    ...args: keyof V extends never ? [variables?: Record<string, string | number>] : [variables: V]
+    ...args: keyof ParseMessage<PathValue<Message[Locale], P>> extends never
+      ? [variables?: Record<string, string | number>]
+      : [variables: ParseMessage<PathValue<Message[Locale], P>>]
   ) => string
   /**
    * localize number
@@ -159,12 +162,7 @@ export type I18nObjectReturn<
    */
   <Scope extends Path<Message[Locale]>>(
     scope: StringFallback<Scope>
-  ): I18nObject<
-  Locale,
-  ScopeMessage<Locale, Message, Scope>,
-  NumberKey,
-  DatetimeKey
-  >
+  ): I18nObject<Locale, ScopeMessage<Locale, Message, Scope>, NumberKey, DatetimeKey>
 }
 
 // reference from https://github.com/intlify/vue-i18n-next/blob/master/packages/core-base/src/types/intl.ts
