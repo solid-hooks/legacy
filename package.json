@@ -1,25 +1,22 @@
 {
   "name": "solid-dollar",
+  "type": "module",
   "version": "0.5.7",
+  "private": false,
   "description": "object style hooks / i18n / global state management for solid.js",
-  "license": "MIT",
   "author": "subframe7536",
-  "repository": "https://github.com/subframe7536/solid-dollar.git",
+  "license": "MIT",
   "homepage": "https://github.com/subframe7536/solid-dollar#readme",
+  "repository": "https://github.com/subframe7536/solid-dollar.git",
   "bugs": {
     "url": "https://github.com/subframe7536/solid-dollar/issues"
   },
-  "files": [
-    "dist",
-    "directive.d.ts"
+  "keywords": [
+    "solid-js",
+    "hooks",
+    "use"
   ],
-  "private": false,
   "sideEffects": false,
-  "type": "module",
-  "main": "./dist/index/index.cjs",
-  "module": "./dist/index/index.js",
-  "types": "./dist/index/index.d.ts",
-  "browser": {},
   "exports": {
     ".": {
       "import": {
@@ -82,6 +79,9 @@
       }
     }
   },
+  "main": "./dist/index/index.cjs",
+  "module": "./dist/index/index.js",
+  "types": "./dist/index/index.d.ts",
   "typesVersions": {
     "*": {
       "i18n": [
@@ -101,6 +101,11 @@
       ]
     }
   },
+  "files": [
+    "directive.d.ts",
+    "dist"
+  ],
+  "browser": {},
   "scripts": {
     "dev": "vite serve dev --open",
     "build": "node scripts/update-auto-import.js && tsup",
@@ -136,12 +141,8 @@
     "vite-plugin-solid": "^2.7.1",
     "vitest": "0.34.2",
     "vitest-indexeddb": "^0.0.0",
-    "yaml": "^2.3.2"
+    "yaml": "^2.3.3"
   },
-  "keywords": [
-    "solid",
-    "hooks"
-  ],
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org"

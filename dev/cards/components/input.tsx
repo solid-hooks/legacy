@@ -14,12 +14,10 @@ export default function Input() {
       </For>
 
       <div>
-        double:
-        <span>{info.doubleValue()}</span>
+        double:<span>{info.doubleValue()}</span>
       </div>
       <div>
-        test memo:
-        <span>{info.doubleValue()}</span>
+        test memo:<span>{info.doubleValue()}</span>
       </div>
     </>
   )

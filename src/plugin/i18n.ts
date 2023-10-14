@@ -36,8 +36,9 @@ languageIds:
   - javascriptreact
   - typescriptreact
 usageMatchRegex:
-  - "[^\\\\w\\\\d]t\\\\(['\\"\`]({key})['\\"\`]"
-monopoly: true`.replace(/\r\n?/g, '\n')
+  - '[^\\w\\d]t\\([''"\`]({key})[''"\`]'
+monopoly: true
+`.replace(/\r\n?/g, '\n')
 
   const base = join(basePath, '.vscode')
   if (!existsSync(base)) {
@@ -65,7 +66,7 @@ export function I18nPlugin(options: I18nPluginOptions): Plugin {
     transform(code, id) {
       if (filter(id)) {
         const msg = transformMessage(code, id)
-        logger.info(`transform messages at ${relative(cwd, id)}`, { timestamp: true })
+        logger.info(`transform from ${relative(cwd, id)}`, { timestamp: true })
         return `export default ${JSON.stringify(msg)}`
       }
     },

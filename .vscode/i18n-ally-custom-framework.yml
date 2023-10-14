@@ -6,5 +6,5 @@ languageIds:
   - javascriptreact
   - typescriptreact
 usageMatchRegex:
-  - "[^\\w\\d]t\\(['\"`]({key})['\"`]"
+  - '[^\w\d]t\([''"`]({key})[''"`]'
 monopoly: true
