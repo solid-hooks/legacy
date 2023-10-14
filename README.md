@@ -489,36 +489,6 @@ render(
 
 reference from [solid-utils](https://github.com/amoutonbrady/solid-utils#createapp)
 
-### `$idb`
-
-create function to generate `$()` like IndexedDB wrapper, using [idb-keyval](https://github.com/jakearchibald/idb-keyval)
-
-no serializer, be caution when store `Proxy`
-
-```ts
-import { $idb } from 'solid-dollar/utils'
-
-const foo = $idb('foo', 'default value')
-console.log(foo()) // get value
-foo.$('test') // set value
-await foo.$del() // delete key
-```
-
-#### `$idbRecord`
-
-reactive IndexedDB record list
-
-```ts
-import { $idbRecord } from 'solid-dollar/utils'
-
-const record = $idbRecord<string, string>('image', { cache: new LRU(10) })
-
-record.$('first', 'data:,') // set record
-record.$('first') // set current key
-record.$() // get current key
-console.log(record()) // get current value
-```
-
 ### `defineContext`
 
 object style [createContextProvider](https://github.com/solidjs-community/solid-primitives/tree/main/packages/context#createcontextprovider)

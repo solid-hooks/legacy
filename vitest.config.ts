@@ -5,7 +5,6 @@ export default defineConfig({
   plugins: [solid()],
   test: {
     environment: 'jsdom',
-    setupFiles: ['./test/setup/idb.ts'],
   },
   resolve: {
     conditions: ['development', 'browser'],

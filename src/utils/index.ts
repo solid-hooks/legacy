@@ -6,9 +6,6 @@ export type { ContextObject } from './ctx'
 
 export { $tick } from './tick'
 
-export { $idb, $idbRecord } from './idb'
-export type { IDBObject, IDBOptions, IDBRecord, IDBRecordOptions } from './idb'
-
 export { $app } from './app'
 
 export { defineEmits } from './emits'
