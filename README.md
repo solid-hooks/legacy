@@ -557,3 +557,24 @@ bar() // 'updated'
 ### `$listenEvent` / `$listenEventMap` / `$listenDocument` / `listenWindow`
 
 aliases and shortcuts of [@solid-primitives/event-listener](https://github.com/solidjs-community/solid-primitives/tree/main/packages/event-listener)
+
+### `$persist`
+
+auto persist value to storage(sync or async)
+
+```ts
+import { $persist } from 'solid-dollar/utils'
+
+// default to persist to `localeStorage`
+const val = $persist('key', 1)
+
+const itemState = $persist('item', 'loading', {
+  storage: {/* async or sync storage */}
+  serializer: {
+    read: JSON.parse, // default
+    write: JSON.stringify, // default
+  }
+})
+```
+
+reference from [@solid-primitives/storage](https://github.com/solidjs-community/solid-primitives/tree/main/packages/storage)
