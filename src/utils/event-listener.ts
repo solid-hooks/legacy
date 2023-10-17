@@ -7,12 +7,12 @@ import {
 /**
  * listen event on `window`
  */
-export const $listenWindow = makeEventListener.bind(null, window)
+export const $listenWindow = makeEventListener.bind(makeEventListener, window)
 
 /**
  * listen event on `document`
  */
-export const $listenDocument = makeEventListener.bind(null, document)
+export const $listenDocument = makeEventListener.bind(makeEventListener, document)
 
 /**
  * listen reactive event on reactive `EventTarget`

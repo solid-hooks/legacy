@@ -15,10 +15,12 @@ type BaseResourceObject<
 & AddPrefix$ToKeys<{
   [K in keyof Actions]: Actions[K]
 }>
+
 /**
  * type of {@link $resource} with initalized value
  */
 export type InitializedResourceObject<T, R> = BaseResourceObject<T, R, true>
+
 /**
  * type of {@link $resource}
  */
@@ -31,27 +33,36 @@ type SourceOption<S> = {
   $: SignalObject<S | false | null> | Accessor<S | false | null> | S | false | null
 }
 
+/**
+ * object wrapper for {@link createResource}
+ */
 export function $resource<T, R = unknown>(
   fetcher: ResourceFetcher<true, T, R>,
   options: InitializedResourceOptions<NoInfer<T>, true>,
 ): InitializedResourceObject<T, R>
+/**
+ * object wrapper for {@link createResource}
+ */
 export function $resource<T, R = unknown>(
   fetcher: ResourceFetcher<true, T, R>,
   options?: ResourceOptions<T, true>,
 ): ResourceObject<T, R>
+/**
+ * object wrapper for {@link createResource} with signal
+ */
 export function $resource<T, S, R = unknown>(
   source: ResourceSource<S>,
   fetcher: ResourceFetcher<S, T, R>,
   options: InitializedResourceOptions<NoInfer<T>, S>,
 ): InitializedResourceObject<T, R>
+/**
+ * object wrapper for {@link createResource} with signal
+ */
 export function $resource<T, S, R = unknown>(
   source: ResourceSource<S>,
   fetcher: ResourceFetcher<S, T, R>,
   options?: ResourceOptions<T, S> & SourceOption<S>,
 ): ResourceObject<T, R>
-/**
- * object wrapper for {@link createResource} with signal
- */
 export function $resource(...args: any[]) {
   // @ts-expect-error args
   const [data, { mutate, refetch }] = createResource(...args)

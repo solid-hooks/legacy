@@ -64,8 +64,17 @@ export default defineConfig((config) => {
     preset.writePackageJson(package_fields)
   }
 
-  const [prod] = preset.generateTsupOptions(parsed_options)
+  const prod = preset.generateTsupOptions(parsed_options)[0]!
   // @ts-expect-error setup i18n utils
   prod.entry['i18n/utils'] = './src/i18n/utils.ts'
-  return prod!
+  prod.plugins ??= []
+  prod.plugins.push({
+    name: 'undefined to void 0',
+    renderChunk(code) {
+      return {
+        code: code.replaceAll('undefined', 'void 0'),
+      }
+    },
+  })
+  return prod
 })
