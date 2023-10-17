@@ -10,10 +10,10 @@ export type { ResourceObject, InitializedResourceObject } from './resource'
 export { $store, $trackStore } from './store'
 export type { StoreObject } from './store'
 
-export { $watch, $watchOnce } from './watch'
+export { $watch, $watchOnce, $watchInstant, $watchRendered } from './watch'
 export type { WatchCallback, WatchOptions, WatchObject } from './watch'
 
 export { $selector } from './selector'
 export type { SelectorObject, SelectorObjectOptions } from './selector'
 
-export { $$, $effect, $instantEffect, $renderEffect, $deferred } from './alias'
+export { $$, $effect, $effectInstant, $effectRendered, $deferred } from './alias'

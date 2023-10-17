@@ -11,23 +11,23 @@ export const $effect = createEffect
  *
  * alias for {@link createRenderEffect}
  */
-export const $renderEffect = createRenderEffect
+export const $effectRendered = createRenderEffect
 /**
  * run effect instantly
  *
  * alias for {@link createComputed}
  */
-export const $instantEffect = createComputed
+export const $effectInstant = createComputed
 /**
  * prevent update notification and run
  *
  * alias for {@link untrack}
  */
 export const $$ = untrack
+
 /**
  * defer update notification until browser is idle
  *
  * alias for {@link createDeferred}
  */
-
 export const $deferred = createDeferred

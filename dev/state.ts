@@ -1,6 +1,6 @@
 import { getOwner } from 'solid-js'
 import { $state } from '../src/state'
-import { $, $instantEffect, $memo } from '../src'
+import { $, $effectInstant, $memo } from '../src'
 
 export const useInfoState = $state('info', {
   $init: {
@@ -34,7 +34,7 @@ export const useInfoState = $state('info', {
 
 export const useCustomState = $state('custom', (name, log) => {
   const plain = $(1)
-  $instantEffect(() => {
+  $effectInstant(() => {
     log('$state with custom function:', { name, newValue: plain() })
   })
   const plus2 = $memo(plain() + 2)

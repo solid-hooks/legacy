@@ -44,11 +44,13 @@ export const $autoImport: ImportFn = directiveOnly => directiveOnly ? [
       '$trackStore',
       '$watch',
       '$watchOnce',
+      '$watchInstant',
+      '$watchRendered',
       '$selector',
       '$$',
       '$effect',
-      '$instantEffect',
-      '$renderEffect',
+      '$effectInstant',
+      '$effectRendered',
       '$deferred'
     ]
   },

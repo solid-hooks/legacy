@@ -1,11 +1,11 @@
 import type { Accessor, AccessorArray, OnOptions } from 'solid-js'
-import { batch, createEffect, createReaction, createSignal, on, onCleanup } from 'solid-js'
+import { batch, createComputed, createEffect, createReaction, createRenderEffect, createSignal, on, onCleanup } from 'solid-js'
 import type { SignalObject } from './signal'
 
 export type Cleanupable = void | (() => void)
 
 /**
- * {@link $watch} callback function
+ * {@link baseWatch} callback function
  * @param value current value
  * @param oldValue previous value
  */
@@ -15,7 +15,7 @@ export type WatchCallback<S> = (
 ) => Cleanupable
 
 /**
- * {@link $watch} options
+ * {@link baseWatch} options
  */
 export type WatchOptions<T> = OnOptions & {
   /**
@@ -28,10 +28,14 @@ export type WatchOptions<T> = OnOptions & {
    * @alert `oldValue` in {@link WatchCallback} will fail to filter
    */
   filterFn?: (newValue: T, times: number) => boolean
+  /**
+   * whether to use instant watch (`createComputed`)
+   */
+  effectFn: typeof createEffect | typeof createComputed | typeof createRenderEffect
 }
 
 /**
- * type of {@link $watch}
+ * type of {@link baseWatch}
  */
 export type WatchObject = {
   /**
@@ -71,14 +75,14 @@ export function $watchOnce<T>(deps: Accessor<T>, cb: WatchCallback<T>, name?: st
  * @param options options
  * @see https://github.com/subframe7536/solid-dollar#watch
  */
-export function $watch<T>(
+function baseWatch<T>(
   deps: Accessor<T> | AccessorArray<T> | SignalObject<T>,
   fn: WatchCallback<T>,
-  options: WatchOptions<T> = {},
+  options: WatchOptions<T>,
 ): WatchObject {
   const [isWatch, setIsWatch] = createSignal(true)
   const [callTimes, setCallTimes] = createSignal(0)
-  const { triggerFn, defer = false, filterFn } = options
+  const { triggerFn, defer = false, filterFn, effectFn } = options
 
   const needToTriggerEffect = (newValue: T) => {
     return isWatch()
@@ -91,7 +95,7 @@ export function $watch<T>(
     setCallTimes(time => time + 1)
     return (triggerFn ? triggerFn(fn) : fn)(value, oldValue)
   }
-  createEffect(on(deps, (value, oldValue) => {
+  effectFn(on(deps, (value, oldValue) => {
     if (needToTriggerEffect(value)) {
       const cleanup = _fn(value, oldValue)
       typeof cleanup === 'function' && onCleanup(cleanup)
@@ -108,4 +112,47 @@ export function $watch<T>(
       setIsWatch(true)
     },
   }
+}
+
+/**
+ * object wrapper for {@link createEffect} and {@link on}
+ * @param deps Accessor that need to be watch
+ * @param fn {@link WatchCallback callback function}
+ * @param options options
+ * @see https://github.com/subframe7536/solid-dollar#watch
+ */
+export function $watch<T>(
+  deps: Accessor<T> | AccessorArray<T> | SignalObject<T>,
+  fn: WatchCallback<T>,
+  options: Omit<WatchOptions<T>, 'effectFn'> = {},
+): WatchObject {
+  return baseWatch(deps, fn, { ...options, effectFn: createEffect })
+}
+
+/**
+ * object wrapper for {@link createComputed} and {@link on}
+ * @param deps Accessor that need to be watch
+ * @param fn {@link WatchCallback callback function}
+ * @param options options
+ */
+export function $watchInstant<T>(
+  deps: Accessor<T> | AccessorArray<T> | SignalObject<T>,
+  fn: WatchCallback<T>,
+  options: Omit<WatchOptions<T>, 'effectFn'> = {},
+): WatchObject {
+  return baseWatch(deps, fn, { ...options, effectFn: createComputed })
+}
+
+/**
+ * object wrapper for {@link createRenderEffect} and {@link on}
+ * @param deps Accessor that need to be watch
+ * @param fn {@link WatchCallback callback function}
+ * @param options options
+ */
+export function $watchRendered<T>(
+  deps: Accessor<T> | AccessorArray<T> | SignalObject<T>,
+  fn: WatchCallback<T>,
+  options: Omit<WatchOptions<T>, 'effectFn'> = {},
+): WatchObject {
+  return baseWatch(deps, fn, { ...options, effectFn: createRenderEffect })
 }
