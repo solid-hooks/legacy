@@ -108,11 +108,19 @@ const {
 
 normal effect, alias for `createEffect`
 
-#### `$renderEffect`
+#### `$watchRendered`
+
+`$watch` but `createRenderEffect(on())`
+
+#### `$effectRendered`
 
 run effect after rendered, be able to access DOM, alias for `createRenderEffect`
 
-#### `$instantEffect`
+#### `$watchInstant`
+
+`$watch` but `createComputed(on())`
+
+#### `$effectInstant`
 
 run effect instantly, alias for `createComputed`
 
