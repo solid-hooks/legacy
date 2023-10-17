@@ -118,9 +118,7 @@ export const $autoImport: ImportFn = directiveOnly => directiveOnly ? [
       '$listenWindow',
       '$listenEvent',
       '$listenEventMap',
-      '$signal',
-      'NORETURN',
-      'noReturn'
+      '$persist'
     ]
   },
   {
@@ -131,8 +129,7 @@ export const $autoImport: ImportFn = directiveOnly => directiveOnly ? [
       'EmitProps',
       'EmitsObject',
       'ReactiveObject',
-      'SignalHooksObject',
-      'SignalHooksObjectOptions'
+      'PeresistOptions'
     ],
     'type': true
   }

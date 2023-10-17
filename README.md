@@ -511,29 +511,6 @@ const { useDateContext, DateProvider } = defineContext(
 )
 ```
 
-### `$signal`
-
-signal object with preSet and postSet hooks
-
-```ts
-import { $signal, NORETURN, noReturn } from 'solid-dollar/utils'
-
-const hooks = $('hello', {
-  preSet: v => `${v} hooks`, // change the set value
-  postSet: newV => console.log(newV)
-})
-// hello hooks
-console.log(hooks.$source) // orignal Signal Array: [hooks, setHooks]
-
-const logPreSetHooks = $(1, {
-  // preSet: v => noReturn(() => console.log(v))
-  preSet: (v) => {
-    console.log(v)
-    return NORETURN
-  }
-})
-```
-
 ### `$reactive`
 
 `$()` like wrapper to make plain object props reactive

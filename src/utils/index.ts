@@ -16,8 +16,5 @@ export type { ReactiveObject } from './reactive'
 
 export { $listenDocument, $listenWindow, $listenEvent, $listenEventMap } from './event-listener'
 
-export { $signal, NORETURN, noReturn } from './signal-hooks'
-export type { SignalHooksObject, SignalHooksObjectOptions } from './signal-hooks'
-
 export { $persist } from './persist'
 export type { PeresistOptions } from './persist'
