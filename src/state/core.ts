@@ -71,12 +71,12 @@ export function $state<
 
   return () => {
     const ctx = useContext($STATE_CTX)
-    const _m = ctx.map
-    if (_m.has(name)) {
-      return _m.get(name)
+    const _map = ctx.map
+    if (_map.has(name)) {
+      return _map.get(name)
     }
     function attach(result: State | StateObject<State, Getter, Action>, msg: string) {
-      _m.set(name, result)
+      _map.set(name, result)
       log(msg)
       // @ts-expect-error for GC
       build = null
@@ -135,7 +135,7 @@ function setupObject<
   } = $persist || {}
 
   return (stateName, log) => {
-    const key = $persist?.key ?? stateName
+    const key = $persist?.key || stateName
     const initialState = typeof $init === 'function' ? $init() : $init
     const _store = $store(
       Array.isArray(initialState) ? initialState : deepClone(initialState),
@@ -168,19 +168,14 @@ function setupObject<
       $patch: state => _store.$(
         typeof state === 'function'
           ? produce(state)
-          : reconcile(
-            Object.assign({}, unwrap(_store()), state),
-            { key: stateName, merge: true },
-          ),
+          : reconcile(Object.assign({}, unwrap(_store()), state), { merge: true }),
       ),
       $reset: () => {
         if (Array.isArray(initialState)) {
-          DEV && log('cannot reset, type of initial value is Store')
+          DEV && log('can not reset')
           return
         }
-        _store.$(
-          reconcile(initialState, { key: stateName, merge: true }),
-        )
+        _store.$(reconcile(initialState, { merge: true }))
       },
       $subscribe: (cb, { path, ...options } = {}) => $watch(
         path ? () => pathGet(_store(), path) : getDeps() as any,

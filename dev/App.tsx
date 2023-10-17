@@ -4,7 +4,6 @@ import ShowI18n from './cards/i18n'
 import ShowGlobalState from './cards/globalState'
 import Basic from './cards/basic'
 import ShowDirective from './cards/directive'
-import ShowIDB from './cards/idb'
 
 type Prop = ParentProps<{ title: string }>
 
@@ -23,7 +22,6 @@ function App() {
     'signal / emit / watch(open devtools)': <Basic />,
     'i18n': <ShowI18n />,
     'global state': <ShowGlobalState />,
-    'IndexedDB': <ShowIDB />,
   }
   return (
     <div class="flex">

@@ -503,6 +503,7 @@ const { useDateContext, DateProvider } = defineContext(
   () => new Date()
 )
 
+// use parameters
 const { useDateContext, DateProvider } = defineContext(
   'date',
   (args: { date: string }) => new Date(args.date),
