@@ -20,3 +20,9 @@ export type { PeresistOptions } from './persist'
 
 export { $draggable, clamp } from './drag'
 export type { DragOptions, DraggableElement } from './drag'
+
+export { $objectURL } from './object-url'
+export type { ObjectURLObject } from './object-url'
+
+export { $loadScript, $loadStyle } from './load-resource'
+export type { ScriptOptions as ScriptProps, StyleOption as StyleProps } from './load-resource'

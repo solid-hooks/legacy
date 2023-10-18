@@ -589,9 +589,10 @@ const {
   disable,
   isDragging,
   isDraggable,
+  style,
 } = $draggable(el, {
   initialPosition: { x: 200, y: 80 },
-  addStyle: true, // add style on el
+  addStyle: true, // auto add style on el
   handleEl: handle,
 })
 return (
@@ -608,4 +609,25 @@ return (
     </div>
   </div>
 )
+```
+
+### `$loadScript` / `$loadStyle`
+
+load external script / style
+
+```ts
+import { $loadScript, $loadStyle } from 'solid-dollar/utils'
+
+const cleanup = $loadScript('console.log(`test load script`)')
+const cleanup = $loadStyle('.card{color:#666}')
+```
+
+### `$objectURL`
+
+convert binary to object url
+
+```ts
+import { $objectURL } from 'solid-dollar/utils'
+
+const url = $objectURL([new Uint8Array()])
 ```

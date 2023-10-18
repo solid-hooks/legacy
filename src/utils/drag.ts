@@ -3,8 +3,6 @@ import type { Accessor } from 'solid-js'
 import { createMemo, createSignal, onMount } from 'solid-js'
 import { type MaybeAccessor, access } from '@solid-primitives/utils'
 
-export const DragStyleClass = '_drag_'
-
 type Position = {
   x: number
   y: number
