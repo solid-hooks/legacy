@@ -7,7 +7,7 @@ export default function ShowI18n() {
   const { $t, $d, $n, availiableLocales, locale } = useI18n()
   const { $t: t } = useI18n('nest')
   function changeLocale(target: string) {
-    locale.$(target)
+    locale.$set(target)
   }
   return (
     <>

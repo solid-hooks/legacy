@@ -7,4 +7,4 @@ export type {
   StorageLike,
   StateListener,
 } from './types'
-export { deepClone } from './utils'
+export { deepClone, useActions, useGetters } from './utils'

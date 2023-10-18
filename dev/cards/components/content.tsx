@@ -1,5 +1,6 @@
 import { pathGet } from 'object-standard-path'
 import { useCustomState, useInfoState } from '../../state'
+import { useActions } from '../../../src/state/utils'
 
 export default function Content() {
   const info = useInfoState()
@@ -9,9 +10,10 @@ export default function Content() {
   info.$subscribe(state => console.log('deep path data:', state), { path: 'deep.data' })
   async function handleClick() {
     const v = (new Date().getTime() - start) / 1000
-    info.$.setTest(v)
-    plain.$(v)
-    info.$.sleepAndPlus(500)
+    const { setTest, sleepAndPlus } = useActions(info)
+    setTest(v)
+    plain.$set(v)
+    sleepAndPlus(500)
     info.$patch({ deep: { data: `update at ${Date.now()}` } })
   }
   return (

@@ -35,12 +35,8 @@ export type StateObject<
   State,
   Getter = GetterObject,
   Action = ActionObject,
-> = Getter & StateUtils<State> & (() => State) & {
-  /**
-   * action records
-   */
-  $: Action
-}
+> = Getter & StateUtils<State> & (() => State) & Action
+
 export type InitialState<State extends object> = State | (() => State | [Store<State>, SetStoreFunction<State>])
 
 export type StateSetup<

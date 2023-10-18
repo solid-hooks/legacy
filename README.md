@@ -180,7 +180,7 @@ support run without provider (fallback to `createRoot`)
 inspired by `pinia` & `zustand`
 
 ```tsx
-import { $state, GlobalStateProvider } from 'solid-dollar/state'
+import { $state, GlobalStateProvider, useGetters, useActions } from 'solid-dollar/state'
 
 const useTestState = $state('test', {
   $init: { value: 1 },
@@ -207,11 +207,18 @@ const useTestState = $state('test', {
 
 // usage
 const state = useTestState()
+const getters = useGetters(state/* or useTestState */)
+const actions = useActions(state/* or useTestState */)
+
 render(() => (
   <GlobalStateProvider> {/* optional */}
     state: <p>{state().value}</p>
-    getter: <p>{state.$.doubleValue()}</p>
+
+    getter: <p>{state.doubleValue()}</p>
+    getter: <p>{getters.doubleValue()}</p>
+
     action: <button onClick={state.double}>double</button>
+    action: <button onClick={actions.double}>double</button>
     action: <button onClick={() => state.plus(2)}>plus 2</button>
   </GlobalStateProvider>
 ))

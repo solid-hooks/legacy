@@ -15,7 +15,7 @@ function Child(props: EmitProps<Emits, { num: number }>) {
   const { emit, $emit } = defineEmits<Emits>(props)
   const v = $emit('var', 1)
   const handleClick = () => {
-    v.$(v() + 1)
+    v.$set(v() + 1)
     emit('update', `emit from child: ${props.num}`, '[second param]')
     emit('optional', { test: 1 })
   }
@@ -39,7 +39,7 @@ export default function Basic() {
   return (
     <TestProvider>
       <button
-        onClick={() => (count.$(c => c + 1), refObj.$(data => data * 2))}
+        onClick={() => (count.$set(c => c + 1), refObj.$set(data => data * 2))}
       >
         increase
       </button>

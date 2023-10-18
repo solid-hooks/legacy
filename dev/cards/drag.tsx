@@ -31,7 +31,7 @@ export default function Drag() {
         <div>{`is draggable: ${isDraggable()}`}</div>
         <div>{`is dragging: ${isDragging()}`}</div>
         <div
-          ref={el.$}
+          ref={el.$set}
           style={{
             'position': 'fixed',
             'width': '150px',
@@ -50,7 +50,7 @@ export default function Drag() {
             </div>
           </div>
           <div
-            ref={handle.$}
+            ref={handle.$set}
             style={{
               'padding': '10px',
               'background-color': '#666',

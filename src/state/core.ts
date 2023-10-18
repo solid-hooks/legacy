@@ -213,7 +213,7 @@ function setupObject<
       () => _store(),
       utilFn,
       getters,
-      { $: createActions($actions?.(_store, utilFn)) },
+      createActions($actions?.(_store, utilFn)),
     )
   }
 }
