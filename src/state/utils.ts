@@ -1,7 +1,6 @@
 import { batch, untrack } from 'solid-js'
 import { klona } from 'klona'
 import type { MaybeAccessor } from '@solid-primitives/utils'
-import { access } from '@solid-primitives/utils'
 import type { ActionObject, GetterObject, StateObject } from './types'
 
 /**
@@ -32,7 +31,7 @@ export function useActions<
   Getter extends GetterObject,
   Action extends ActionObject,
 >(state: MaybeAccessor<StateObject<State, Getter, Action>>): Action {
-  return access(state) as Action
+  return '$patch' in state ? state : state() as Action
 }
 
 /**
@@ -43,5 +42,5 @@ export function useGetters<
   Getter extends GetterObject,
   Action extends ActionObject,
 >(state: MaybeAccessor<StateObject<State, Getter, Action>>): Getter {
-  return access(state) as Getter
+  return '$patch' in state ? state : state() as Getter
 }

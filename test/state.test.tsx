@@ -2,7 +2,7 @@ import { fireEvent, render } from '@solidjs/testing-library'
 import { describe, expect, it, vi } from 'vitest'
 import { createRoot } from 'solid-js'
 import { $memo } from '../src'
-import { $state } from '../src/state'
+import { $state, useActions } from '../src/state'
 import { $tick } from '../src/utils'
 
 describe('test state', () => {
@@ -37,6 +37,7 @@ describe('test state', () => {
     }))
 
     const state = useState()
+    const actions = useActions(state)
 
     await $tick()
     createRoot(() => state.$subscribe(callback, { defer: true }))
@@ -55,12 +56,12 @@ describe('test state', () => {
     expect(cacheCount).toBeCalledTimes(1)
     expect(state.getLarger(4)).toBe(5)
 
-    state.$action.double()
+    actions.double()
     expect(state().deep.test).toBe(2)
     expect(state.doubleValue()).toBe(4)
     expect(deepCallback).toHaveBeenCalledWith(2)
 
-    state.$action.plus(200)
+    actions.plus(200)
     expect(state().deep.test).toBe(202)
     expect(state.doubleValue()).toBe(404)
     expect(deepCallback).toHaveBeenCalledWith(202)
@@ -95,7 +96,7 @@ describe('test state', () => {
       $init: initialState,
       $actions: tmp => ({
         generate: () => {
-          state.$action.increment()
+          state.increment()
           tmp.$set('count', state.fresh())
         },
       }),
@@ -104,8 +105,8 @@ describe('test state', () => {
     const { unmount, getByTestId } = render(() => (
       <div>
         <p data-testid="value">{state().count}</p>
-        <button data-testid="increment" onClick={state.$action.increment}>Increment</button>
-        <button data-testid="decrement" onClick={state.$action.decrement}>Decrement</button>
+        <button data-testid="increment" onClick={state.increment}>Increment</button>
+        <button data-testid="decrement" onClick={state.decrement}>Decrement</button>
       </div>
     ))
 
@@ -122,7 +123,7 @@ describe('test state', () => {
     await $tick()
     expect(p.innerHTML).toBe('0')
 
-    tempState.$action.generate()
+    tempState.generate()
     expect(tempState().count).toBe(22)
     unmount()
   })
@@ -155,8 +156,8 @@ describe('test state', () => {
     const { unmount, getByTestId } = render(() => (
       <div>
         <p data-testid="value">{test().count}</p>
-        <button data-testid="increment" onClick={test.$action.increment}>Increment</button>
-        <button data-testid="decrement" onClick={test.$action.decrement}>Decrement</button>
+        <button data-testid="increment" onClick={test.increment}>Increment</button>
+        <button data-testid="decrement" onClick={test.decrement}>Decrement</button>
       </div>
     ))
 
@@ -226,8 +227,8 @@ describe('test state', () => {
     const { getByTestId } = render(() => (
       <div>
         <p data-testid="value">{state().persist.count}</p>
-        <button data-testid="increment" onClick={state.$action.increment}>Increment</button>
-        <button data-testid="decrement" onClick={state.$action.decrement}>Decrement</button>
+        <button data-testid="increment" onClick={state.increment}>Increment</button>
+        <button data-testid="decrement" onClick={state.decrement}>Decrement</button>
       </div>
     ))
 
