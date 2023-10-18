@@ -414,7 +414,7 @@ function Father() {
 }
 ```
 
-### `$model`
+### `model`
 
 simple two-way binding directive for `<input>`, `<textare>`, `<select>`
 
@@ -423,10 +423,10 @@ import { $ } from 'solid-dollar'
 
 const msg = $('')
 
-return <input type="text" use:$model={msg} />
+return <input type="text" use:model={msg} />
 ```
 
-#### typescript support
+typescript support
 
 env.d.ts:
 ```ts

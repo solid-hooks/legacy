@@ -1,16 +1,22 @@
-import { createRenderEffect, onCleanup } from 'solid-js'
+import { createRenderEffect } from 'solid-js'
+import { makeEventListener } from '@solid-primitives/event-listener'
 import type { SignalObject } from '../signal'
 
 /**
- * type support for {@link $model}
+ * type support for {@link $model} directive
  */
 export interface ModelDirective {
   $model: SignalObject<any>
 }
 
-export function $model(el: HTMLElement, value: () => SignalObject<any>) {
-  const data = value()
-
+/**
+ * two-way binding directive
+ */
+export function $model(
+  el: HTMLInputElement | HTMLSelectElement,
+  data: () => SignalObject<any>,
+) {
+  const value = data()
   let eventName = 'input'
   let property = 'value'
   if (el instanceof HTMLInputElement && ['checkbox', 'radio'].includes(el.type)) {
@@ -20,10 +26,10 @@ export function $model(el: HTMLElement, value: () => SignalObject<any>) {
     eventName = 'change'
     property = 'value'
   }
-  createRenderEffect(() => ((el as any)[property] = data()))
-  const handleValue = ({ target }: Event) => {
-    target && data.$((target as any)[property])
-  }
-  el.addEventListener(eventName, handleValue)
-  onCleanup(() => el.removeEventListener(eventName, handleValue))
+  createRenderEffect(() => {
+    (el as any)[property] = value()
+  })
+  makeEventListener(el, eventName, ({ target }) => {
+    target && value.$((target as any)[property])
+  })
 }
