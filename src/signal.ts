@@ -9,7 +9,7 @@ export type SignalObject<T> = {
   /**
    * setter function
    */
-  $: Setter<T>
+  $set: Setter<T>
 }
 
 export function isSignal<T>(val: unknown): val is Signal<T> {
@@ -42,6 +42,6 @@ export function $<T>(value?: T, options: SignalOptions<T> = {}) {
     : createSignal(value as T, options)
 
   // @ts-expect-error assign
-  val.$ = set
+  val.$set = set
   return val
 }

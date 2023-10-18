@@ -165,7 +165,7 @@ function setupObject<
       return dep
     }
     const utilFn: StateUtils<State> = {
-      $patch: state => _store.$(
+      $patch: state => _store.$set(
         typeof state === 'function'
           ? produce(state)
           : reconcile(Object.assign({}, unwrap(_store()), state), { merge: true }),
@@ -175,7 +175,7 @@ function setupObject<
           DEV && log('can not reset')
           return
         }
-        _store.$(reconcile(initialState, { merge: true }))
+        _store.$set(reconcile(initialState, { merge: true }))
       },
       $subscribe: (cb, { path, ...options } = {}) => $watch(
         path ? () => pathGet(_store(), path) : getDeps() as any,

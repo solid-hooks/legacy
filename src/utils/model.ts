@@ -30,6 +30,6 @@ export function $model(
     (el as any)[property] = value()
   })
   makeEventListener(el, eventName, ({ target }) => {
-    target && value.$((target as any)[property])
+    target && value.$set((target as any)[property])
   })
 }

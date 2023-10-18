@@ -45,11 +45,11 @@ describe('i18n', () => {
   const { availiableLocales, locale, $t, $d, $n } = useI18n()
   const { $t: $scopeTranslate } = useI18n('nest')
   beforeEach(() => {
-    locale.$('en')
+    locale.$set('en')
   })
 
   async function changeLocale() {
-    locale.$('zh')
+    locale.$set('zh')
     await $tick()
   }
 

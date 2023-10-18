@@ -11,7 +11,7 @@ export type StoreObject<T extends object> = {
   /**
    * store setter function
    */
-  $: SetStoreFunction<T>
+  $set: SetStoreFunction<T>
 }
 
 /**
@@ -38,7 +38,7 @@ export function $store<T extends object>(
     ? data
     : createStore<T>(data, options)
   const result = () => store
-  result.$ = setStore
+  result.$set = setStore
   return result
 }
 

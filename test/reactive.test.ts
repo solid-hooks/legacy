@@ -9,7 +9,7 @@ describe('test $reactive', () => {
     }
     const bar = $reactive(value, 'data')
     expect(bar()).toBe(1)
-    expect(bar.$(4)).toBe(4)
+    expect(bar.$set(4)).toBe(4)
     expect(value.data).toBe(4)
     expect(bar()).toBe(4)
   })
@@ -22,7 +22,7 @@ describe('test $reactive', () => {
     const updatedString = 'updated'
     const bar = $reactive(value, 'deep.data')
     expect(bar()).toBe('str')
-    expect(bar.$(updatedString)).toBe(updatedString)
+    expect(bar.$set(updatedString)).toBe(updatedString)
     expect(value.deep.data).toBe(updatedString)
     expect(bar()).toBe(updatedString)
   })
@@ -34,7 +34,7 @@ describe('test $reactive', () => {
     const fn = vi.fn()
     createRoot(() => createEffect(() => fn(bar())))
 
-    bar.$(2)
+    bar.$set(2)
     expect(fn).toBeCalledWith(2)
   })
 })

@@ -28,10 +28,10 @@ describe('test state', () => {
       }),
       $actions: state => ({
         double() {
-          state.$('deep', 'test', test => test * 2)
+          state.$set('deep', 'test', test => test * 2)
         },
         plus(num: number) {
-          state.$('deep', 'test', test => test + num)
+          state.$set('deep', 'test', test => test + num)
         },
       }),
     }))
@@ -55,12 +55,12 @@ describe('test state', () => {
     expect(cacheCount).toBeCalledTimes(1)
     expect(state.getLarger(4)).toBe(5)
 
-    state.$.double()
+    state.$action.double()
     expect(state().deep.test).toBe(2)
     expect(state.doubleValue()).toBe(4)
     expect(deepCallback).toHaveBeenCalledWith(2)
 
-    state.$.plus(200)
+    state.$action.plus(200)
     expect(state().deep.test).toBe(202)
     expect(state.doubleValue()).toBe(404)
     expect(deepCallback).toHaveBeenCalledWith(202)
@@ -86,8 +86,8 @@ describe('test state', () => {
         },
       }),
       $actions: state => ({
-        increment: () => state.$('count', n => n + 1),
-        decrement: () => state.$('count', n => n - 1),
+        increment: () => state.$set('count', n => n + 1),
+        decrement: () => state.$set('count', n => n - 1),
       }),
     })
     const state = useState()
@@ -95,8 +95,8 @@ describe('test state', () => {
       $init: initialState,
       $actions: tmp => ({
         generate: () => {
-          state.$.increment()
-          tmp.$('count', state.fresh())
+          state.$action.increment()
+          tmp.$set('count', state.fresh())
         },
       }),
     })
@@ -104,8 +104,8 @@ describe('test state', () => {
     const { unmount, getByTestId } = render(() => (
       <div>
         <p data-testid="value">{state().count}</p>
-        <button data-testid="increment" onClick={state.$.increment}>Increment</button>
-        <button data-testid="decrement" onClick={state.$.decrement}>Decrement</button>
+        <button data-testid="increment" onClick={state.$action.increment}>Increment</button>
+        <button data-testid="decrement" onClick={state.$action.decrement}>Decrement</button>
       </div>
     ))
 
@@ -122,7 +122,7 @@ describe('test state', () => {
     await $tick()
     expect(p.innerHTML).toBe('0')
 
-    tempState.$.generate()
+    tempState.$action.generate()
     expect(tempState().count).toBe(22)
     unmount()
   })
@@ -133,8 +133,8 @@ describe('test state', () => {
     const useState = $state('test-persist', {
       $init: initialState,
       $actions: state => ({
-        increment: () => state.$('count', n => n + 1),
-        decrement: () => state.$('count', n => n - 1),
+        increment: () => state.$set('count', n => n + 1),
+        decrement: () => state.$set('count', n => n - 1),
       }),
       $persist: {
         enable: true,
@@ -155,8 +155,8 @@ describe('test state', () => {
     const { unmount, getByTestId } = render(() => (
       <div>
         <p data-testid="value">{test().count}</p>
-        <button data-testid="increment" onClick={test.$.increment}>Increment</button>
-        <button data-testid="decrement" onClick={test.$.decrement}>Decrement</button>
+        <button data-testid="increment" onClick={test.$action.increment}>Increment</button>
+        <button data-testid="decrement" onClick={test.$action.decrement}>Decrement</button>
       </div>
     ))
 
@@ -197,12 +197,12 @@ describe('test state', () => {
       $init: initialState,
       $actions: state => ({
         increment: () => {
-          state.$('persist', 'count', n => n + 1)
-          state.$('nonePersist', ['increment', `${state().persist.count}`])
+          state.$set('persist', 'count', n => n + 1)
+          state.$set('nonePersist', ['increment', `${state().persist.count}`])
         },
         decrement: () => {
-          state.$('persist', 'count', n => n - 1)
-          state.$('nonePersist', ['decrement', `${state().persist.count}`])
+          state.$set('persist', 'count', n => n - 1)
+          state.$set('nonePersist', ['decrement', `${state().persist.count}`])
         },
       }),
       $persist: {
@@ -226,8 +226,8 @@ describe('test state', () => {
     const { getByTestId } = render(() => (
       <div>
         <p data-testid="value">{state().persist.count}</p>
-        <button data-testid="increment" onClick={state.$.increment}>Increment</button>
-        <button data-testid="decrement" onClick={state.$.decrement}>Decrement</button>
+        <button data-testid="increment" onClick={state.$action.increment}>Increment</button>
+        <button data-testid="decrement" onClick={state.$action.decrement}>Decrement</button>
       </div>
     ))
 

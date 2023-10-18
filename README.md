@@ -32,7 +32,7 @@ import { $ } from 'solid-dollar'
 const data = $(0)
 
 console.log(data()) // 0
-console.log(data.$(1)) // set value
+console.log(data.$set(1)) // set value
 ```
 
 #### `$$`
@@ -126,7 +126,7 @@ run effect instantly, alias for `createComputed`
 
 ### `$store`
 
-object wrapper for `createStore`, return `$()` like object
+object wrapper for `createStore`
 
 ```ts
 import { $store } from 'solid-dollar'
@@ -134,7 +134,7 @@ import { $store } from 'solid-dollar'
 const store = $store({ test: { deep: 1 } })
 
 store() // { test: { deep: 1 } }
-store.$('test', 'deep', 2) // set value
+store.$set('test', 'deep', 2) // set value
 ```
 
 #### `$trackStore`
@@ -154,7 +154,7 @@ import { For } from 'solid-js'
 import { $selector } from 'solid-dollar'
 
 const activeId = $selector(0)
-activeId.$(1)
+activeId.$set(1)
 
 return (
   <For each={list()}>
@@ -192,10 +192,10 @@ const useTestState = $state('test', {
   }),
   $action: stateObj => ({
     double(num: number) {
-      stateObj.$('value', value => value * 2 * number)
+      stateObj.$set('value', value => value * 2 * number)
     },
     plus(num: number) {
-      stateObj.$('value', value => value + num)
+      stateObj.$set('value', value => value + num)
     },
   }),
   $persist: {
@@ -315,7 +315,7 @@ const { $t, $d, $n, availiableLocales, locale } = useI18n(/* optional typesafe s
 
 return (
   <I18nProvider>{/* optional */}
-    <select onChange={e => locale.$(e.target.value)}>
+    <select onChange={e => locale.$set(e.target.value)}>
       <For each={availiableLocales}>
         {l => <option selected={l === locale()}>{l}</option>}
       </For>
@@ -388,7 +388,7 @@ function Child(props: EmitProps<Emits, BaseProps>) {
   // auto emit after value changing, inspird by `defineModel` in Vue
   const variable = $emit('var', 1)
   const handleClick = () => {
-    variable.$(v => v + 1)
+    variable.$set(v => v + 1)
 
     // manully emit
     emit('update', `emit from child: ${props.num}`, 'second')
@@ -414,7 +414,7 @@ function Father() {
 }
 ```
 
-### `model`
+### `$model`
 
 simple two-way binding directive for `<input>`, `<textare>`, `<select>`
 
@@ -521,7 +521,7 @@ const { useDateContext, DateProvider } = defineContext(
 
 ### `$reactive`
 
-`$()` like wrapper to make plain object props reactive
+make plain object props reactive
 
 ```ts
 import { $reactive } from 'solid-dollar/utils'
@@ -535,7 +535,7 @@ const value = {
 const bar = $reactive(value, 'deep.data')
 
 bar() // 'str'
-bar.$('updated') // 'update'
+bar.$set('updated') // 'update'
 bar() // 'updated'
 ```
 

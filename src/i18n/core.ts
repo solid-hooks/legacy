@@ -1,7 +1,7 @@
 import type { FlowProps, Owner } from 'solid-js'
 import { DEV, createComponent, createContext, createEffect, createRoot, createSignal, getOwner, on, runWithOwner, useContext } from 'solid-js'
 import { makeEventListener } from '@solid-primitives/event-listener'
-import type { SignalObject } from '../signal'
+import { $, type SignalObject } from '../signal'
 import type { I18nObject, I18nObjectReturn, I18nOptions, MessageType } from './types'
 import { parseMessage, scopeTranslateWrapper, translate } from './utils'
 
@@ -130,12 +130,11 @@ function createI18n<
   }
   const [curMsg, setCurMsg] = createSignal<Record<string, any>>({}, { name: '$i18n-message' })
 
-  const [loc, setLoc] = createSignal(defaultLocale, { name: '$i18n-locale' })
-  // @ts-expect-error assign
-  loc.$ = setLoc
+  const loc = $(defaultLocale, { name: '$i18n-locale' })
+
   makeEventListener(window, 'languagechange', () => {
     const l = navigator?.language
-    l && setLoc(l as any)
+    l && loc.$set(l as any)
   })
   createEffect(on(loc, (l) => {
     document?.querySelector('html')?.setAttribute('lang', l)

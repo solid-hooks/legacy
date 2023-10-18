@@ -1,7 +1,5 @@
 import { createResource } from 'solid-js'
-import type { Accessor, InitializedResource, InitializedResourceOptions, NoInfer, Resource, ResourceActions, ResourceFetcher, ResourceOptions, ResourceSource } from 'solid-js'
-
-import type { SignalObject } from './signal'
+import type { InitializedResource, InitializedResourceOptions, NoInfer, Resource, ResourceActions, ResourceFetcher, ResourceOptions, ResourceSource } from 'solid-js'
 
 type AddPrefix$ToKeys<T extends Record<string, any>> = {
   [K in keyof T as `$${string & K}`]: T[K];
@@ -25,13 +23,6 @@ export type InitializedResourceObject<T, R> = BaseResourceObject<T, R, true>
  * type of {@link $resource}
  */
 export type ResourceObject<T, R> = BaseResourceObject<T, R, false>
-
-type SourceOption<S> = {
-  /**
-   * source signal
-   */
-  $: SignalObject<S | false | null> | Accessor<S | false | null> | S | false | null
-}
 
 /**
  * object wrapper for {@link createResource}
@@ -61,7 +52,7 @@ export function $resource<T, S, R = unknown>(
 export function $resource<T, S, R = unknown>(
   source: ResourceSource<S>,
   fetcher: ResourceFetcher<S, T, R>,
-  options?: ResourceOptions<T, S> & SourceOption<S>,
+  options?: ResourceOptions<T, S>,
 ): ResourceObject<T, R>
 export function $resource(...args: any[]) {
   // @ts-expect-error args

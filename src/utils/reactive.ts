@@ -24,7 +24,7 @@ export function $reactive<T extends object, P extends Path<T>>(
     track()
     return get()
   }) as SignalObject<PathValue<T, P>>
-  result.$ = (arg?) => {
+  result.$set = (arg?) => {
     const _ = typeof arg === 'function' ? (arg as any)(get()) : arg
     const _equals = typeof equals === 'function'
       ? equals(get(), _)

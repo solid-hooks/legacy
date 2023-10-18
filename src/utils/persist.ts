@@ -46,7 +46,7 @@ export function $persist<T>(
   key: string,
   value: any,
   options: SignalOptions<T> & PeresistOptions<T> = {},
-): any {
+): SignalObject<T> {
   const {
     serializer = { read: JSON.parse, write: JSON.stringify },
     storage = localStorage,
@@ -63,13 +63,13 @@ export function $persist<T>(
   let unchanged: 1 | null = 1
 
   init instanceof Promise
-    ? init.then(data => unchanged && data && val.$(read(data)))
-    : init && val.$(read(init))
+    ? init.then(data => unchanged && data && val.$set(read(data)))
+    : init && val.$set(read(init))
 
   createComputed(on(
     val,
     (data) => {
-      const result = val.$(data as any)
+      const result = val.$set(data as any)
       onPersist?.(result)
       value === null
         ? storage.removeItem(key)
