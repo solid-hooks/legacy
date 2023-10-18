@@ -1,5 +1,6 @@
 import type { Accessor, AccessorArray, OnOptions } from 'solid-js'
 import { batch, createComputed, createEffect, createReaction, createRenderEffect, createSignal, on, onCleanup } from 'solid-js'
+import type { Prettify } from '@subframe7536/type-utils'
 import type { SignalObject } from './signal'
 
 export type Cleanupable = void | (() => void)
@@ -17,7 +18,7 @@ export type WatchCallback<S> = (
 /**
  * options for {@link baseWatch}
  */
-export type WatchOptions<T> = OnOptions & {
+type BaseWatchOptions<T> = OnOptions & {
   /**
    * function for trigger callback, like `debounce()` or `throttle()` in `@solid-primitives/scheduled`
    */
@@ -78,7 +79,7 @@ export function $watchOnce<T>(deps: Accessor<T>, cb: WatchCallback<T>, name?: st
 function baseWatch<T>(
   deps: Accessor<T> | AccessorArray<T> | SignalObject<T>,
   fn: WatchCallback<T>,
-  options: WatchOptions<T>,
+  options: BaseWatchOptions<T>,
 ): WatchObject {
   const [isWatch, setIsWatch] = createSignal(true)
   const [callTimes, setCallTimes] = createSignal(0)
@@ -114,6 +115,8 @@ function baseWatch<T>(
   }
 }
 
+export type WatchOptions<T> = Prettify<Omit<BaseWatchOptions<T>, 'effectFn'>>
+
 /**
  * object wrapper for {@link createEffect} and {@link on}
  * @param deps Accessor that need to be watch
@@ -124,7 +127,7 @@ function baseWatch<T>(
 export function $watch<T>(
   deps: Accessor<T> | AccessorArray<T> | SignalObject<T>,
   fn: WatchCallback<T>,
-  options: Omit<WatchOptions<T>, 'effectFn'> = {},
+  options: WatchOptions<T> = {},
 ): WatchObject {
   return baseWatch(deps, fn, { ...options, effectFn: createEffect })
 }
@@ -138,7 +141,7 @@ export function $watch<T>(
 export function $watchInstant<T>(
   deps: Accessor<T> | AccessorArray<T> | SignalObject<T>,
   fn: WatchCallback<T>,
-  options: Omit<WatchOptions<T>, 'effectFn'> = {},
+  options: WatchOptions<T> = {},
 ): WatchObject {
   return baseWatch(deps, fn, { ...options, effectFn: createComputed })
 }
@@ -152,7 +155,7 @@ export function $watchInstant<T>(
 export function $watchRendered<T>(
   deps: Accessor<T> | AccessorArray<T> | SignalObject<T>,
   fn: WatchCallback<T>,
-  options: Omit<WatchOptions<T>, 'effectFn'> = {},
+  options: WatchOptions<T> = {},
 ): WatchObject {
   return baseWatch(deps, fn, { ...options, effectFn: createRenderEffect })
 }

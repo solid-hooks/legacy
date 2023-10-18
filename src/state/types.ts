@@ -22,7 +22,7 @@ export type StateUtils<State> = {
    */
   $subscribe: <T extends Path<State>, S = T extends undefined ? State : PathValue<State, T>>(
     callback: (value: S) => Cleanupable,
-    options?: Omit<WatchOptions<S>, 'effectFn'> & {
+    options?: WatchOptions<S> & {
       path?: T
     }
   ) => WatchObject
