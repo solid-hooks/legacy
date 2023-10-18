@@ -4,10 +4,6 @@ import { createSignal } from 'solid-js'
 import type { SignalObject } from '../signal'
 
 /**
- * type of {@link $reactive}
- */
-export type ReactiveObject<T> = SignalObject<T>
-/**
  * `$()` like wrapper to make plain object props reactive
  * @param data source object
  * @param path object access path, support array access
@@ -18,7 +14,7 @@ export function $reactive<T extends object, P extends Path<T>>(
   data: T,
   path: P,
   options: SignalOptions<PathValue<T, P>> = {},
-): ReactiveObject<PathValue<T, P>> {
+): SignalObject<PathValue<T, P>> {
   const { equals } = options
   const [track, trigger] = createSignal(undefined, { ...options, equals: false })
   const get = () => pathGet(data, path)
@@ -27,7 +23,7 @@ export function $reactive<T extends object, P extends Path<T>>(
   const result = (() => {
     track()
     return get()
-  }) as ReactiveObject<PathValue<T, P>>
+  }) as SignalObject<PathValue<T, P>>
   result.$ = (arg?) => {
     const _ = typeof arg === 'function' ? (arg as any)(get()) : arg
     const _equals = typeof equals === 'function'

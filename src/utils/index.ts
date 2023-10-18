@@ -12,9 +12,11 @@ export { defineEmits } from './emits'
 export type { EmitProps, EmitsObject } from './emits'
 
 export { $reactive } from './reactive'
-export type { ReactiveObject } from './reactive'
 
 export { $listenDocument, $listenWindow, $listenEvent, $listenEventMap } from './event-listener'
 
 export { $persist } from './persist'
 export type { PeresistOptions } from './persist'
+
+export { $draggable, $drag, clamp } from './drag'
+export type { DragOptions, DraggableElement } from './drag'
