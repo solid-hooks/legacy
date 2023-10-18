@@ -120,7 +120,9 @@ export const $autoImport: ImportFn = directiveOnly => directiveOnly ? [
       '$listenWindow',
       '$listenEvent',
       '$listenEventMap',
-      '$persist'
+      '$persist',
+      '$draggable',
+      'clamp'
     ]
   },
   {
@@ -130,8 +132,9 @@ export const $autoImport: ImportFn = directiveOnly => directiveOnly ? [
       'ContextObject',
       'EmitProps',
       'EmitsObject',
-      'ReactiveObject',
-      'PeresistOptions'
+      'PeresistOptions',
+      'DragOptions',
+      'DraggableElement'
     ],
     'type': true
   }

@@ -15,7 +15,7 @@ export type WatchCallback<S> = (
 ) => Cleanupable
 
 /**
- * {@link baseWatch} options
+ * options for {@link baseWatch}
  */
 export type WatchOptions<T> = OnOptions & {
   /**

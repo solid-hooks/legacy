@@ -13,6 +13,9 @@ export type SelectorObject<T, U = T> = SignalObject<T> & {
   $bind: (k: U) => boolean
 }
 
+/**
+ * options for {@link $selector}
+ */
 export type SelectorObjectOptions<T, U = T> = SignalOptions<T> & {
   selectorEqual?: EqualityCheckerFunction<T, U>
 }

@@ -10,21 +10,6 @@ type Position = {
   y: number
 }
 
-/**
- * type support for {@link $drag} directive
- */
-export interface DragDirective {
-  drag: DragOptions
-}
-
-/**
- * draggable directive
- */
-export function $drag(el: HTMLElement, value: Accessor<DragOptions>) {
-  el.style.touchAction = 'none'
-  $draggable(el, { ...value(), addStyle: true, bindOnMount: true })
-}
-
 export type DraggableElement = HTMLElement | SVGElement | undefined | null
 
 /**
@@ -120,6 +105,7 @@ type DragResult = {
  * @param el target element
  * @param options drag options
  * @description recommend to add `touch-action: none` on element
+ * @see https://github.com/subframe7536/solid-dollar#draggable
  */
 export function $draggable(
   el: MaybeAccessor<DraggableElement>,

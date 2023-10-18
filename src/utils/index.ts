@@ -18,5 +18,5 @@ export { $listenDocument, $listenWindow, $listenEvent, $listenEventMap } from '.
 export { $persist } from './persist'
 export type { PeresistOptions } from './persist'
 
-export { $draggable, $drag, clamp } from './drag'
+export { $draggable, clamp } from './drag'
 export type { DragOptions, DraggableElement } from './drag'

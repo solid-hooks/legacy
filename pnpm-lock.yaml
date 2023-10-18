@@ -11,6 +11,9 @@ dependencies:
   '@solid-primitives/event-listener':
     specifier: ^2.3.0
     version: 2.3.0(solid-js@1.8.0)
+  '@solid-primitives/utils':
+    specifier: ^6.2.1
+    version: 6.2.1(solid-js@1.8.0)
   '@subframe7536/type-utils':
     specifier: ^0.1.2
     version: 0.1.2

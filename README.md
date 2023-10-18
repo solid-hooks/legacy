@@ -423,7 +423,7 @@ import { $ } from 'solid-dollar'
 
 const msg = $('')
 
-return <input type="text" use:model={msg} />
+return <input type="text" use:$model={msg} />
 ```
 
 typescript support
@@ -563,3 +563,42 @@ const itemState = $persist('item', 'loading', {
 ```
 
 reference from [@solid-primitives/storage](https://github.com/solidjs-community/solid-primitives/tree/main/packages/storage)
+
+### `$draggable`
+
+make element draggable
+
+```tsx
+import { $ } from 'solid-dollar'
+import { $draggable } from 'solid-dollar/utils'
+
+const el = $<HTMLElement>()
+const handle = $<HTMLElement>()
+
+const {
+  position,
+  resetPosition,
+  enable,
+  disable,
+  isDragging,
+  isDraggable,
+} = $draggable(el, {
+  initialPosition: { x: 200, y: 80 },
+  addStyle: true, // add style on el
+  handleEl: handle,
+})
+return (
+  <div
+    ref={el.$}
+    style={{ position: 'fixed' }}
+  >
+    I am at {Math.round(position().x)}, {Math.round(position().y)}
+    <div
+      ref={handle.$}
+      style={{ position: 'fixed' }}
+    >
+    drag me
+    </div>
+  </div>
+)
+```

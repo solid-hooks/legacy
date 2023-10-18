@@ -16,6 +16,9 @@ export type MessageType<Locale extends string> =
   | Record<Locale, Record<string, any>>
   | Record<string, () => Promise<{ default: any }>>
 
+/**
+ * options for {@link $i18n}
+ */
 export type I18nOptions<
   Locale extends string = string,
   Message extends MessageType<Locale> = any,
