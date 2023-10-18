@@ -92,7 +92,9 @@ export const $autoImport: ImportFn = directiveOnly => directiveOnly ? [
     'imports': [
       '$state',
       'GlobalStateProvider',
-      'deepClone'
+      'deepClone',
+      'useActions',
+      'useGetters'
     ]
   },
   {
