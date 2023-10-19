@@ -611,15 +611,28 @@ return (
 )
 ```
 
-### `$loadScript` / `$loadStyle`
+### load resources
+
+#### `$loadScript`
 
 load external script / style
 
 ```ts
-import { $loadScript, $loadStyle } from 'solid-dollar/utils'
+import { $ } from 'solid-dollar'
+import { $loadScript } from 'solid-dollar/utils'
 
-const cleanup = $loadScript('console.log(`test load script`)')
-const cleanup = $loadStyle('.card{color:#666}')
+const script = $('console.log(`test load script`)')
+const { element, cleanup } = $loadScript(script, {/* options */})
+```
+
+#### `$loadStyle`
+
+load external CSS code
+
+```ts
+import { $loadStyle } from 'solid-dollar/utils'
+
+const { element, cleanup } = $loadStyle('.card{color:#666}', {/* options */})
 ```
 
 ### `$objectURL`

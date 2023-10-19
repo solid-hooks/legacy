@@ -3,7 +3,11 @@ import type { ComponentProps } from 'solid-js'
 import { createRenderEffect } from 'solid-js'
 import { spread } from 'solid-js/web'
 
-function loadResource(type: 'script' | 'style', content: MaybeAccessor<string>, options?: ScriptOptions | StyleOption) {
+function loadResource(
+  type: 'script' | 'style',
+  content: MaybeAccessor<string>,
+  options?: ScriptOptions | StyleOption,
+) {
   const element = document.createElement(type)
   spread(element, options, false, true)
   createRenderEffect(() => {
@@ -14,9 +18,10 @@ function loadResource(type: 'script' | 'style', content: MaybeAccessor<string>, 
       document.head.appendChild(element)
     }
   })
-  return tryOnCleanup(() => {
+  const cleanup = tryOnCleanup(() => {
     document.head.contains(element) && document.head.removeChild(element)
   })
+  return { element, cleanup }
 }
 
 /**
@@ -29,6 +34,7 @@ export type ScriptOptions = Pick<ComponentProps<'script'>, 'defer' | 'crossOrigi
  * @param src script URL or js code
  * @param options script tag props
  * @returns cleanup function
+ * @see https://github.com/subframe7536/solid-dollar#loadscript
  */
 export function $loadScript(src: MaybeAccessor<string>, options?: ScriptOptions) {
   return loadResource('script', src, options)
@@ -44,6 +50,7 @@ export type StyleOption = Pick<ComponentProps<'style'>, 'media' | 'onLoad'>
  * @param css css code
  * @param options style tag props
  * @returns cleanup function
+ * @see https://github.com/subframe7536/solid-dollar#loadstyle
  */
 export function $loadStyle(css: MaybeAccessor<string>, options?: StyleOption) {
   return loadResource('style', css, options)
