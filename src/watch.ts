@@ -1,6 +1,7 @@
 import type { Accessor, AccessorArray, OnOptions } from 'solid-js'
 import { batch, createComputed, createEffect, createReaction, createRenderEffect, createSignal, on, onCleanup } from 'solid-js'
 import type { Prettify } from '@subframe7536/type-utils'
+import type { EffectOptions } from 'solid-js/types/reactive/signal'
 import type { SignalObject } from './signal'
 
 export type Cleanupable = void | (() => void)
@@ -61,11 +62,11 @@ export type WatchObject = {
 /**
  * wrapper for {@link createReaction}
  */
-export function $watchOnce<T>(deps: Accessor<T>, cb: WatchCallback<T>, name?: string) {
+export function $watchOnce<T>(deps: Accessor<T>, cb: WatchCallback<T>, options?: EffectOptions) {
   const old = deps()
   return createReaction(
     () => cb(deps(), old),
-    { name: name ? `$watchOnce-${name}` : undefined },
+    options,
   )(deps)
 }
 
@@ -83,7 +84,7 @@ function baseWatch<T>(
 ): WatchObject {
   const [isWatch, setIsWatch] = createSignal(true)
   const [callTimes, setCallTimes] = createSignal(0)
-  const { triggerFn, defer = false, filterFn, effectFn } = options
+  const { triggerFn, defer = true, filterFn, effectFn } = options
 
   const needToTriggerEffect = (newValue: T) => {
     return isWatch()
@@ -115,10 +116,18 @@ function baseWatch<T>(
   }
 }
 
-export type WatchOptions<T> = Prettify<Omit<BaseWatchOptions<T>, 'effectFn'>>
+export type WatchOptions<T> = Prettify<
+  Omit<BaseWatchOptions<T>, 'effectFn'> & {
+    /**
+     * {@link OnOptions}
+     * @default true
+     */
+    defer?: boolean
+  }
+>
 
 /**
- * object wrapper for {@link createEffect} and {@link on}
+ * object wrapper for {@link createEffect} and {@link on}, defer by default
  * @param deps Accessor that need to be watch
  * @param fn {@link WatchCallback callback function}
  * @param options options
@@ -133,7 +142,7 @@ export function $watch<T>(
 }
 
 /**
- * object wrapper for {@link createComputed} and {@link on}
+ * object wrapper for {@link createComputed} and {@link on}, defer by default
  * @param deps Accessor that need to be watch
  * @param fn {@link WatchCallback callback function}
  * @param options options
@@ -147,7 +156,7 @@ export function $watchInstant<T>(
 }
 
 /**
- * object wrapper for {@link createRenderEffect} and {@link on}
+ * object wrapper for {@link createRenderEffect} and {@link on}, defer by default
  * @param deps Accessor that need to be watch
  * @param fn {@link WatchCallback callback function}
  * @param options options

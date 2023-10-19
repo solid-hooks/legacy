@@ -40,8 +40,8 @@ describe('test state', () => {
     const actions = useActions(state)
 
     await $tick()
-    createRoot(() => state.$subscribe(callback, { defer: true }))
-    createRoot(() => state.$subscribe(deepCallback, { path: 'deep.test' }))
+    createRoot(() => state.$subscribe(callback))
+    createRoot(() => state.$subscribe(deepCallback, { path: 'deep.test', defer: false }))
     expect(state().deep.test).toBe(1)
     expect(state.doubleValue()).toBe(2)
     expect(deepCallback).toHaveBeenCalledWith(1)

@@ -18,13 +18,11 @@ export type StateUtils<State> = {
    */
   $reset: () => void
   /**
-   * subscribe to state, return {@link WatchObject}
+   * subscribe to state, defer by default, return {@link WatchObject}
    */
   $subscribe: <T extends Path<State>, S = T extends undefined ? State : PathValue<State, T>>(
     callback: (value: S) => Cleanupable,
-    options?: WatchOptions<S> & {
-      path?: T
-    }
+    options?: WatchOptions<S> & { path?: T }
   ) => WatchObject
 }
 

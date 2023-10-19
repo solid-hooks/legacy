@@ -79,7 +79,7 @@ data.$refetch()
 
 ### `$watch`
 
-pausable and filterable `createEffect(on())`
+pausable and filterable `createEffect(on())`, defer by default
 
 ```ts
 import { $watch } from 'solid-dollar'
@@ -183,7 +183,7 @@ inspired by `pinia` & `zustand`
 import { $state, GlobalStateProvider, useGetters, useActions } from 'solid-dollar/state'
 
 const useTestState = $state('test', {
-  $init: { value: 1 },
+  $init: { value: 1, deep: { data: 'hello' } },
   $getter: state => ({
     // without param, will auto wrapped with `createMemo`
     doubleValue() {
@@ -191,9 +191,6 @@ const useTestState = $state('test', {
     },
   }),
   $action: stateObj => ({
-    double(num: number) {
-      stateObj.$set('value', value => value * 2 * number)
-    },
     plus(num: number) {
       stateObj.$set('value', value => value + num)
     },
@@ -232,10 +229,10 @@ state.$patch({
   test: 2
 })
 
-// watch
+// extend $watch
 const { pause, resume, isWatching } = state.$subscribe(
   state => console.log(state),
-  { defer: true },
+  { defer: false, path: 'deep.data' },
 )
 
 // reset
