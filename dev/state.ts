@@ -38,7 +38,7 @@ export const useCustomState = $state('custom', (name, log) => {
     log('$state with custom function:', { name, newValue: plain() })
   })
   const plus2 = $memo(plain() + 2)
-  const owner = getOwner()
-  console.log(owner)
+  // const owner = getOwner()
+  // console.log(owner)
   return { plain, plus2 }
 })

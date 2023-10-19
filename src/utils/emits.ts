@@ -64,14 +64,11 @@ export function defineEmits<
 >(props: PropsWithEmits): EmitsObject<PropsWithEmits, Emits> {
   return {
     emit: (e, ...args) => {
-      // @ts-expect-error access $... and call it
+      // @ts-expect-error emit
       props[`$${e}`]?.(...args)
     },
     $emit: (e, value, options) => {
-      const val = $(value, {
-        name: `$emit-${e}`,
-        ...options,
-      })
+      const val = $(value, options)
       createEffect(on(val, (value) => {
         // @ts-expect-error emit
         props[`$${e}`]?.(value)
