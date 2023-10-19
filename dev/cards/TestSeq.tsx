@@ -1,4 +1,4 @@
-import { For, getOwner, onMount, runWithOwner } from 'solid-js'
+import { For, observable, onMount } from 'solid-js'
 import { $, $effect, $effectInstant, $effectRendered } from '../../src'
 import { $array, $tick } from '../../src/utils'
 
@@ -16,6 +16,13 @@ export function TestSeq() {
   $effect(() => log(`effect: ${str()}`))
   $effectRendered(() => log(`rendered: ${str()}`))
   $effectInstant(() => log(`instant: ${str()}`))
+  // same with $effect
+  observable(str).subscribe({
+    next(str) {
+      log(`subscribe: ${str}`)
+    },
+  })
+  // same with queueMicroTask
   $tick(() => {
     log(`tick: ${str()}`)
     str.$set('set when promise')

@@ -127,7 +127,9 @@ export const $autoImport: ImportFn = directiveOnly => directiveOnly ? [
       'clamp',
       '$objectURL',
       '$loadScript',
-      '$loadStyle'
+      '$loadStyle',
+      '$array',
+      '$callback'
     ]
   },
   {
@@ -141,8 +143,9 @@ export const $autoImport: ImportFn = directiveOnly => directiveOnly ? [
       'DragOptions',
       'DraggableElement',
       'ObjectURLObject',
-      'ScriptProps',
-      'StyleProps'
+      'ScriptOptions',
+      'StyleOption',
+      'ArrayObject'
     ],
     'type': true
   }

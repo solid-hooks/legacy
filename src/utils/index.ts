@@ -29,3 +29,5 @@ export type { ScriptOptions, StyleOption } from './load-resource'
 
 export { $array } from './array'
 export type { ArrayObject } from './array'
+
+export { $callback } from './callback'

@@ -657,3 +657,19 @@ arr() // [1]
 arr.$update(a => a.push(3)) // setter or `produce` like update
 arr() // [2, 3]
 ```
+
+### `$callback`
+
+create callbacks with `runWithOwner`, auto get current owner
+
+```ts
+import { $watch } from 'solid-dollar'
+import { $callback } from 'solid-dollar/utils'
+
+const handleClick = $callback(() => {
+  $watch(() => {...})
+})
+setTimeOut(handleClick, 100)
+```
+
+reference from [@solid-primitives/rootless](https://github.com/solidjs-community/solid-primitives/tree/main/packages/rootless#createcallback)
