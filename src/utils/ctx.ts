@@ -42,13 +42,13 @@ export function defineContext<T, Props extends Record<string, unknown>, N extend
  *
  * @param name context name
  * @param fn setup context function
- * @param defaultValue fallback value when context is not provided
+ * @param value fallback value when context is not provided
  * @see https://github.com/subframe7536/solid-dollar#defineContext
  */
 export function defineContext<T, Props extends Record<string, unknown>, N extends string>(
   name: N,
   fn: (props: Props) => T,
-  defaultValue: T,
+  value: T,
 ): ContextObject<N, T, Props>
 export function defineContext<T, Props extends Record<string, unknown>, N extends string>(
   name: N,

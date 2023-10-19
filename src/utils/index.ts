@@ -25,4 +25,7 @@ export { $objectURL } from './object-url'
 export type { ObjectURLObject } from './object-url'
 
 export { $loadScript, $loadStyle } from './load-resource'
-export type { ScriptOptions as ScriptProps, StyleOption as StyleProps } from './load-resource'
+export type { ScriptOptions, StyleOption } from './load-resource'
+
+export { $array } from './array'
+export type { ArrayObject } from './array'

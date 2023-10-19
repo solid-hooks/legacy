@@ -32,8 +32,8 @@ devDependencies:
     specifier: ^0.8.4
     version: 0.8.4(@solidjs/router@0.8.2)(solid-js@1.8.0)
   '@subframe7536/eslint-config':
-    specifier: ^0.3.6
-    version: 0.3.6(eslint@8.51.0)(typescript@5.2.2)(vitest@0.34.2)
+    specifier: ^0.3.7
+    version: 0.3.7(eslint@8.51.0)(typescript@5.2.2)(vitest@0.34.2)
   bumpp:
     specifier: ^9.2.0
     version: 9.2.0
@@ -1172,8 +1172,8 @@ packages:
       - typescript
     dev: true
 
-  /@subframe7536/eslint-config@0.3.6(eslint@8.51.0)(typescript@5.2.2)(vitest@0.34.2):
-    resolution: {integrity: sha512-NxZ9RinSR045QZBFT8mk8GMMHfzvwqURCcymddeBw5eKcXP8rMoOuQTtsmW6N1E8GRBU4UFWdjJBw95r0CyRwg==}
+  /@subframe7536/eslint-config@0.3.7(eslint@8.51.0)(typescript@5.2.2)(vitest@0.34.2):
+    resolution: {integrity: sha512-iha6d64uK2DrI99CWYSHjV6Rd6scGQGSVigvzRYT8VT8d+6oewhtgsEIlIdE3hE25gslxunGObR1AB9hixTqPg==}
     peerDependencies:
       eslint: ^8.51.0
     dependencies:

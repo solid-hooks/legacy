@@ -639,5 +639,22 @@ convert binary to object url
 ```ts
 import { $objectURL } from 'solid-dollar/utils'
 
-const url = $objectURL([new Uint8Array()])
+const url = $objectURL(new Blob())
+const url = $objectURL(new MediaSource())
+const url = $objectURL(new Uint8Array())
+```
+
+### `$array`
+
+object wrapper for array signal
+
+```ts
+import { $array } from 'solid-dollar/utils'
+
+const arr = $array<number[]>([1])
+
+arr() // [1]
+arr.$set([2]) // set value
+arr.$update(a => a.push(3)) // `produce` like update
+arr() // [2, 3]
 ```

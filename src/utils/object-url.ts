@@ -13,7 +13,7 @@ export type ObjectURLObject = {
 
 /**
  * convert blob to URL
- * @param value blobs
+ * @param value initial value
  * @param options options
  */
 export function $objectURL(
@@ -22,7 +22,7 @@ export function $objectURL(
 ): ObjectURLObject
 /**
  * convert ArrayBuffer or string to URL
- * @param value ArrayBuffer or string
+ * @param value initial value
  * @param options options
  */
 export function $objectURL(

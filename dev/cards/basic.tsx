@@ -35,7 +35,7 @@ export default function Basic() {
     console.log('watch current value:', currentCount)
     console.log('watch old value:', oldCount)
     console.log('object ref:', refObj())
-  }, { defer: true })
+  })
   return (
     <TestProvider>
       <button

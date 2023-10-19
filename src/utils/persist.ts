@@ -21,7 +21,7 @@ export type PeresistOptions<T> = {
 /**
  * auto persist value to storage(sync or async)
  * @param key storage key
- * @param value default value
+ * @param value initial value
  * @param options persist options
  * @see https://github.com/subframe7536/solid-dollar#persist
  */
