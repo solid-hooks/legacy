@@ -102,7 +102,6 @@
     }
   },
   "files": [
-    "directive.d.ts",
     "dist"
   ],
   "browser": {},
@@ -117,7 +116,7 @@
     "format": "eslint . --fix"
   },
   "peerDependencies": {
-    "solid-js": "^1.8"
+    "solid-js": "^1.7 || ^1.8"
   },
   "dependencies": {
     "@solid-primitives/deep": "^0.2.4",
@@ -136,8 +135,8 @@
     "tsup": "^7.2.0",
     "tsup-preset-solid": "^2.1.0",
     "typescript": "^5.2.2",
-    "vite": "^4.4.11",
-    "vite-plugin-solid": "^2.7.1",
+    "vite": "^4.5.0",
+    "vite-plugin-solid": "^2.7.2",
     "vitest": "0.34.2",
     "yaml": "^2.3.3"
   },
