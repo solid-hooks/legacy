@@ -12,7 +12,7 @@ type Prop = ParentProps<{ title: string }>
 function Card(props: Prop) {
   return (
     <ErrorBoundary fallback="error">
-      <div class="card" style={{ 'min-width': 'max(15vw,200px)' }}>
+      <div class="card">
         <h4>{props.title}</h4>
         {props.children}
       </div>

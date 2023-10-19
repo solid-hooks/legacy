@@ -654,7 +654,6 @@ import { $array } from 'solid-dollar/utils'
 const arr = $array<number[]>([1])
 
 arr() // [1]
-arr.$set([2]) // set value
-arr.$update(a => a.push(3)) // `produce` like update
+arr.$update(a => a.push(3)) // setter or `produce` like update
 arr() // [2, 3]
 ```

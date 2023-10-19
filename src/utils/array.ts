@@ -1,13 +1,11 @@
-import type { Setter, SignalOptions } from 'solid-js/types/reactive/signal'
-import { $ } from '../signal'
+import { type SignalOptions, createSignal } from 'solid-js'
 
 /**
  * type of {@link $array}
  */
 export type ArrayObject<T> = {
   (): T
-  $set: Setter<T>
-  $update: (updater: (prev: T) => void) => T
+  $update: (data: T | ((prev: T) => T | void)) => T
 }
 
 /**
@@ -17,16 +15,19 @@ export type ArrayObject<T> = {
  */
 export function $array<T extends any[]>(
   value: T,
-  options: SignalOptions<T> = {},
+  options: Omit<SignalOptions<T>, 'equal'> = {},
 ): ArrayObject<T> {
-  const arr = $(value, options)
-  // @ts-expect-error assign
-  arr.$update = updater => setArr(
-    (value: T) => {
-      let _ = [...value]
-      updater(_)
-      return _
-    },
+  const [arr, setArr] = createSignal(
+    value,
+    { ...options, equals: false },
   )
+  // @ts-expect-error assign
+  arr.$update = (data: any) => setArr((prev) => {
+    if (Array.isArray(data)) {
+      return data
+    }
+    const result = data(prev)
+    return result || prev
+  })
   return arr as ArrayObject<T>
 }
