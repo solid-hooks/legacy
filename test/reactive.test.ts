@@ -1,6 +1,6 @@
 import { createEffect, createRoot } from 'solid-js'
 import { describe, expect, it, vi } from 'vitest'
-import { $reactive } from '../src/hooks'
+import { $reactive } from '../src'
 
 describe('test $reactive', () => {
   it('basic', () => {

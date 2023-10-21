@@ -1,7 +1,7 @@
 import type { Path, PathValue } from 'object-standard-path'
 import type { SetStoreFunction, Store } from 'solid-js/store'
 import type { AnyFunction } from '@subframe7536/type-utils'
-import type { Cleanupable, WatchObject, WatchOptions } from '../watch'
+import type { Cleanupable, WatchCallback, WatchObject, WatchOptions } from '../watch'
 import type { StoreObject } from '../store'
 
 export type StateListener<State> = (state: State) => void
@@ -17,13 +17,25 @@ export type StateUtils<State> = {
    * reset state
    */
   $reset: () => void
-  /**
-   * subscribe to state, defer by default, return {@link WatchObject}
-   */
-  $subscribe: <T extends Path<State>, S = T extends undefined ? State : PathValue<State, T>>(
-    callback: (value: S) => Cleanupable,
-    options?: WatchOptions<S> & { path?: T }
-  ) => WatchObject
+  $subscribe: {
+    /**
+     * subscribe **full** object change, defer by default, return {@link WatchObject}
+     * @param callback watch callback
+     * @param options options
+     */
+    (callback: (value: State) => Cleanupable, options?: WatchOptions<State>): WatchObject
+    /**
+     * subscribe **partial** object change, defer by default, return {@link WatchObject}
+     * @param deps watch deps
+     * @param callback watch callback
+     * @param options options
+     */
+    <S>(
+      deps: (value: State) => S,
+      callback: WatchCallback<S>,
+      options?: WatchOptions<S>
+    ): WatchObject
+  }
 }
 
 /**

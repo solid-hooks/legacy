@@ -297,10 +297,16 @@ state.$patch({
   test: 2
 })
 
-// extend $watch
+// $watch
 const { pause, resume, isWatching } = state.$subscribe(
   state => console.log(state),
-  { defer: false, path: 'deep.data' },
+)
+
+// partial watch
+state.$subscribe(
+  (state) => state.deep.data
+  state => console.log(state),
+  { defer: false },
 )
 
 // reset

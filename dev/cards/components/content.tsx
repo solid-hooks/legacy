@@ -7,7 +7,7 @@ export default function Content() {
   const { plain } = useCustomState()
   const start = new Date().getTime()
   const { pause, resume, isWatching } = info.$subscribe(state => console.log('watching info:', state))
-  info.$subscribe(state => console.log('deep path data:', state), { path: 'deep.data' })
+  info.$subscribe(state => state.deep.data, state => console.log('deep path data:', state))
   async function handleClick() {
     const v = (new Date().getTime() - start) / 1000
     const { setTest, sleepAndPlus } = useActions(info)

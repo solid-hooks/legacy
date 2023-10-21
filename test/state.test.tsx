@@ -41,10 +41,10 @@ describe('test state', () => {
 
     await useTick()
     createRoot(() => state.$subscribe(callback))
-    createRoot(() => state.$subscribe(deepCallback, { path: 'deep.test', defer: false }))
+    createRoot(() => state.$subscribe(state => state.deep.test, deepCallback, { defer: false }))
     expect(state().deep.test).toBe(1)
     expect(state.doubleValue()).toBe(2)
-    expect(deepCallback).toHaveBeenCalledWith(1)
+    expect(deepCallback).toHaveBeenCalledWith(1, undefined)
 
     const value = createRoot(() => $memo(state.getLarger(1e8)))
 
@@ -59,12 +59,12 @@ describe('test state', () => {
     actions.double()
     expect(state().deep.test).toBe(2)
     expect(state.doubleValue()).toBe(4)
-    expect(deepCallback).toHaveBeenCalledWith(2)
+    expect(deepCallback).toHaveBeenCalledWith(2, 1)
 
     actions.plus(200)
     expect(state().deep.test).toBe(202)
     expect(state.doubleValue()).toBe(404)
-    expect(deepCallback).toHaveBeenCalledWith(202)
+    expect(deepCallback).toHaveBeenCalledWith(202, 2)
 
     state.$patch({ foo: 'baz' })
     expect(state().foo).toBe('baz')

@@ -183,11 +183,18 @@ function setupObject<
         }
         _store.$set(reconcile(initialState, { merge: true }))
       },
-      $subscribe: (callback, { path, ...options } = {}) => $watch(
-        path ? () => pathGet(_store(), path) : getDeps() as any,
-        s => callback(unwrap(s) as any),
-        options,
-      ),
+      $subscribe: (...args: any[]) => {
+        let deps = getDeps()
+        let callback = args[1]
+        let options = args[2]
+        if (typeof callback === 'function') {
+          deps = () => args[0](_store())
+        } else {
+          callback = args[0]
+          options = args[1]
+        }
+        return $watch(deps, callback, options)
+      },
     }
     log('initial state:', unwrap(_store()))
 

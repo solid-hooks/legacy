@@ -41,7 +41,7 @@ export type EmitsObject<PropsWithEmits, Emits extends Record<string, any>> = {
    * create a {@link SignalObject} that trigger event after value is set
    * @param event trigger event (only events with one parameter allowed)
    * @param value initial value
-   * @param options optoins
+   * @param options options
    */
   $emit: <
     K extends FilterOneParameterEvents<Emits, FilterKeys<PropsWithEmits>>,
