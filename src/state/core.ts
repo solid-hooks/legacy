@@ -5,7 +5,6 @@ import {
   createComponent,
   createComputed,
   createContext,
-  createMemo,
   createRoot,
   getOwner,
   on,
@@ -16,8 +15,15 @@ import { produce, reconcile, unwrap } from 'solid-js/store'
 import type { StoreObject } from '../store'
 import { $store, $trackStore } from '../store'
 import { $watch } from '../watch'
-import type { ActionObject, GetterObject, StateFunction, StateObject, StateSetup, StateUtils } from './types'
-import { createActions, deepClone } from './utils'
+import type {
+  ActionObject,
+  GetterObject,
+  StateFunction,
+  StateObject,
+  StateSetup,
+  StateUtils,
+} from './types'
+import { createActions, createGetters, deepClone } from './utils'
 
 type GlobalStateContext = {
   owner: Owner | null
@@ -121,7 +127,7 @@ function setupObject<
 >(
   setup: StateSetup<State, Getter, Action, Paths>,
 ): StateFunction<StateObject<State, Getter, Action>> {
-  const { $init, $getters, $actions, $persist } = setup
+  const { init, getters, actions, persist } = setup
   const {
     serializer: {
       write: writeFn,
@@ -132,11 +138,11 @@ function setupObject<
     },
     storage = localStorage,
     paths,
-  } = $persist || {}
+  } = persist || {}
 
   return (stateName, log) => {
-    const key = $persist?.key || stateName
-    const initialState = typeof $init === 'function' ? $init() : $init
+    const key = persist?.key || stateName
+    const initialState = typeof init === 'function' ? init() : init
     const _store = $store(
       Array.isArray(initialState) ? initialState : deepClone(initialState),
       { name: stateName },
@@ -177,15 +183,15 @@ function setupObject<
         }
         _store.$set(reconcile(initialState, { merge: true }))
       },
-      $subscribe: (cb, { path, ...options } = {}) => $watch(
+      $subscribe: (callback, { path, ...options } = {}) => $watch(
         path ? () => pathGet(_store(), path) : getDeps() as any,
-        s => cb(unwrap(s) as any),
+        s => callback(unwrap(s) as any),
         options,
       ),
     }
     log('initial state:', unwrap(_store()))
 
-    if ($persist && $persist.enable) {
+    if (persist?.enable) {
       const stored = storage.getItem(key)
       if (stored) {
         log('load from storage:', stored)
@@ -201,19 +207,11 @@ function setupObject<
       ))
     }
 
-    const getters = {} as Readonly<Getter>
-    for (const [key, getter] of Object.entries($getters?.(_store()) || {})) {
-      // @ts-expect-error assign
-      getters[key] = getter.length === 0
-        ? createMemo(getter, undefined, { name: `${stateName}-${getter.name}` })
-        : getter
-    }
-
     return Object.assign(
       () => _store(),
       utilFn,
-      getters,
-      createActions($actions?.(_store, utilFn)),
+      createGetters(getters, _store, stateName),
+      createActions(actions?.(_store, utilFn)),
     )
   }
 }

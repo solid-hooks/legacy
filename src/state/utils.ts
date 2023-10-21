@@ -1,12 +1,30 @@
-import { batch, untrack } from 'solid-js'
-import { klona } from 'klona'
+import { batch, createMemo, untrack } from 'solid-js'
 import type { MaybeAccessor } from '@solid-primitives/utils'
-import type { ActionObject, GetterObject, StateObject } from './types'
+import type { StoreObject } from '../store'
+import type { ActionObject, GetterObject, StateGetter, StateObject } from './types'
+
+export { klona as deepClone } from 'klona'
 
 /**
- * alias for {@link klona}
+ * @internal
  */
-export const deepClone = klona
+export function createGetters<
+  State extends object = Record<string, any>,
+  Getter extends GetterObject = {},
+  >(
+  getters: StateGetter<State, Getter> | undefined,
+  store: StoreObject<State>,
+  stateName: string,
+) {
+  const _getters = {} as Readonly<Getter>
+  for (const [key, getter] of Object.entries(getters?.(store()) || {})) {
+    // @ts-expect-error assign
+    getters[key] = getter.length === 0
+      ? createMemo(getter, undefined, { name: `${stateName}-${getter.name}` })
+      : getter
+  }
+  return _getters
+}
 
 /**
  * @internal

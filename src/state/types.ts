@@ -49,21 +49,21 @@ export type StateSetup<
    * if is Store, maybe built-in `$patch` and `$reset`
    * will not work as expect
    */
-  $init: InitialState<State>
+  init: InitialState<State>
   /**
    * functions to get state
    *
    * if the function param is none, use {@link createMemo}
    */
-  $getters?: StateGetter<State, Getter>
+  getters?: StateGetter<State, Getter>
   /**
    * functions to manage state
    */
-  $actions?: StateAction<State, Action>
+  actions?: StateAction<State, Action>
   /**
    * persist options for state
    */
-  $persist?: PersistOptions<State, Paths>
+  persist?: PersistOptions<State, Paths>
 }
 
 export type StateAction<

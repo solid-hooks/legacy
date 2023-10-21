@@ -3,19 +3,19 @@ import { $state } from '../src/state'
 import { $, $effectInstant, $memo } from '../src'
 
 export const useInfoState = $state('info', {
-  $init: {
+  init: {
     test: 1,
     deep: {
       data: 'test',
     },
   },
-  $getters: state => ({
+  getters: state => ({
     doubleValue() {
       console.log('update in memo')
       return state.test * 2
     },
   }),
-  $actions: state => ({
+  actions: state => ({
     setTest(test: number) {
       state.$set('test', test)
     },
@@ -27,7 +27,7 @@ export const useInfoState = $state('info', {
       }, ms))
     },
   }),
-  $persist: {
+  persist: {
     enable: true,
   },
 }, true)

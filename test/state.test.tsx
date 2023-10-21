@@ -11,8 +11,8 @@ describe('test state', () => {
     const deepCallback = vi.fn()
     const cacheCount = vi.fn()
     const useState = createRoot(() => $state('test-utils', {
-      $init: { deep: { test: 1 }, foo: 'bar' },
-      $getters: state => ({
+      init: { deep: { test: 1 }, foo: 'bar' },
+      getters: state => ({
         doubleValue() {
           return state.deep.test * 2
         },
@@ -26,7 +26,7 @@ describe('test state', () => {
           return state.deep.test + value
         },
       }),
-      $actions: state => ({
+      actions: state => ({
         double() {
           state.$set('deep', 'test', test => test * 2)
         },
@@ -80,21 +80,21 @@ describe('test state', () => {
   it('should successfully use nest $state()', async () => {
     const initialState = { count: 0 }
     const useState = $state('test-nest', {
-      $init: initialState,
-      $getters: state => ({
+      init: initialState,
+      getters: state => ({
         fresh: () => {
           return state.count * 2 + 20
         },
       }),
-      $actions: state => ({
+      actions: state => ({
         increment: () => state.$set('count', n => n + 1),
         decrement: () => state.$set('count', n => n - 1),
       }),
     })
     const state = useState()
     const useTempState = $state('test-nest-temp', {
-      $init: initialState,
-      $actions: tmp => ({
+      init: initialState,
+      actions: tmp => ({
         generate: () => {
           state.increment()
           tmp.$set('count', state.fresh())
@@ -132,12 +132,12 @@ describe('test state', () => {
     const initialState = { count: 0 }
     const kv = new Map()
     const useState = $state('test-persist', {
-      $init: initialState,
-      $actions: state => ({
+      init: initialState,
+      actions: state => ({
         increment: () => state.$set('count', n => n + 1),
         decrement: () => state.$set('count', n => n - 1),
       }),
-      $persist: {
+      persist: {
         enable: true,
         storage: {
           getItem(key) {
@@ -195,8 +195,8 @@ describe('test state', () => {
     }
     const kv = new Map()
     const useState = $state('test-persist-optional', {
-      $init: initialState,
-      $actions: state => ({
+      init: initialState,
+      actions: state => ({
         increment: () => {
           state.$set('persist', 'count', n => n + 1)
           state.$set('nonePersist', ['increment', `${state().persist.count}`])
@@ -206,7 +206,7 @@ describe('test state', () => {
           state.$set('nonePersist', ['decrement', `${state().persist.count}`])
         },
       }),
-      $persist: {
+      persist: {
         enable: true,
         storage: {
           getItem(key) {

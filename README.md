@@ -251,19 +251,19 @@ inspired by `pinia` & `zustand`
 import { $state, GlobalStateProvider, useGetters, useActions } from 'solid-dollar/state'
 
 const useTestState = $state('test', {
-  $init: { value: 1, deep: { data: 'hello' } },
-  $getter: state => ({
+  init: { value: 1, deep: { data: 'hello' } },
+  getter: state => ({
     // without param, will auto wrapped with `createMemo`
     doubleValue() {
       return state.value * 2
     },
   }),
-  $action: stateObj => ({
+  action: stateObj => ({
     plus(num: number) {
       stateObj.$set('value', value => value + num)
     },
   }),
-  $persist: {
+  persist: {
     enable: true,
     storage: localStorage,
     path: ['test'] // type safe, support array
