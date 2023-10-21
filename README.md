@@ -167,6 +167,74 @@ return (
 )
 ```
 
+### `$persist`
+
+auto persist value to storage(sync or async)
+
+reference from [@solid-primitives/storage](https://github.com/solidjs-community/solid-primitives/tree/main/packages/storage)
+
+```ts
+import { $persist } from 'solid-dollar'
+
+// default to persist to `localeStorage`
+const val = $persist('key', 1)
+
+const itemState = $persist('item', 'loading', {
+  storage: {/* async or sync storage */}
+  serializer: {
+    read: JSON.parse, // default
+    write: JSON.stringify, // default
+  }
+})
+```
+
+### `$objectURL`
+
+convert binary to object url
+
+```ts
+import { $objectURL } from 'solid-dollar'
+
+const url = $objectURL(new Blob())
+const url = $objectURL(new MediaSource())
+const url = $objectURL(new Uint8Array())
+```
+
+### `$array`
+
+object wrapper for array signal
+
+```ts
+import { $array } from 'solid-dollar'
+
+const arr = $array<number[]>([1])
+
+arr() // [1]
+arr.$set([2]) // set
+arr.$mutate(a => a.push(3)) // update by mutating it in-place
+arr() // [2, 3]
+```
+
+### `$reactive`
+
+make plain object props reactive
+
+```ts
+import { $reactive } from 'solid-dollar'
+
+const value = {
+  deep: {
+    data: 'str',
+  },
+}
+
+const bar = $reactive(value, 'deep.data')
+
+bar() // 'str'
+bar.$set('updated') // 'update'
+bar() // 'updated'
+```
+
 ---
 
 ## `solid-dollar/state`
@@ -368,15 +436,15 @@ see more at [`dev/`](/dev) and [`test`](/test/i18n.test.ts)
 
 ---
 
-## `solid-dollar/utils`
+## `solid-dollar/hooks`
 
 ### `defineEmits`
 
 util for child component event emitting, auto handle optional prop
 
 ```tsx
-import { defineEmits } from 'solid-dollar/utils'
-import type { EmitProps } from 'solid-dollar/utils'
+import { useEmits } from 'solid-dollar/hooks'
+import type { EmitProps } from 'solid-dollar/hooks'
 
 type Emits = {
   var: number
@@ -387,7 +455,7 @@ type Emits = {
 type BaseProps = { num: number }
 
 function Child(props: EmitProps<Emits, BaseProps>) {
-  const { emit, $emit } = defineEmits<Emits>(props)
+  const { emit, $emit } = useEmits<Emits>(props)
 
   // auto emit after value changing, inspird by `defineModel` in Vue
   const variable = $emit('var', 1)
@@ -418,7 +486,7 @@ function Father() {
 }
 ```
 
-### `$model`
+### `model`
 
 simple two-way binding directive for `<input>`, `<textare>`, `<select>`
 
@@ -427,14 +495,14 @@ import { $ } from 'solid-dollar'
 
 const msg = $('')
 
-return <input type="text" use:$model={msg} />
+return <input type="text" use:model={msg} />
 ```
 
 typescript support
 
 env.d.ts:
 ```ts
-import { ModelDirective } from 'solid-dollar/utils'
+import { ModelDirective } from 'solid-dollar/hooks'
 
 declare module 'solid-js' {
   namespace JSX {
@@ -465,19 +533,19 @@ export default defineConfig({
 })
 ```
 
-### `$tick`
+### `useTick`
 
 `Vue` like `nextTick()`, reference from [solidjs-use](https://github.com/solidjs-use/solidjs-use/blob/main/packages/solid-to-vue/src/scheduler.ts)
 
-### `$app`
+### `useApp`
 
 `Vue` like `createApp()`
 
 ```ts
-import { $app } from 'solid-dollar/utils'
+import { useApp } from 'solid-dollar/hooks'
 import App from './App'
 
-$app(App)
+useApp(App)
   .use(RouterProvider, { props })
   .use(I18nProvider)
   .use(GlobalStoreProvider)
@@ -501,80 +569,43 @@ render(
 
 reference from [solid-utils](https://github.com/amoutonbrady/solid-utils#createapp)
 
-### `defineContext`
+### `useContextProvider`
 
-object style [createContextProvider](https://github.com/solidjs-community/solid-primitives/tree/main/packages/context#createcontextprovider)
+object style useContext and Provider
 
 if default value is not defined and use context outside provider, throw `Error` when DEV
 
-```ts
-import { defineContext } from 'solid-dollar/utils'
+reference from [@solid-primitives/context](https://github.com/solidjs-community/solid-primitives/tree/main/packages/context#createcontextprovider)
 
-const { useDateContext, DateProvider } = defineContext(
+```ts
+import { useContextProvider } from 'solid-dollar/hooks'
+
+const { useDateContext, DateProvider } = useContextProvider(
   'date',
   () => new Date()
 )
 
 // use parameters
-const { useDateContext, DateProvider } = defineContext(
+const { useDateContext, DateProvider } = useContextProvider(
   'date',
   (args: { date: string }) => new Date(args.date),
   { date: '2000-01-01' }
 )
 ```
 
-### `$reactive`
+### `useEventListener` / `useEventListenerMap` / `useDocumentListener` / `useWindowListener`
 
-make plain object props reactive
+auto cleanup event listener
 
-```ts
-import { $reactive } from 'solid-dollar/utils'
+reference from [@solid-primitives/event-listener](https://github.com/solidjs-community/solid-primitives/tree/main/packages/event-listener)
 
-const value = {
-  deep: {
-    data: 'str',
-  },
-}
-
-const bar = $reactive(value, 'deep.data')
-
-bar() // 'str'
-bar.$set('updated') // 'update'
-bar() // 'updated'
-```
-
-### `$listenEvent` / `$listenEventMap` / `$listenDocument` / `listenWindow`
-
-aliases and shortcuts of [@solid-primitives/event-listener](https://github.com/solidjs-community/solid-primitives/tree/main/packages/event-listener)
-
-### `$persist`
-
-auto persist value to storage(sync or async)
-
-```ts
-import { $persist } from 'solid-dollar/utils'
-
-// default to persist to `localeStorage`
-const val = $persist('key', 1)
-
-const itemState = $persist('item', 'loading', {
-  storage: {/* async or sync storage */}
-  serializer: {
-    read: JSON.parse, // default
-    write: JSON.stringify, // default
-  }
-})
-```
-
-reference from [@solid-primitives/storage](https://github.com/solidjs-community/solid-primitives/tree/main/packages/storage)
-
-### `$draggable`
+### `useDraggable`
 
 make element draggable
 
 ```tsx
 import { $ } from 'solid-dollar'
-import { $draggable } from 'solid-dollar/utils'
+import { useDraggable } from 'solid-dollar/hooks'
 
 const el = $<HTMLElement>()
 const handle = $<HTMLElement>()
@@ -587,7 +618,7 @@ const {
   isDragging,
   isDraggable,
   style,
-} = $draggable(el, {
+} = useDraggable(el, {
   initialPosition: { x: 200, y: 80 },
   addStyle: true, // auto add style on el
   handleEl: handle,
@@ -610,66 +641,40 @@ return (
 
 ### load resources
 
-#### `$loadScript`
+#### `useScriptLoader`
 
 load external script / style
 
 ```ts
 import { $ } from 'solid-dollar'
-import { $loadScript } from 'solid-dollar/utils'
+import { useScriptLoader } from 'solid-dollar/hooks'
 
 const script = $('console.log(`test load script`)')
-const { element, cleanup } = $loadScript(script, {/* options */})
+const { element, cleanup } = useScriptLoader(script, {/* options */})
 ```
 
-#### `$loadStyle`
+#### `useStyleLoader`
 
 load external CSS code
 
 ```ts
-import { $loadStyle } from 'solid-dollar/utils'
+import { useStyleLoader } from 'solid-dollar/hooks'
 
-const { element, cleanup } = $loadStyle('.card{color:#666}', {/* options */})
+const { element, cleanup } = useStyleLoader('.card{color:#666}', {/* options */})
 ```
 
-### `$objectURL`
-
-convert binary to object url
-
-```ts
-import { $objectURL } from 'solid-dollar/utils'
-
-const url = $objectURL(new Blob())
-const url = $objectURL(new MediaSource())
-const url = $objectURL(new Uint8Array())
-```
-
-### `$array`
-
-object wrapper for array signal
-
-```ts
-import { $array } from 'solid-dollar/utils'
-
-const arr = $array<number[]>([1])
-
-arr() // [1]
-arr.$update(a => a.push(3)) // setter or `produce` like update
-arr() // [2, 3]
-```
-
-### `$callback`
+### `useCallback`
 
 create callbacks with `runWithOwner`, auto get current owner
 
+reference from [@solid-primitives/rootless](https://github.com/solidjs-community/solid-primitives/tree/main/packages/rootless#createcallback)
+
 ```ts
 import { $watch } from 'solid-dollar'
-import { $callback } from 'solid-dollar/utils'
+import { useCallback } from 'solid-dollar/hooks'
 
-const handleClick = $callback(() => {
+const handleClick = useCallback(() => {
   $watch(() => {...})
 })
 setTimeOut(handleClick, 100)
 ```
-
-reference from [@solid-primitives/rootless](https://github.com/solidjs-community/solid-primitives/tree/main/packages/rootless#createcallback)

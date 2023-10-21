@@ -2,7 +2,7 @@ import { createSignal } from 'solid-js'
 import { describe, expect, it } from 'vitest'
 import { $ } from '../src'
 
-describe('test signal', () => {
+describe('test $', () => {
   it('$()', () => {
     const foo = $()
     expect(foo()).toBe(undefined)

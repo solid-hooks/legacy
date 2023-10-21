@@ -1,5 +1,5 @@
 import { $ } from '../../src'
-import { $draggable } from '../../src/utils'
+import { useDraggable } from '../../src/hooks'
 
 export default function Drag() {
   const el = $<HTMLElement>()
@@ -12,7 +12,7 @@ export default function Drag() {
     disable,
     isDragging,
     isDraggable,
-  } = $draggable(el, {
+  } = useDraggable(el, {
     initialPosition: { x: 200, y: 80 },
     addStyle: true,
     handleEl: handle,

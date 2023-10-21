@@ -11,7 +11,7 @@ type Position = {
 export type DraggableElement = HTMLElement | SVGElement | undefined | null
 
 /**
- * options for {@link $draggable}
+ * options for {@link useDraggable}
  */
 export type DragOptions = {
   /**
@@ -99,13 +99,13 @@ type DragResult = {
 }
 
 /**
- * make element dragable
+ * make element draggable
  * @param el target element
  * @param options drag options
  * @description recommend to add `touch-action: none` on element
  * @see https://github.com/subframe7536/solid-dollar#draggable
  */
-export function $draggable(
+export function useDraggable(
   el: MaybeAccessor<DraggableElement>,
   options: DragOptions = {},
 ): DragResult {

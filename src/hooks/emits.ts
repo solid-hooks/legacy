@@ -25,7 +25,7 @@ export type EmitProps<
 }>
 
 /**
- * type for {@link defineEmits}
+ * type for {@link useEmits}
  */
 export type EmitsObject<PropsWithEmits, Emits extends Record<string, any>> = {
   /**
@@ -58,7 +58,7 @@ export type EmitsObject<PropsWithEmits, Emits extends Record<string, any>> = {
  * @param props conponents props
  * @see https://github.com/subframe7536/solid-dollar#defineEmits
  */
-export function defineEmits<
+export function useEmits<
   Emits extends Record<string, any>,
   PropsWithEmits = EmitProps<Emits>,
 >(props: PropsWithEmits): EmitsObject<PropsWithEmits, Emits> {

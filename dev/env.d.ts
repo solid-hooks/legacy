@@ -1,4 +1,4 @@
-import type { ModelDirective } from '../src/utils/model'
+import type { ModelDirective } from '../src/hooks/model'
 
 declare module 'solid-js' {
   namespace JSX {

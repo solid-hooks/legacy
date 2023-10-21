@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { $i18n } from '../src/i18n'
-import { $tick } from '../src/utils'
+import { useTick } from '../src/hooks'
 
 describe('i18n', () => {
   const en = {
@@ -50,7 +50,7 @@ describe('i18n', () => {
 
   async function changeLocale() {
     locale.$set('zh')
-    await $tick()
+    await useTick()
   }
 
   it('translation', async () => {

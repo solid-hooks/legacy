@@ -17,3 +17,14 @@ export { $selector } from './selector'
 export type { SelectorObject, SelectorObjectOptions } from './selector'
 
 export { $$, $effect, $effectInstant, $effectRendered, $deferred } from './alias'
+
+export { $array } from './array'
+export type { ArrayObject } from './array'
+
+export { $objectURL } from './object-url'
+export type { ObjectURLObject } from './object-url'
+
+export { $persist } from './persist'
+export type { PeresistOptions } from './persist'
+
+export { $reactive } from './reactive'

@@ -51,7 +51,11 @@ export const $autoImport: ImportFn = directiveOnly => directiveOnly ? [
       '$effect',
       '$effectInstant',
       '$effectRendered',
-      '$deferred'
+      '$deferred',
+      '$array',
+      '$objectURL',
+      '$persist',
+      '$reactive'
     ]
   },
   {
@@ -66,7 +70,10 @@ export const $autoImport: ImportFn = directiveOnly => directiveOnly ? [
       'WatchOptions',
       'WatchObject',
       'SelectorObject',
-      'SelectorObjectOptions'
+      'SelectorObjectOptions',
+      'ArrayObject',
+      'ObjectURLObject',
+      'PeresistOptions'
     ],
     'type': true
   },
@@ -112,24 +119,20 @@ export const $autoImport: ImportFn = directiveOnly => directiveOnly ? [
   {
     'from': 'solid-dollar/utils',
     'imports': [
-      '$model',
-      'defineContext',
-      '$tick',
-      '$app',
-      'defineEmits',
-      '$reactive',
-      '$listenDocument',
-      '$listenWindow',
-      '$listenEvent',
-      '$listenEventMap',
-      '$persist',
-      '$draggable',
+      'model',
+      'useContextProvider',
+      'useTick',
+      'useApp',
+      'useEmits',
+      'useDocumentListener',
+      'useWindowListener',
+      'useEventListener',
+      'useEventListenerMap',
+      'useDraggable',
       'clamp',
-      '$objectURL',
-      '$loadScript',
-      '$loadStyle',
-      '$array',
-      '$callback'
+      'useScriptLoader',
+      'useStyleLoader',
+      'useCallback'
     ]
   },
   {
@@ -139,13 +142,10 @@ export const $autoImport: ImportFn = directiveOnly => directiveOnly ? [
       'ContextObject',
       'EmitProps',
       'EmitsObject',
-      'PeresistOptions',
       'DragOptions',
       'DraggableElement',
-      'ObjectURLObject',
       'ScriptOptions',
-      'StyleOption',
-      'ArrayObject'
+      'StyleOption'
     ],
     'type': true
   }

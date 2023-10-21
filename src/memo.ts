@@ -9,6 +9,7 @@ export type MemoObject<T> = () => (T extends (...args: any) => infer R ? R : T)
 /**
  * object wrapper for {@link createMemo}, auto wrap with accessor
  * @param data memo data
+ * @see https://github.com/subframe7536/solid-dollar#memo
  */
 export function $memo<T>(data: T): MemoObject<T>
 /**
@@ -16,6 +17,7 @@ export function $memo<T>(data: T): MemoObject<T>
  * @param accessor memo accessor
  * @param value initial value
  * @param options memo options
+ * @see https://github.com/subframe7536/solid-dollar#memo
  */
 export function $memo<T>(
   accessor: EffectFunction<T | undefined, T>,

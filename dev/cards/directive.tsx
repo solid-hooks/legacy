@@ -1,13 +1,13 @@
 import { $ } from '../../src'
-import { $model } from '../../src/utils'
+import { model } from '../../src/hooks'
 
 export default function ShowDirective() {
   const val = $('test1')
   // eslint-disable-next-line no-unused-expressions
-  $model
+  model
   return (
     <>
-      <input type="text" use:$model={val} />
+      <input type="text" use:model={val} />
       <br />
       test: {val()}
     </>

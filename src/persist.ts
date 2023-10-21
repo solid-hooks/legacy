@@ -1,7 +1,7 @@
 import { createComputed, on } from 'solid-js'
 import type { Accessor, Setter, SignalOptions } from 'solid-js'
-import type { Serializer, StorageLike } from '../state/types'
-import { $, type SignalObject, isSignal } from '../signal'
+import type { Serializer, StorageLike } from './state/types'
+import { $, type SignalObject, isSignal } from './signal'
 
 type AnyStorage = StorageLike | {
   [K in keyof StorageLike]: (

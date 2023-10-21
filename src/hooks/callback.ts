@@ -3,12 +3,12 @@ import type { Owner } from 'solid-js'
 import { getOwner, runWithOwner } from 'solid-js'
 
 /**
- * create callbacks with `runWithOwner`, auto get current owner
+ * create callback with `runWithOwner`, auto get current owner
  * @param callback callback function
  * @param owner owner that run with
- * @see https://github.com/subframe7536/solid-dollar#callback
+ * @see https://github.com/subframe7536/solid-dollar#useCallback
  */
-export function $callback<T extends AnyFunction>(
+export function useCallback<T extends AnyFunction>(
   callback: T,
   owner: Owner | null = getOwner(),
 ): T {

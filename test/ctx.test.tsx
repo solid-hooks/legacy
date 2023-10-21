@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import { render } from 'solid-js/web'
-import { defineContext } from '../src/utils/ctx'
+import { useContextProvider } from '../src/hooks/context-provider'
 
 const context = { message: 'Hello, Context!' }
 
 describe('defineContext with props and fallback', () => {
   const fallback = { message: 'FALLBACK' }
-  const { TestProvider, useTestContext } = defineContext(
+  const { TestProvider, useTestContext } = useContextProvider(
     'test',
     (params: { text?: string }) => {
       return {
@@ -40,7 +40,7 @@ describe('defineContext with props and fallback', () => {
 })
 
 describe('defineContext without props', () => {
-  const { TestProvider, useTestContext } = defineContext(
+  const { TestProvider, useTestContext } = useContextProvider(
     'test',
     () => {
       return {

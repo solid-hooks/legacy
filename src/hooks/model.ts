@@ -3,16 +3,16 @@ import { makeEventListener } from '@solid-primitives/event-listener'
 import type { SignalObject } from '../signal'
 
 /**
- * type support for {@link $model} directive
+ * type support for {@link model} directive
  */
 export interface ModelDirective {
-  $model: SignalObject<any>
+  model: SignalObject<any>
 }
 
 /**
  * two-way binding directive
  */
-export function $model(
+export function model(
   el: HTMLInputElement | HTMLSelectElement,
   data: () => SignalObject<any>,
 ) {

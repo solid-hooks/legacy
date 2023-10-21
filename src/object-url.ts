@@ -15,6 +15,7 @@ export type ObjectURLObject = {
  * convert blob to URL
  * @param value initial value
  * @param options options
+ * @see https://github.com/subframe7536/solid-dollar#objecturl
  */
 export function $objectURL(
   value: Blob | File | MediaSource,
@@ -24,6 +25,7 @@ export function $objectURL(
  * convert ArrayBuffer or string to URL
  * @param value initial value
  * @param options options
+ * @see https://github.com/subframe7536/solid-dollar#objecturl
  */
 export function $objectURL(
   value: ArrayBuffer | string,

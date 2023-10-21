@@ -1,7 +1,7 @@
 import { type Path, type PathValue, pathGet, pathSet } from 'object-standard-path'
 import type { SignalOptions } from 'solid-js'
 import { createSignal } from 'solid-js'
-import type { SignalObject } from '../signal'
+import type { SignalObject } from './signal'
 
 /**
  * `$()` like wrapper to make plain object props reactive

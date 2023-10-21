@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { createRoot } from 'solid-js'
 import { $memo } from '../src'
 import { $state, useActions } from '../src/state'
-import { $tick } from '../src/utils'
+import { useTick } from '../src/hooks'
 
 describe('test state', () => {
   it('$state()', async () => {
@@ -39,7 +39,7 @@ describe('test state', () => {
     const state = useState()
     const actions = useActions(state)
 
-    await $tick()
+    await useTick()
     createRoot(() => state.$subscribe(callback))
     createRoot(() => state.$subscribe(deepCallback, { path: 'deep.test', defer: false }))
     expect(state().deep.test).toBe(1)
@@ -74,7 +74,7 @@ describe('test state', () => {
     expect(state().foo).toBe('bar')
     expect(state.doubleValue()).toBe(2)
 
-    await $tick()
+    await useTick()
     expect(callback).toHaveBeenCalledTimes(4)
   })
   it('should successfully use nest $state()', async () => {
@@ -116,11 +116,11 @@ describe('test state', () => {
     expect(p.innerHTML).toBe('0')
 
     fireEvent.click(incrementBtn)
-    await $tick()
+    await useTick()
     expect(p.innerHTML).toBe('1')
 
     fireEvent.click(decrementBtn)
-    await $tick()
+    await useTick()
     expect(p.innerHTML).toBe('0')
 
     tempState.generate()
@@ -166,7 +166,7 @@ describe('test state', () => {
     const incrementBtn = getByTestId('increment')
     const decrementBtn = getByTestId('decrement')
 
-    await $tick()
+    await useTick()
     expect(p.innerHTML).toBe('0')
     expect(kv.get(key)).toBe('{"count":0}')
 
@@ -237,17 +237,17 @@ describe('test state', () => {
     const incrementBtn = getByTestId('increment')
     const decrementBtn = getByTestId('decrement')
 
-    await $tick()
+    await useTick()
     expect(p.innerHTML).toBe('0')
     expect(kv.get(key)).toBe('{"persist":{"count":0},"nonePersist":["test"]}')
 
     fireEvent.click(incrementBtn)
-    await $tick()
+    await useTick()
     expect(p.innerHTML).toBe('1')
     expect(kv.get(key)).toBe('{"persist":{"count":1},"nonePersist":["increment"]}')
 
     fireEvent.click(decrementBtn)
-    await $tick()
+    await useTick()
     expect(p.innerHTML).toBe('0')
     expect(kv.get(key)).toBe('{"persist":{"count":0},"nonePersist":["decrement"]}')
   })

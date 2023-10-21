@@ -3,7 +3,7 @@ import type { ComponentProps } from 'solid-js'
 import { createRenderEffect } from 'solid-js'
 import { spread } from 'solid-js/web'
 
-function loadResource(
+function loader(
   type: 'script' | 'style',
   content: MaybeAccessor<string>,
   options?: ScriptOptions | StyleOption,
@@ -25,9 +25,18 @@ function loadResource(
 }
 
 /**
- * options of {@link $loadScript}
+ * options of {@link useScriptLoader}
  */
-export type ScriptOptions = Pick<ComponentProps<'script'>, 'defer' | 'crossOrigin' | 'noModule' | 'referrerPolicy' | 'type' | 'async' | 'onLoad'>
+export type ScriptOptions = Pick<
+  ComponentProps<'script'>,
+  | 'defer'
+  | 'crossOrigin'
+  | 'noModule'
+  | 'referrerPolicy'
+  | 'type'
+  | 'async'
+  | 'onLoad'
+>
 
 /**
  * load external script
@@ -36,14 +45,18 @@ export type ScriptOptions = Pick<ComponentProps<'script'>, 'defer' | 'crossOrigi
  * @returns cleanup function
  * @see https://github.com/subframe7536/solid-dollar#loadscript
  */
-export function $loadScript(src: MaybeAccessor<string>, options?: ScriptOptions) {
-  return loadResource('script', src, options)
+export function useScriptLoader(src: MaybeAccessor<string>, options?: ScriptOptions) {
+  return loader('script', src, options)
 }
 
 /**
- * options of {@link $loadStyle}
+ * options of {@link useStyleLoader}
  */
-export type StyleOption = Pick<ComponentProps<'style'>, 'media' | 'onLoad'>
+export type StyleOption = Pick<
+  ComponentProps<'style'>,
+  | 'media'
+  | 'onLoad'
+>
 
 /**
  * load external style
@@ -52,6 +65,6 @@ export type StyleOption = Pick<ComponentProps<'style'>, 'media' | 'onLoad'>
  * @returns cleanup function
  * @see https://github.com/subframe7536/solid-dollar#loadstyle
  */
-export function $loadStyle(css: MaybeAccessor<string>, options?: StyleOption) {
-  return loadResource('style', css, options)
+export function useStyleLoader(css: MaybeAccessor<string>, options?: StyleOption) {
+  return loader('style', css, options)
 }

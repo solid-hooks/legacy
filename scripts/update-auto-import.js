@@ -29,7 +29,7 @@ function getExports(filePath) {
 const index = getExports('src/index.ts')
 const i18n = getExports('src/i18n/index.ts')
 const state = getExports('src/state/index.ts')
-const utils = getExports('src/utils/index.ts')
+const utils = getExports('src/hooks/index.ts')
 const result = [
   {
     from: 'solid-dollar',

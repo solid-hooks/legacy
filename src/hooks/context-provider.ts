@@ -15,14 +15,14 @@ export type ContextObject<
 }
 
 /**
- * object style {@link https://github.com/solidjs-community/solid-primitives/tree/main/packages/context#createcontextprovider createContextProvider}
+ * object style useContext and Provider
  *
  * if use context outside provider, throw `Error` when DEV
  * @param name context name
  * @param fn setup context function
  * @see https://github.com/subframe7536/solid-dollar#defineContext
  */
-export function defineContext<T, N extends string>(
+export function useContextProvider<T, N extends string>(
   name: N,
   fn: () => T,
 ): ContextObject<N, T>
@@ -33,7 +33,7 @@ export function defineContext<T, N extends string>(
  * @param fn setup context function
  * @see https://github.com/subframe7536/solid-dollar#defineContext
  */
-export function defineContext<T, Props extends Record<string, unknown>, N extends string>(
+export function useContextProvider<T, Props extends Record<string, unknown>, N extends string>(
   name: N,
   fn: (props: Props) => T,
 ): ContextObject<N, T | undefined, Props>
@@ -45,12 +45,12 @@ export function defineContext<T, Props extends Record<string, unknown>, N extend
  * @param value fallback value when context is not provided
  * @see https://github.com/subframe7536/solid-dollar#defineContext
  */
-export function defineContext<T, Props extends Record<string, unknown>, N extends string>(
+export function useContextProvider<T, Props extends Record<string, unknown>, N extends string>(
   name: N,
   fn: (props: Props) => T,
   value: T,
 ): ContextObject<N, T, Props>
-export function defineContext<T, Props extends Record<string, unknown>, N extends string>(
+export function useContextProvider<T, Props extends Record<string, unknown>, N extends string>(
   name: N,
   fn: (props?: Props) => T,
   defaultValue?: T,

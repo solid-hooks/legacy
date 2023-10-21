@@ -19,8 +19,8 @@ const preset_options: preset.PresetOptions = {
       name: 'state',
     },
     {
-      entry: 'src/utils/index.ts',
-      name: 'utils',
+      entry: 'src/hooks/index.ts',
+      name: 'hooks',
     },
   ],
   cjs: true,

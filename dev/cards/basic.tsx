@@ -1,8 +1,8 @@
-import { $, $watch } from '../../src'
-import type { EmitProps } from '../../src/utils'
-import { $reactive, defineContext, defineEmits } from '../../src/utils'
+import { $, $reactive, $watch } from '../../src'
+import type { EmitProps } from '../../src/hooks'
+import { useContextProvider, useEmits } from '../../src/hooks'
 
-const { useTestContext, TestProvider } = defineContext('test', (_props?: { test: number }) => new Date())
+const { useTestContext, TestProvider } = useContextProvider('test', (_props?: { test: number }) => new Date())
 type Emits = {
   var: number
   update: [d1: string, d2?: string, d3?: string]
@@ -12,7 +12,7 @@ const FOO = {
   bar: 1,
 }
 function Child(props: EmitProps<Emits, { num: number }>) {
-  const { emit, $emit } = defineEmits<Emits>(props)
+  const { emit, $emit } = useEmits<Emits>(props)
   const v = $emit('var', 1)
   const handleClick = () => {
     v.$set(v() + 1)

@@ -71,11 +71,7 @@ export function $watchOnce<T>(deps: Accessor<T>, cb: WatchCallback<T>, options?:
 }
 
 /**
- * object wrapper for {@link createEffect}, using {@link on}
- * @param deps Accessor that need to be watch
- * @param fn {@link WatchCallback callback function}
- * @param options options
- * @see https://github.com/subframe7536/solid-dollar#watch
+ * base watch fn
  */
 function baseWatch<T>(
   deps: Accessor<T> | AccessorArray<T> | SignalObject<T>,
@@ -116,6 +112,9 @@ function baseWatch<T>(
   }
 }
 
+/**
+ * options for {@link $watch} and so on
+ */
 export type WatchOptions<T> = Prettify<
   Omit<BaseWatchOptions<T>, 'effectFn'> & {
     /**

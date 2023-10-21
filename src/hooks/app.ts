@@ -45,13 +45,11 @@ function mergeProviders({ app, props = {}, providers }: MergeParams) {
 
 /**
  * Vue's `createApp` like initialization, works in both `.ts` and `.tsx`
- *
- * reference from {@link https://github.com/amoutonbrady/solid-utils#createapp solid-utils}
  * @param app App component
  * @param props App params
- * @see https://github.com/subframe7536/solid-dollar#app
+ * @see https://github.com/subframe7536/solid-dollar#useApp
  */
-export function $app<AppProps extends Record<string, any> = {}>(
+export function useApp<AppProps extends Record<string, any> = {}>(
   app: (props?: AppProps) => JSX.Element,
   props?: AppProps,
 ): App {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { $resource } from '../src'
-import { $tick } from '../src/utils'
+import { useTick } from '../src/hooks'
 
 describe('$resource', () => {
   it('returns a resource object with mutate and refetch functions', async () => {
@@ -11,7 +11,7 @@ describe('$resource', () => {
     expect(obj.state).toBe('pending')
     expect(obj.$mutate).toBeTypeOf('function')
     expect(obj.$refetch).toBeTypeOf('function')
-    await $tick()
+    await useTick()
     expect(obj()).toBe('source data')
     expect(obj.loading).toBe(false)
     expect(obj.state).toBe('ready')

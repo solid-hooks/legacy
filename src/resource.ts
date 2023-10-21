@@ -26,6 +26,7 @@ export type ResourceObject<T, R> = BaseResourceObject<T, R, false>
 
 /**
  * object wrapper for {@link createResource}
+ * @see https://github.com/subframe7536/solid-dollar#resource
  */
 export function $resource<T, R = unknown>(
   fetcher: ResourceFetcher<true, T, R>,
@@ -33,6 +34,7 @@ export function $resource<T, R = unknown>(
 ): InitializedResourceObject<T, R>
 /**
  * object wrapper for {@link createResource}
+ * @see https://github.com/subframe7536/solid-dollar#resource
  */
 export function $resource<T, R = unknown>(
   fetcher: ResourceFetcher<true, T, R>,
@@ -40,6 +42,7 @@ export function $resource<T, R = unknown>(
 ): ResourceObject<T, R>
 /**
  * object wrapper for {@link createResource} with signal
+ * @see https://github.com/subframe7536/solid-dollar#resource
  */
 export function $resource<T, S, R = unknown>(
   source: ResourceSource<S>,
@@ -48,6 +51,7 @@ export function $resource<T, S, R = unknown>(
 ): InitializedResourceObject<T, R>
 /**
  * object wrapper for {@link createResource} with signal
+ * @see https://github.com/subframe7536/solid-dollar#resource
  */
 export function $resource<T, S, R = unknown>(
   source: ResourceSource<S>,

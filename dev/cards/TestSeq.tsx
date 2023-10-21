@@ -1,11 +1,11 @@
 import { For, observable, onMount } from 'solid-js'
-import { $, $effect, $effectInstant, $effectRendered } from '../../src'
-import { $array, $tick } from '../../src/utils'
+import { $, $array, $effect, $effectInstant, $effectRendered } from '../../src'
+import { useTick } from '../../src/hooks'
 
 export function TestSeq() {
   const str = $('before all')
   const logList = $array<string[]>([])
-  const log = (str: string) => logList.$update((arr) => {
+  const log = (str: string) => logList.$mutate((arr) => {
     arr.push(str)
   })
   log(str())
@@ -23,7 +23,7 @@ export function TestSeq() {
     },
   })
   // same with queueMicroTask
-  $tick(() => {
+  useTick(() => {
     log(`tick: ${str()}`)
     str.$set('set when promise')
   })

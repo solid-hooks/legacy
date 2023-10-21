@@ -28,6 +28,16 @@
         "default": "./dist/index/index.cjs"
       }
     },
+    "./hooks": {
+      "import": {
+        "types": "./dist/hooks/index.d.ts",
+        "default": "./dist/hooks/index.js"
+      },
+      "require": {
+        "types": "./dist/hooks/index.d.cts",
+        "default": "./dist/hooks/index.cjs"
+      }
+    },
     "./i18n": {
       "import": {
         "types": "./dist/i18n/index.d.ts",
@@ -58,16 +68,6 @@
         "default": "./dist/state/index.cjs"
       }
     },
-    "./utils": {
-      "import": {
-        "types": "./dist/utils/index.d.ts",
-        "default": "./dist/utils/index.js"
-      },
-      "require": {
-        "types": "./dist/utils/index.d.cts",
-        "default": "./dist/utils/index.cjs"
-      }
-    },
     "./i18n/utils": {
       "import": {
         "types": "./dist/i18n/utils.d.ts",
@@ -84,6 +84,9 @@
   "types": "./dist/index/index.d.ts",
   "typesVersions": {
     "*": {
+      "hooks": [
+        "./dist/hooks/index.d.ts"
+      ],
       "i18n": [
         "./dist/i18n/index.d.ts"
       ],
@@ -92,9 +95,6 @@
       ],
       "state": [
         "./dist/state/index.d.ts"
-      ],
-      "utils": [
-        "./dist/utils/index.d.ts"
       ],
       "i18n/utils": [
         "./dist/i18n/utils.d.ts"

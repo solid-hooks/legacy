@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import { createRoot } from 'solid-js'
 import { $, $watch } from '../src'
-import { $tick } from '../src/utils'
+import { useTick } from '../src/hooks'
 
 describe('$watch', () => {
   it('basic', async () => {
@@ -10,14 +10,14 @@ describe('$watch', () => {
 
     createRoot(() => $watch(value, callback, { defer: true }))
 
-    await $tick()
+    await useTick()
     value.$set(1)
-    await $tick()
+    await useTick()
     expect(callback).toHaveBeenCalledTimes(1)
     expect(callback).toHaveBeenCalledWith(1, undefined)
 
     value.$set(2)
-    await $tick()
+    await useTick()
     expect(callback).toHaveBeenCalledTimes(2)
     expect(callback).toHaveBeenCalledWith(2, 1)
   })
@@ -31,13 +31,13 @@ describe('$watch', () => {
 
     createRoot(() => $watch(str, callback, { filterFn, defer: true }))
 
-    await $tick()
+    await useTick()
     str.$set('new')
-    await $tick()
+    await useTick()
     expect(callback).toHaveBeenCalledTimes(0)
 
     str.$set('new new')
-    await $tick()
+    await useTick()
     expect(callback).toHaveBeenCalledTimes(1)
 
     // cannot filter old value
@@ -51,21 +51,21 @@ describe('$watch', () => {
 
       const { pause, resume, isWatching } = $watch(value, callback, { defer: true })
 
-      await $tick()
+      await useTick()
       value.$set(100)
-      await $tick()
+      await useTick()
       expect(callback).toHaveBeenCalledTimes(1)
       expect(callback).toHaveBeenCalledWith(100, undefined)
 
       pause()
       expect(isWatching()).toBe(false)
       value.$set(200)
-      await $tick()
+      await useTick()
       expect(callback).toHaveBeenCalledTimes(1)
 
       resume()
       value.$set(300)
-      await $tick()
+      await useTick()
       expect(callback).toHaveBeenCalledTimes(2)
 
       // cannot filter old value

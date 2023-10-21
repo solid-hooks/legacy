@@ -18,6 +18,7 @@ export type StoreObject<T extends object> = {
  * object wrapper for {@link createStore}
  * @param value initial value
  * @param options base options
+ * @see https://github.com/subframe7536/solid-dollar#store
  */
 export function $store<T extends object>(
   value: T,
@@ -26,6 +27,7 @@ export function $store<T extends object>(
 /**
  * object wrapper for {@link createStore}
  * @param existStore exist store
+ * @see https://github.com/subframe7536/solid-dollar#store
  */
 export function $store<T extends object>(
   existStore: [Store<T>, SetStoreFunction<T>],
