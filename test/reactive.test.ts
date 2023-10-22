@@ -16,15 +16,20 @@ describe('test $reactive', () => {
   it('deep prop', () => {
     const value = {
       deep: {
-        data: 'str',
+        data: {
+          test: 'str',
+        },
       },
     }
     const updatedString = 'updated'
     const bar = $reactive(value, 'deep.data')
-    expect(bar()).toBe('str')
-    expect(bar.$set(updatedString)).toBe(updatedString)
-    expect(value.deep.data).toBe(updatedString)
-    expect(bar()).toBe(updatedString)
+    expect(bar().test).toBe('str')
+    expect(bar.$set((prev) => {
+      prev.test = updatedString
+      return prev
+    })).toStrictEqual({ test: updatedString })
+    expect(value.deep.data.test).toBe(updatedString)
+    expect(bar().test).toBe(updatedString)
   })
   it('effect', async () => {
     const value = {

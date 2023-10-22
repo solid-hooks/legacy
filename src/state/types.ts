@@ -1,8 +1,10 @@
 import type { Path, PathValue } from 'object-standard-path'
 import type { SetStoreFunction, Store } from 'solid-js/store'
-import type { AnyFunction } from '@subframe7536/type-utils'
+import type { AnyFunction, Prettify } from '@subframe7536/type-utils'
+import type { $TRACK } from 'solid-js'
 import type { Cleanupable, WatchCallback, WatchObject, WatchOptions } from '../watch'
 import type { StoreObject } from '../store'
+import type { MemoObject } from '../memo'
 
 export type StateListener<State> = (state: State) => void
 
@@ -158,3 +160,38 @@ export interface Serializer<State> {
 }
 
 export type StateFunction<T> = (stateName: string, log: AnyFunction<void>) => T
+
+export type AvailableState = StateObject<any> | object
+
+type RemoveNeverProps<T> = Prettify<
+  Pick<
+    T,
+    { [K in keyof T]: T[K] extends never ? never : K }[keyof T]
+  >
+>
+
+export type ParseGetters<T> = T extends AnyFunction
+  ? T extends StateObject<infer _, infer Getters, infer __>
+    ? Getters
+    : never
+  : T extends object
+    ? RemoveNeverProps<{ [K in keyof T]: T[K] extends MemoObject<any> ? T[K] : never }>
+    : never
+
+export type ParseActions<T> = T extends AnyFunction
+  ? T extends StateObject<infer _, infer __, infer Actions>
+    ? Actions
+    : never
+  : T extends object
+    ? RemoveNeverProps<{
+      [K in keyof T]: T[K] extends { [$TRACK]: any } ? never : T[K]
+    }>
+    : never
+
+export type StateReturn<T> = <
+  Option extends 'getter' | 'action' | 'default' = 'default',
+>() => Option extends 'getter'
+  ? ParseGetters<T>
+  : Option extends 'action'
+    ? ParseActions<T>
+    : T

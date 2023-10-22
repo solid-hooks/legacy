@@ -20,6 +20,7 @@ import type {
   GetterObject,
   StateFunction,
   StateObject,
+  StateReturn,
   StateSetup,
   StateUtils,
 } from './types'
@@ -47,7 +48,7 @@ export function $state<
   name: string,
   setup: StateSetup<State, Getter, Action, Paths>,
   _log?: boolean,
-): () => StateObject<State, Getter, Action>
+): StateReturn<StateObject<State, Getter, Action>>
 /**
  * initialize global state with functions, just like global {@link createContext}
  * @param name state name
@@ -60,7 +61,7 @@ export function $state<
   name: string,
   setup: StateFunction<State>,
   _log?: boolean,
-): () => State
+): StateReturn<State>
 export function $state<
   State extends object = Record<string, any>,
   Getter extends GetterObject = {},
@@ -70,7 +71,7 @@ export function $state<
   name: string,
   setup: StateSetup<State, Getter, Action, Paths> | StateFunction<State>,
   _log?: boolean,
-): () => State | StateObject<State, Getter, Action> {
+): StateReturn<State | StateObject<State, Getter, Action>> {
   const stateName = `$state-${name}`
   const log = (...args: any[]) => DEV && _log && console.log(`[${stateName}]`, ...args)
   let build = typeof setup === 'function' ? setup : setupObject(setup)

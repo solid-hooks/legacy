@@ -272,8 +272,8 @@ const useTestState = $state('test', {
 
 // usage
 const state = useTestState()
-const getters = useGetters(state/* or useTestState */)
-const actions = useActions(state/* or useTestState */)
+const getters = useTestState<'getter'>() // type only getter parser
+const actions = useTestState<'action'>() // type only action parser
 
 render(() => (
   <GlobalStateProvider> {/* optional */}

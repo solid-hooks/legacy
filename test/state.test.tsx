@@ -2,7 +2,7 @@ import { fireEvent, render } from '@solidjs/testing-library'
 import { describe, expect, it, vi } from 'vitest'
 import { createRoot } from 'solid-js'
 import { $memo } from '../src'
-import { $state, useActions } from '../src/state'
+import { $state } from '../src/state'
 import { useTick } from '../src/hooks'
 
 describe('test state', () => {
@@ -37,7 +37,7 @@ describe('test state', () => {
     }))
 
     const state = useState()
-    const actions = useActions(state)
+    const actions = useState<'action'>()
 
     await useTick()
     createRoot(() => state.$subscribe(callback))

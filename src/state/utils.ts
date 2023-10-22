@@ -1,7 +1,7 @@
+import type { Accessor } from 'solid-js'
 import { batch, createMemo, untrack } from 'solid-js'
-import type { MaybeAccessor } from '@solid-primitives/utils'
 import type { StoreObject } from '../store'
-import type { ActionObject, GetterObject, StateGetter, StateObject } from './types'
+import type { ActionObject, AvailableState, GetterObject, ParseActions, ParseGetters, StateGetter } from './types'
 
 export { klona as deepClone } from 'klona'
 
@@ -39,26 +39,4 @@ export function createActions<T extends ActionObject>(functions?: T): T {
     actions[name] = (...args) => batch(() => untrack(() => fn(...args)))
   }
   return actions as T
-}
-
-/**
- * get state actions, type only
- */
-export function useActions<
-  State,
-  Getter extends GetterObject,
-  Action extends ActionObject,
->(state: MaybeAccessor<StateObject<State, Getter, Action>>): Action {
-  return '$patch' in state ? state : state() as Action
-}
-
-/**
- * get state getters, type only
- */
-export function useGetters<
-  State,
-  Getter extends GetterObject,
-  Action extends ActionObject,
->(state: MaybeAccessor<StateObject<State, Getter, Action>>): Getter {
-  return '$patch' in state ? state : state() as Getter
 }
