@@ -20,3 +20,6 @@ export { useScriptLoader, useStyleLoader } from './resource-loader'
 export type { ScriptOptions, StyleOption } from './resource-loader'
 
 export { useCallback } from './callback'
+
+export { usePersist } from './persist'
+export type { PeresistOptions } from './persist'

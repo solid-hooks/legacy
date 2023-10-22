@@ -2,6 +2,7 @@ import { type Path, pathGet, pathSet } from 'object-standard-path'
 import type { FlowProps, Owner } from 'solid-js'
 import {
   DEV,
+  batch,
   createComponent,
   createComputed,
   createContext,
@@ -194,7 +195,11 @@ function setupObject<
           callback = args[0]
           options = args[1]
         }
-        return $watch(deps, callback, options)
+        return $watch(
+          deps,
+          (state, oldState) => batch(() => callback(unwrap(state), unwrap(oldState))),
+          options,
+        )
       },
     }
     log('initial state:', unwrap(_store()))

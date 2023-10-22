@@ -1,4 +1,4 @@
-import { For } from 'solid-js'
+import { $PROXY, For } from 'solid-js'
 import { useInfoState } from '../../state'
 import { $, $selector } from '../../../src'
 

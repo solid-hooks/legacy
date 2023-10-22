@@ -24,8 +24,5 @@ export type { ArrayObject } from './array'
 export { $objectURL } from './object-url'
 export type { ObjectURLObject } from './object-url'
 
-export { $persist } from './persist'
-export type { PeresistOptions } from './persist'
-
 export { $reactive } from './reactive'
 export type { ReactiveObject } from './reactive'

@@ -167,26 +167,7 @@ return (
 )
 ```
 
-### `$persist`
 
-auto persist value to storage(sync or async)
-
-reference from [@solid-primitives/storage](https://github.com/solidjs-community/solid-primitives/tree/main/packages/storage)
-
-```ts
-import { $persist } from 'solid-dollar'
-
-// default to persist to `localeStorage`
-const val = $persist('key', 1)
-
-const itemState = $persist('item', 'loading', {
-  storage: {/* async or sync storage */}
-  serializer: {
-    read: JSON.parse, // default
-    write: JSON.stringify, // default
-  }
-})
-```
 
 ### `$objectURL`
 
@@ -683,4 +664,26 @@ const handleClick = useCallback(() => {
   $watch(() => {...})
 })
 setTimeOut(handleClick, 100)
+```
+
+### `usePersist`
+
+auto persist value to storage(sync or async)
+
+reference from [@solid-primitives/storage](https://github.com/solidjs-community/solid-primitives/tree/main/packages/storage)
+
+```ts
+import { $, $store } from 'solid-dollar'
+import { usePersist } from 'solid-dollar/hooks'
+
+// default to persist to `localeStorage`
+const val = usePersist('key', $(1))
+
+const itemState = usePersist('item', $store({ test:'loading' }), {
+  storage: {/* async or sync storage */}
+  serializer: {
+    read: JSON.parse, // default
+    write: JSON.stringify, // default
+  }
+})
 ```

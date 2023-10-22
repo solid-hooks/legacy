@@ -54,7 +54,6 @@ export const $autoImport: ImportFn = directiveOnly => directiveOnly ? [
       '$deferred',
       '$array',
       '$objectURL',
-      '$persist',
       '$reactive'
     ]
   },
@@ -73,7 +72,7 @@ export const $autoImport: ImportFn = directiveOnly => directiveOnly ? [
       'SelectorObjectOptions',
       'ArrayObject',
       'ObjectURLObject',
-      'PeresistOptions'
+      'ReactiveObject'
     ],
     'type': true
   },
@@ -99,9 +98,7 @@ export const $autoImport: ImportFn = directiveOnly => directiveOnly ? [
     'imports': [
       '$state',
       'GlobalStateProvider',
-      'deepClone',
-      'useActions',
-      'useGetters'
+      'deepClone'
     ]
   },
   {
@@ -132,7 +129,8 @@ export const $autoImport: ImportFn = directiveOnly => directiveOnly ? [
       'clamp',
       'useScriptLoader',
       'useStyleLoader',
-      'useCallback'
+      'useCallback',
+      'usePersist'
     ]
   },
   {
@@ -145,7 +143,8 @@ export const $autoImport: ImportFn = directiveOnly => directiveOnly ? [
       'DragOptions',
       'DraggableElement',
       'ScriptOptions',
-      'StyleOption'
+      'StyleOption',
+      'PeresistOptions'
     ],
     'type': true
   }
