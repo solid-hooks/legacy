@@ -21,14 +21,14 @@ export type StateUtils<State> = {
     /**
      * subscribe **full** object change, defer by default, return {@link WatchObject}
      * @param callback watch callback
-     * @param options options
+     * @param options watch options
      */
     (callback: (value: State) => Cleanupable, options?: WatchOptions<State>): WatchObject
     /**
      * subscribe **partial** object change, defer by default, return {@link WatchObject}
      * @param deps watch deps
      * @param callback watch callback
-     * @param options options
+     * @param options watch options
      */
     <S>(
       deps: (value: State) => S,

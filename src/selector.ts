@@ -23,7 +23,7 @@ export type SelectorObjectOptions<T, U = T> = SignalOptions<T> & {
 /**
  * object wrapper for {@link createSelector}
  * @param value initial value
- * @param options options
+ * @param options selector options
  * @see https://github.com/subframe7536/solid-dollar#selector
  */
 export function $selector<T, U = T>(

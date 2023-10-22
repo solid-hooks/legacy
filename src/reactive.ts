@@ -7,7 +7,7 @@ import type { SignalObject } from './signal'
  * `$()` like wrapper to make plain object props reactive
  * @param data source object
  * @param path object access path, support array access
- * @param options options
+ * @param options signal options
  * @see https://github.com/subframe7536/solid-dollar#reactive
  */
 export function $reactive<T extends object, P extends Path<T>>(
@@ -18,7 +18,6 @@ export function $reactive<T extends object, P extends Path<T>>(
   const { equals } = options
   const [track, trigger] = createSignal(undefined, { ...options, equals: false })
   const get = () => pathGet(data, path)
-  const set = (value: any) => pathSet(data, path, value)
 
   const result = (() => {
     track()
@@ -32,7 +31,7 @@ export function $reactive<T extends object, P extends Path<T>>(
         ? get() === _
         : equals
     if (!_equals) {
-      set(_)
+      pathSet(data, path, _)
       trigger()
     }
     return _

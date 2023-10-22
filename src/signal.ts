@@ -35,7 +35,7 @@ export function $<T>(existSignal: Signal<T>): SignalObject<T>
 /**
  * object wrapper for {@link createSignal}
  * @param value initial value
- * @param options options
+ * @param options signal options
  * @see https://github.com/subframe7536/solid-dollar#solid-dollar-1
  */
 export function $<T>(value: T, options?: SignalOptions<T>): SignalObject<T>

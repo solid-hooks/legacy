@@ -129,7 +129,7 @@ export type WatchOptions<T> = Prettify<
  * object wrapper for {@link createEffect} and {@link on}, defer by default
  * @param deps Accessor that need to be watch
  * @param fn {@link WatchCallback callback function}
- * @param options options
+ * @param options watch options
  * @see https://github.com/subframe7536/solid-dollar#watch
  */
 export function $watch<T>(
@@ -144,7 +144,7 @@ export function $watch<T>(
  * object wrapper for {@link createComputed} and {@link on}, defer by default
  * @param deps Accessor that need to be watch
  * @param fn {@link WatchCallback callback function}
- * @param options options
+ * @param options watch options
  */
 export function $watchInstant<T>(
   deps: Accessor<T> | AccessorArray<T> | SignalObject<T>,
@@ -158,7 +158,7 @@ export function $watchInstant<T>(
  * object wrapper for {@link createRenderEffect} and {@link on}, defer by default
  * @param deps Accessor that need to be watch
  * @param fn {@link WatchCallback callback function}
- * @param options options
+ * @param options watch options
  */
 export function $watchRendered<T>(
   deps: Accessor<T> | AccessorArray<T> | SignalObject<T>,

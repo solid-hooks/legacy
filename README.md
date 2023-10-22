@@ -197,7 +197,7 @@ import { $objectURL } from 'solid-dollar'
 
 const url = $objectURL(new Blob())
 const url = $objectURL(new MediaSource())
-const url = $objectURL(new Uint8Array())
+const url = $objectURL(new Uint8Array(), { type: 'image/png' })
 ```
 
 ### `$array`

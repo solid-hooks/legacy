@@ -14,7 +14,7 @@ export type ObjectURLObject = {
 /**
  * convert blob to URL
  * @param value initial value
- * @param options options
+ * @param options signal options
  * @see https://github.com/subframe7536/solid-dollar#objecturl
  */
 export function $objectURL(
@@ -24,7 +24,7 @@ export function $objectURL(
 /**
  * convert ArrayBuffer or string to URL
  * @param value initial value
- * @param options options
+ * @param options signal options
  * @see https://github.com/subframe7536/solid-dollar#objecturl
  */
 export function $objectURL(

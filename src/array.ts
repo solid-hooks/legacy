@@ -20,7 +20,7 @@ export type ArrayObject<T> = {
 /**
  * object wrapper for array signal
  * @param value initial value
- * @param options options
+ * @param options signal options
  * @see https://github.com/subframe7536/solid-dollar#array
  */
 export function $array<T extends any[]>(

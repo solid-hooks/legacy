@@ -8,7 +8,7 @@ type App = {
    * at mount time.
    *
    * @param provider provider to add to the list
-   * @param options options
+   * @param options provider options
    */
   use<Props>(provider: Component<FlowProps<Props>>, options?: Props): App
 
