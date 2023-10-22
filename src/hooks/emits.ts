@@ -56,7 +56,7 @@ export type EmitsObject<PropsWithEmits, Emits extends Record<string, any>> = {
 /**
  * util for child component event emitting, auto handle optional prop
  * @param props conponents props
- * @see https://github.com/subframe7536/solid-dollar#defineEmits
+ * @see https://github.com/subframe7536/solid-dollar#useEmits
  */
 export function useEmits<
   Emits extends Record<string, any>,

@@ -444,7 +444,7 @@ see more at [`dev/`](/dev) and [`test`](/test/i18n.test.ts)
 
 ## `solid-dollar/hooks`
 
-### `defineEmits`
+### `useEmits`
 
 util for child component event emitting, auto handle optional prop
 

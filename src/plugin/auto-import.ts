@@ -27,9 +27,9 @@ type ImportFn = (directiveOnly: boolean) => ImportMap
  */
 export const $autoImport: ImportFn = directiveOnly => directiveOnly ? [
   {
-    'from': 'solid-dollar/utils',
+    'from': 'solid-dollar/hooks',
     'imports': [
-      '$model'
+      'model'
     ]
   }
 ] : [
@@ -117,7 +117,7 @@ export const $autoImport: ImportFn = directiveOnly => directiveOnly ? [
     'type': true
   },
   {
-    'from': 'solid-dollar/utils',
+    'from': 'solid-dollar/hooks',
     'imports': [
       'model',
       'useContextProvider',
@@ -136,7 +136,7 @@ export const $autoImport: ImportFn = directiveOnly => directiveOnly ? [
     ]
   },
   {
-    'from': 'solid-dollar/utils',
+    'from': 'solid-dollar/hooks',
     'imports': [
       'ModelDirective',
       'ContextObject',

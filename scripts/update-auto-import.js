@@ -29,7 +29,7 @@ function getExports(filePath) {
 const index = getExports('src/index.ts')
 const i18n = getExports('src/i18n/index.ts')
 const state = getExports('src/state/index.ts')
-const utils = getExports('src/hooks/index.ts')
+const hooks = getExports('src/hooks/index.ts')
 const result = [
   {
     from: 'solid-dollar',
@@ -59,18 +59,18 @@ const result = [
     type: true,
   },
   {
-    from: 'solid-dollar/utils',
-    imports: utils.vars,
+    from: 'solid-dollar/hooks',
+    imports: hooks.vars,
   },
   {
-    from: 'solid-dollar/utils',
-    imports: utils.types,
+    from: 'solid-dollar/hooks',
+    imports: hooks.types,
     type: true,
   },
 ]
 const code = readFileSync('src/plugin/auto-import.ts', 'utf-8')
 const imports = JSON.stringify(result, null, 2)
-const directiveOnly = JSON.stringify([{ from: 'solid-dollar/utils', imports: ['$model'] }], null, 2)
+const directiveOnly = JSON.stringify([{ from: 'solid-dollar/hooks', imports: ['model'] }], null, 2)
 const replacedCode = code.replace(/export const \$autoImport: ImportFn = [\s\S]*/gm, '')
 
 writeFileSync(
