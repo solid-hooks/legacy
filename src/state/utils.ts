@@ -20,7 +20,7 @@ export function createGetters<
   for (const [key, getter] of Object.entries(getters?.(store()) || {})) {
     // @ts-expect-error assign
     _getters[key] = getter.length === 0
-      ? createMemo(getter, undefined, { name: `${stateName}-${getter.name}` })
+      ? createMemo(getter, undefined, { name: `${stateName}-${key}` })
       : getter
   }
   return _getters

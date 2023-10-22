@@ -304,7 +304,7 @@ const { pause, resume, isWatching } = state.$subscribe(
 
 // partial watch
 state.$subscribe(
-  (state) => state.deep.data
+  s => s.deep.data
   state => console.log(state),
   { defer: false },
 )
