@@ -1,16 +1,25 @@
 import { createSelector } from 'solid-js'
-import type { EqualityCheckerFunction, SignalOptions } from 'solid-js/types/reactive/signal'
+import type { $TRACK, EqualityCheckerFunction, Setter, SignalOptions } from 'solid-js/types/reactive/signal'
 import type { SignalObject } from './signal'
 import { $ } from './signal'
 
 /**
  * type of {@link $selector}
  */
-export type SelectorObject<T, U = T> = SignalObject<T> & {
+export type SelectorObject<T, U = T> = {
+  (): T
+  /**
+   * setter function
+   */
+  $set: Setter<T>
   /**
    * bind value, call {@link createSelector}
    */
   $bind: (k: U) => boolean
+  /**
+   * type only symbol
+   */
+  [$TRACK]: 'selector(type only)'
 }
 
 /**
@@ -30,9 +39,10 @@ export function $selector<T, U = T>(
   value: T | SignalObject<T>,
   options: SelectorObjectOptions<T, U> = {},
 ): SelectorObject<T, U> {
-  const _ = $(value as T, options) as SelectorObject<T, U>
+  const _ = $(value as T, options)
+  // @ts-expect-error assign
   _.$bind = createSelector<T, U>(_, options.selectorEqual, {
     name: options.name ? `$selector-${options.name}` : undefined,
   })
-  return _
+  return _ as any
 }

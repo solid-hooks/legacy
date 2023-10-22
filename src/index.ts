@@ -28,3 +28,4 @@ export { $persist } from './persist'
 export type { PeresistOptions } from './persist'
 
 export { $reactive } from './reactive'
+export type { ReactiveObject } from './reactive'

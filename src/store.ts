@@ -1,7 +1,7 @@
 import { trackStore } from '@solid-primitives/deep'
 import type { SetStoreFunction, Store } from 'solid-js/store'
 import { createStore } from 'solid-js/store'
-import type { BaseOptions } from 'solid-js/types/reactive/signal'
+import type { $TRACK, BaseOptions } from 'solid-js/types/reactive/signal'
 
 /**
  * type of {@link $store}
@@ -12,6 +12,7 @@ export type StoreObject<T extends object> = {
    * store setter function
    */
   $set: SetStoreFunction<T>
+  [$TRACK]: 'store(type only)'
 }
 
 /**
@@ -41,7 +42,7 @@ export function $store<T extends object>(
     : createStore<T>(data, options)
   const result = () => store
   result.$set = setStore
-  return result
+  return result as any
 }
 
 /**

@@ -1,4 +1,4 @@
-import type { Setter, Signal, SignalOptions } from 'solid-js'
+import type { $TRACK, Setter, Signal, SignalOptions } from 'solid-js'
 import { createSignal } from 'solid-js'
 
 /**
@@ -10,6 +10,10 @@ export type SignalObject<T> = {
    * setter function
    */
   $set: Setter<T>
+  /**
+   * type only symbol
+   */
+  [$TRACK]: 'signal(type only)'
 }
 
 export function isSignal<T>(val: unknown): val is Signal<T> {
