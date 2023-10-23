@@ -1,7 +1,8 @@
 import { trackStore } from '@solid-primitives/deep'
+import type { AnyFunction, DeepPartial } from '@subframe7536/type-utils'
 import type { SetStoreFunction, Store } from 'solid-js/store'
-import { createStore } from 'solid-js/store'
-import type { $TRACK, BaseOptions } from 'solid-js/types/reactive/signal'
+import { createStore, produce, reconcile, unwrap } from 'solid-js/store'
+import type { BaseOptions } from 'solid-js/types/reactive/signal'
 
 /**
  * type of {@link $store}
@@ -51,4 +52,19 @@ export function $store<T extends object>(
  */
 export function $trackStore<T extends object>(store: Store<T> | StoreObject<T>) {
   return () => trackStore(typeof store === 'function' ? store() : store)
+}
+/**
+ * patch store
+ * @param store StoreObject to be patched
+ * @param data patch data
+ */
+export function $patchStore<T extends object>(
+  store: StoreObject<T>,
+  data: DeepPartial<T> | ((data: T) => void),
+) {
+  return store.$set(
+    typeof data === 'function'
+      ? produce(data as AnyFunction)
+      : reconcile(Object.assign(unwrap(store), data) as T, { merge: true }),
+  )
 }
