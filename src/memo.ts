@@ -1,16 +1,10 @@
-import type { $TRACK, EffectFunction, MemoOptions } from 'solid-js'
+import type { EffectFunction, MemoOptions } from 'solid-js'
 import { createMemo } from 'solid-js'
 
 /**
  * type of {@link $memo}
  */
-export type MemoObject<T> = {
-  (): (T extends (...args: any) => infer R ? R : T)
-  /**
-   * type only symbol
-   */
-  [$TRACK]: 'memo(type only)'
-}
+export type MemoObject<T> = () => (T extends (...args: any) => infer R ? R : T)
 
 /**
  * object wrapper for {@link createMemo}, auto wrap with accessor

@@ -1,5 +1,5 @@
 import { createResource } from 'solid-js'
-import type { $TRACK, InitializedResource, InitializedResourceOptions, NoInfer, Resource, ResourceActions, ResourceFetcher, ResourceOptions, ResourceSource } from 'solid-js'
+import type { InitializedResource, InitializedResourceOptions, NoInfer, Resource, ResourceActions, ResourceFetcher, ResourceOptions, ResourceSource } from 'solid-js'
 
 type AddPrefix$ToKeys<T extends Record<string, any>> = {
   [K in keyof T as `$${string & K}`]: T[K];
@@ -12,12 +12,7 @@ type BaseResourceObject<
 > = (Is extends true ? InitializedResource<T> : Resource<T>)
 & AddPrefix$ToKeys<{
   [K in keyof Actions]: Actions[K]
-}> & {
-  /**
-   * type only symbol
-   */
-  [$TRACK]: 'resource(type only)'
-}
+}>
 
 /**
  * type of {@link $resource} with initalized value

@@ -1,21 +1,7 @@
 import { type Path, type PathValue, pathGet, pathSet } from 'object-standard-path'
-import type { $TRACK, Setter, SignalOptions } from 'solid-js'
+import type { SignalOptions } from 'solid-js'
 import { createSignal } from 'solid-js'
-
-/**
- * type of {@link $reactive}
- */
-export type ReactiveObject<T> = {
-  (): T
-  /**
-   * setter function
-   */
-  $set: Setter<T>
-  /**
-   * type only symbol
-   */
-  [$TRACK]: 'reactive(type only)'
-}
+import type { SignalObject } from './signal'
 
 /**
  * `$()` like wrapper to make plain object props reactive
@@ -28,7 +14,7 @@ export function $reactive<T extends object, P extends Path<T>>(
   data: T,
   path: P,
   options: SignalOptions<PathValue<T, P>> = {},
-): ReactiveObject<PathValue<T, P>> {
+): SignalObject<PathValue<T, P>> {
   const { equals } = options
   const [track, trigger] = createSignal(undefined, { ...options, equals: false })
   const get = () => pathGet(data, path)

@@ -13,7 +13,6 @@ export type StoreObject<T extends object> = {
    * store setter function
    */
   $set: SetStoreFunction<T>
-  [$TRACK]: 'store(type only)'
 }
 
 /**

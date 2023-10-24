@@ -1,4 +1,4 @@
-import type { $TRACK, SignalOptions } from 'solid-js'
+import type { SignalOptions } from 'solid-js'
 import { createSignal } from 'solid-js'
 
 type ObjectTypes = Blob | File | MediaSource | ArrayBuffer | string
@@ -12,10 +12,6 @@ export type ObjectURLObject = {
    * setter function
    */
   $set: (data: ObjectTypes) => string
-  /**
-   * type only symbol
-   */
-  [$TRACK]: 'object-url(type only)'
 }
 
 /**

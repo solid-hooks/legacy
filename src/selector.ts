@@ -1,5 +1,5 @@
 import { createSelector } from 'solid-js'
-import type { $TRACK, EqualityCheckerFunction, Setter, SignalOptions } from 'solid-js/types/reactive/signal'
+import type { EqualityCheckerFunction, Setter, SignalOptions } from 'solid-js/types/reactive/signal'
 import type { SignalObject } from './signal'
 import { $ } from './signal'
 
@@ -16,10 +16,6 @@ export type SelectorObject<T, U = T> = {
    * bind value, call {@link createSelector}
    */
   $bind: (k: U) => boolean
-  /**
-   * type only symbol
-   */
-  [$TRACK]: 'selector(type only)'
 }
 
 /**
