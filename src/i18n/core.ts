@@ -1,22 +1,55 @@
-import type { Accessor, FlowProps, Owner } from 'solid-js'
-import { DEV, createComponent, createContext, createResource, createRoot, getOwner, runWithOwner, useContext } from 'solid-js'
+import type { Accessor } from 'solid-js'
+import { DEV, Suspense, createComponent, createContext, useContext } from 'solid-js'
 import { makeEventListener } from '@solid-primitives/event-listener'
 import { $, type SignalObject } from '../signal'
-import type { DateTimeFormatItem, I18nObject, I18nObjectReturn, I18nOptions, MessageType, NumberFormatItem } from './types'
-import { parseMessage, translate } from './utils'
+import type { DateTimeFormatItem, I18nObject, I18nObjectContext, I18nOptions, MessageType, NumberFormatItem } from './types'
+import { translate } from './utils'
 
-function assertImportType(value: any, fn: I18nOptions['parseKey']) {
-  if (typeof value === 'function' && fn === undefined) {
-    throw new Error('parseKey must be set when use import.meta.glob as message')
+/**
+ * initalize i18n
+ * @param options i18n options
+ * @see https://github.com/subframe7536/solid-dollar#i18n
+ */
+export function $i18nContext<
+  Locale extends string = string,
+  Message extends MessageType<Locale> = any,
+  NumberKey extends string = string,
+  DatetimeKey extends string = string,
+>(
+  options: I18nOptions<Locale, Message, NumberKey, DatetimeKey>,
+): I18nObjectContext<Locale, Message, NumberKey, DatetimeKey> {
+  const ctx = createContext<I18nObject<Locale, Message, NumberKey, DatetimeKey>>()
+  return {
+    I18nProvider: (props) => {
+      const { data, suspense } = defineI18n(options)
+      function createPropvider() {
+        return createComponent(ctx.Provider, {
+          value: data,
+          get children() {
+            return props.children
+          },
+        })
+      }
+      return (props.useSuspense === false || !suspense)
+        ? createPropvider()
+        : createComponent(Suspense, {
+          fallback: props.useSuspense === true ? undefined : props.useSuspense,
+          get children() {
+            return createPropvider()
+          },
+        })
+    },
+    useI18n: DEV
+      ? () => {
+          const _ = useContext(ctx)
+          if (!_) {
+            throw new Error('no <I18nProvider /> wrapped!')
+          }
+          return _
+        }
+      : () => useContext(ctx)!,
   }
 }
-const $I18N_CTX = createContext<{
-  owner: Owner | null
-  data: I18nObject<any, any, any, any> | null
-}>({
-  owner: null,
-  data: null,
-})
 /**
  * initalize i18n
  * @param options i18n options
@@ -29,58 +62,22 @@ export function $i18n<
   DatetimeKey extends string = string,
 >(
   options: I18nOptions<Locale, Message, NumberKey, DatetimeKey>,
-): I18nObjectReturn<Locale, Message, NumberKey, DatetimeKey> {
-  let build = () => createI18n(options)
-  let log = DEV && console.log
+): Accessor<I18nObject<Locale, Message, NumberKey, DatetimeKey>> {
+  const ctx = createContext<{
+    data: I18nObject<Locale, Message, NumberKey, DatetimeKey> | undefined
+  }>({ data: undefined })
   return () => {
-    const ctx = useContext($I18N_CTX)
-    const _data = ctx.data
-    if (_data) {
-      return _data as any
+    const _ = useContext(ctx)
+    if (_.data) {
+      return _.data
     }
-    function mount(
-      result: I18nObject<Locale, Message, NumberKey, DatetimeKey>,
-      msg: string,
-    ) {
-      ctx.data = result
-      log?.(msg)
-      // @ts-expect-error for GC
-      build = null
-      // @ts-expect-error for GC
-      log = null
-      return result
-    }
-    return ctx.owner
-      ? runWithOwner(ctx.owner, () => mount(
-        build(),
-        DEV ? 'mount to <I18nProvider />' : '',
-      ))
-      : mount(
-        createRoot(build),
-        DEV ? '<I18nProvider /> is not set, fallback to use createRoot' : '',
-      )
+    const { data } = defineI18n(options)
+    _.data = data
+    return data
   }
 }
 
-/**
- * i18n provider
- */
-export function I18nProvider(props: FlowProps) {
-  const _owner = getOwner()
-  if (DEV && !_owner) {
-    throw new Error('<I18nProvider /> must be set inside component')
-  }
-  return createComponent($I18N_CTX.Provider, {
-    value: {
-      owner: _owner!,
-      data: null,
-    },
-    get children() {
-      return props.children
-    },
-  })
-}
-function createI18n<
+function defineI18n<
   Locale extends string = string,
   Message extends MessageType<Locale> = any,
   NumberKey extends string = string,
@@ -88,28 +85,20 @@ function createI18n<
 >(
   {
     message,
-    parseKey,
     defaultLocale = navigator?.language || 'en' as any,
     datetimeFormats,
     numberFormats,
   }: I18nOptions<Locale, Message, NumberKey, DatetimeKey>,
-): I18nObject<Locale, Message, NumberKey, DatetimeKey> {
+): {
+    data: I18nObject<Locale, Message, NumberKey, DatetimeKey>
+    suspense?: boolean
+  } {
   const loc = $(defaultLocale, { name: '$i18n-locale' })
-  assertImportType(Object.values(message)[0], parseKey)
   const {
-    availiableLocales,
-    messageMap,
-  } = parseMessage<Locale, Message>(message, parseKey)
-  const [curMsg] = createResource(loc, async (l) => {
-    document?.querySelector('html')?.setAttribute('lang', l)
-    if (!messageMap.has(l)) {
-      throw new Error(`unsupported locale: ${l}, availiable: [${availiableLocales}]`)
-    }
-    const msg = messageMap.get(l)!
-    return typeof msg === 'function'
-      ? await msg().then((val: { default: any }) => val.default)
-      : msg
-  }, { name: '$i18n-message' })
+    currentMessage,
+    availableLocales,
+    suspense,
+  } = message(loc as unknown as SignalObject<Locale>)
 
   const datetimeFormatMap = new Map<string, Record<string, DateTimeFormatItem>>()
   const numberFormatMap = new Map<string, Record<string, NumberFormatItem>>()
@@ -142,29 +131,32 @@ function createI18n<
   })
 
   return {
-    $t: (path, variables?) => translate(
-      curMsg(),
-      path as any,
-      variables as Record<string, any>,
-    ),
-    $scopeT: scope => (path, variables?) => translate(
-      curMsg(),
-      `${scope}.${path}` as any,
-      variables as Record<string, any>,
-    ),
-    $n: (num, type, l) => {
-      const _ = numberFormatMap.get(l || loc())?.[type]
-      return typeof _ === 'function'
-        ? _(num)
-        : _?.format(num) || num.toLocaleString(loc())
+    suspense,
+    data: {
+      $t: (path, variables?) => translate(
+        currentMessage(),
+        path as any,
+        variables as Record<string, any>,
+      ),
+      $scopeT: scope => (path, variables?) => translate(
+        currentMessage(),
+        `${scope}.${path}` as any,
+        variables as Record<string, any>,
+      ),
+      $n: (num, type, l) => {
+        const _ = numberFormatMap.get(l || loc())?.[type]
+        return typeof _ === 'function'
+          ? _(num)
+          : _?.format(num) || num.toLocaleString(loc())
+      },
+      $d: (date, type, l) => {
+        const _ = datetimeFormatMap.get(l || loc())?.[type]
+        return typeof _ === 'function'
+          ? _(date)
+          : _?.format(date) || date.toLocaleString(loc())
+      },
+      locale: loc as SignalObject<any>,
+      availableLocales,
     },
-    $d: (date, type, l) => {
-      const _ = datetimeFormatMap.get(l || loc())?.[type]
-      return typeof _ === 'function'
-        ? _(date)
-        : _?.format(date) || date.toLocaleString(loc())
-    },
-    locale: loc as SignalObject<any>,
-    availiableLocales,
   }
 }

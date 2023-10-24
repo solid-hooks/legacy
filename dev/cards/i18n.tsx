@@ -4,22 +4,22 @@ import { useInfoState } from '../state'
 
 export default function ShowI18n() {
   const info = useInfoState()
-  const { $t, $d, $n, availiableLocales, locale } = useI18n()
-  const { $t: t } = useI18n('nest')
+  const { $t, $d, $n, $scopeT, availableLocales, locale } = useI18n()
+  const t = $scopeT('nest')
   function changeLocale(target: string) {
     locale.$set(target)
   }
   return (
     <>
       <select onChange={e => changeLocale(e.target.value)}>
-        <For each={availiableLocales}>
+        <For each={availableLocales}>
           {l => <option selected={l === locale()}>{l}</option>}
         </For>
       </select>
       <div>{$t('test')}</div>
       <br />
-      <div>{t('description')}:</div>
       <div>{$t('nest.description')}:</div>
+      <div>{t('description')}(scope):</div>
       <div>{$t('plural', { name: 'test', num: ~~(info().test % 8) })}</div>
       <br />
       Date:

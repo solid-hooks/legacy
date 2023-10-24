@@ -1,10 +1,12 @@
-import { $i18n } from '../../src/i18n'
+import { $i18nContext, useDynamicMessage } from '../../src/i18n'
 
-export const useI18n = $i18n({
+export const { useI18n, I18nProvider } = $i18nContext({
   // message: import.meta.glob('./locales/*.tr'),
   // parseKey: path => path.slice(10, -3),
-  message: import.meta.glob('./locales/*.yml'),
-  parseKey: path => path.slice(10, -4),
+  message: useDynamicMessage(
+    import.meta.glob('./locales/*.yml'),
+    path => path.slice(10, -4),
+  ),
   datetimeFormats: {
     'en': {
       short: { dateStyle: 'short' },

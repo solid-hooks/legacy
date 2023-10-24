@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { $i18n } from '../src/i18n'
+import { $i18n, useStaticMessage } from '../src/i18n'
 import { useTick } from '../src/hooks'
 
 describe('i18n', () => {
@@ -19,7 +19,7 @@ describe('i18n', () => {
     },
   } as const
   const useI18n = $i18n({
-    message: { en, zh },
+    message: useStaticMessage({ en, zh }),
     defaultLocale: 'en',
     numberFormats: {
       en: {
@@ -42,7 +42,7 @@ describe('i18n', () => {
       },
     },
   })
-  const { availiableLocales, locale, $t, $d, $n, $scopeT } = useI18n()
+  const { availableLocales, locale, $t, $d, $n, $scopeT } = useI18n()
   const $scopeTranslate = $scopeT('nest')
   beforeEach(() => {
     locale.$set('en')
@@ -54,7 +54,7 @@ describe('i18n', () => {
   }
 
   it('translation', async () => {
-    expect(availiableLocales).toStrictEqual(['en', 'zh'])
+    expect(availableLocales).toStrictEqual(['en', 'zh'])
     expect($t('text')).toBe('text')
     expect($scopeTranslate('text', { value: 1 })).toBe('nest 1')
 

@@ -1,6 +1,6 @@
 import type { Path } from 'object-standard-path'
 import { pathGet } from 'object-standard-path'
-import type { MessageType, StringFallback } from './types'
+import type { StringFallback } from './types'
 
 // '2-3,5' => [2, 3, 5]
 function rangeStringToNumbers(rangeString: string): number[] {
@@ -76,29 +76,18 @@ export function translate<T extends Record<string, any>>(
   path: StringFallback<Path<T>>,
   variable?: Record<string, string | number>,
 ): string {
-  return `${pathGet(message, path as any) || ''}`
-    .replace(varRegex, (_, key) => pathGet(variable, key))
-    .replace(pluralRegex, (originalStr, key, configs) => {
-      const num = +pathGet(variable, key)
-      return Number.isNaN(num)
-        ? originalStr
-        : convertPlural(originalStr, configs, num)
-    })
-}
-
-export function parseMessage<
-  Locale extends string,
-  Message extends MessageType<Locale>,
->(
-  imports: Message,
-  parseKey?: (key: string) => string,
-) {
-  const messageMap = new Map<string, Message[keyof Message]>()
-  const availiableLocales: Locale[] = []
-  for (const [key, value] of Object.entries(imports)) {
-    const k = (typeof value == 'function' ? parseKey?.(key) || key : key) as Locale
-    availiableLocales.push(k)
-    messageMap.set(k, value)
+  if (!message) {
+    return ''
   }
-  return { messageMap, availiableLocales }
+  const msg = pathGet(message, path as Path<T>)
+  return !msg
+    ? ''
+    : `${msg}`
+      .replace(varRegex, (_, key) => pathGet(variable, key))
+      .replace(pluralRegex, (originalStr, key, configs) => {
+        const num = +pathGet(variable, key)
+        return Number.isNaN(num)
+          ? originalStr
+          : convertPlural(originalStr, configs, num)
+      })
 }

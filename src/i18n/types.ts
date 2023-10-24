@@ -1,5 +1,6 @@
 import type { Path, PathValue } from 'object-standard-path'
 import type { AnyFunction, Prettify, StringKeys } from '@subframe7536/type-utils'
+import type { Accessor, FlowComponent, JSXElement } from 'solid-js'
 import type { SignalObject } from '../signal'
 
 export type StringFallback<T, F = string> = T extends never ? F : T extends '' ? F : T
@@ -15,9 +16,19 @@ type ExtractMessage<T> = T extends Record<string, infer C>
   ? C extends AnyFunction ? any : C
   : never
 
+export type DynamicMessage = Record<string, Accessor<Promise<unknown>>>
 export type MessageType<Locale extends string> =
   | Record<Locale, Record<string, any>>
-  | Record<string, () => Promise<{ default: unknown }>>
+  | DynamicMessage
+
+export type GenerateMessageFn<
+  Locale extends string,
+  Message extends MessageType<Locale>,
+> = (locale: SignalObject<Locale>) => {
+  currentMessage: Accessor<Message[keyof Message] | undefined>
+  availableLocales: Locale[]
+  suspense?: boolean
+}
 
 /**
  * options for {@link $i18n}
@@ -44,19 +55,11 @@ export type I18nOptions<
    * import.meta.glob('./locales/*.json')
    * ```
    */
-  message: Message
+  message: GenerateMessageFn<Locale, Message>
   /**
-   * default locale, fallback to `navigator?.language, 'en'`
+   * default locale
    */
   defaultLocale?: StringKeys<Message>
-  /**
-   * convert matched file path to key,
-   * only effect when `message` is imported by `import.meta.glob`
-   *
-   * @param key matched message file path
-   * @example path => path.slice(10, -4)
-   */
-  parseKey?: (key: string) => string
   /**
    * number formatters config,
    * support {@link NumberFormatOptions} or custom function
@@ -128,7 +131,7 @@ export type I18nObject<
     scope: Scope
   ) => TranslateFn<
     Locale,
-    Message extends Record<Locale, AnyFunction>
+    Message extends DynamicMessage
       ? any
       : Record<Locale, PathValue<ExtractMessage<Message>, Scope>>
   >
@@ -157,7 +160,7 @@ export type I18nObject<
   /**
    * all available locales
    */
-  availiableLocales: string[]
+  availableLocales: string[]
 }
 
 export type ScopeMessage<
@@ -168,12 +171,30 @@ export type ScopeMessage<
   ? Record<string, Record<string, any>>
   : Record<Locale, PathValue<Message[Locale], Scope>>
 
-export type I18nObjectReturn<
+export type I18nObjectContext<
   Locale extends string = string,
   Message extends MessageType<Locale> = MessageType<Locale>,
   NumberKey extends string = string,
   DatetimeKey extends string = string,
-> = () => I18nObject<Locale, Message, NumberKey, DatetimeKey>
+> = {
+  /**
+   * i18n provider
+   */
+  I18nProvider: FlowComponent<{
+    /**
+     * use boolean to control whether to use `<Suspense />`
+     *
+     * if is `JSX.Element`, set as fallback element
+     *
+     * effect when options.message returns `loading`
+     */
+    useSuspense?: JSXElement | boolean
+  }>
+  /**
+   * use i18n context
+   */
+  useI18n: Accessor<I18nObject<Locale, Message, NumberKey, DatetimeKey>>
+}
 
 // reference from https://github.com/intlify/vue-i18n-next/blob/master/packages/core-base/src/types/intl.ts
 
