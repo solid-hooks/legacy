@@ -4,18 +4,18 @@ import {
   DEV,
   batch,
   createComponent,
-  createComputed,
   createContext,
   createRoot,
   getOwner,
-  on,
   runWithOwner,
   useContext,
 } from 'solid-js'
-import { produce, reconcile, unwrap } from 'solid-js/store'
+import { reconcile, unwrap } from 'solid-js/store'
+import { klona as deepClone } from 'klona'
 import type { StoreObject } from '../store'
-import { $store, $trackStore } from '../store'
+import { $patchStore, $store, $trackStore } from '../store'
 import { $watch } from '../watch'
+import { usePersist } from '../hooks'
 import type {
   ActionObject,
   GetterObject,
@@ -25,7 +25,7 @@ import type {
   StateSetup,
   StateUtils,
 } from './types'
-import { createActions, createGetters, deepClone } from './utils'
+import { createActions, createGetters } from './utils'
 
 type GlobalStateContext = {
   owner: Owner | null
@@ -131,53 +131,30 @@ function setupObject<
 ): StateFunction<StateObject<State, Getter, Action>> {
   const { init, getters, actions, persist } = setup
   const {
-    serializer: {
-      write: writeFn,
-      read: readFn,
-    } = {
+    serializer = {
       write: JSON.stringify,
       read: JSON.parse,
     },
     storage = localStorage,
     paths,
+    listenEvent = true,
   } = persist || {}
 
   return (stateName, log) => {
     const key = persist?.key || stateName
     const initialState = typeof init === 'function' ? init() : init
-    const _store = $store(
+    let _store = $store(
       Array.isArray(initialState) ? initialState : deepClone(initialState),
       { name: stateName },
     ) as StoreObject<State>
 
-    const persistItems = (state: State, isInital = false) => {
-      const old = storage.getItem(key)
-      let serializedState: string
-      if (!paths || paths.length === 0) {
-        serializedState = writeFn(state)
-      } else {
-        const obj = {}
-        for (const path of paths) {
-          pathSet(obj, path as any, pathGet(state, path))
-        }
-        serializedState = writeFn(obj)
-      }
-      if (isInital || old !== serializedState) {
-        storage.setItem(key, serializedState)
-        log('persist state:', serializedState)
-      }
-    }
     let dep: () => State
     const getDeps = () => {
       !dep && (dep = $trackStore(_store()))
       return dep
     }
     const utilFn: StateUtils<State> = {
-      $patch: state => _store.$set(
-        typeof state === 'function'
-          ? produce(state)
-          : reconcile(Object.assign({}, unwrap(_store()), state), { merge: true }),
-      ),
+      $patch: state => $patchStore(_store, state),
       $reset: () => {
         if (Array.isArray(initialState)) {
           DEV && log('can not reset')
@@ -185,39 +162,47 @@ function setupObject<
         }
         _store.$set(reconcile(initialState, { merge: true }))
       },
-      $subscribe: (...args: any[]) => {
-        let deps = getDeps()
-        let callback = args[1]
-        let options = args[2]
-        if (typeof callback === 'function') {
-          deps = () => args[0](_store())
-        } else {
-          callback = args[0]
-          options = args[1]
-        }
-        return $watch(
-          deps,
-          (state, oldState) => batch(() => callback(unwrap(state), unwrap(oldState))),
-          options,
-        )
-      },
+      $subscribe: (...args: any[]) => $watch(
+        ...typeof args[1] === 'function'
+          ? [
+              () => args[0](_store()),
+              (state: any, oldState: any) => batch(() => args[1](unwrap(state), unwrap(oldState))),
+              args[2],
+            ] as const
+          : [
+              getDeps(),
+              (state: any) => batch(() => args[0](unwrap(state))),
+              args[1],
+            ] as const,
+      ),
     }
     log('initial state:', unwrap(_store()))
 
     if (persist?.enable) {
-      const stored = storage.getItem(key)
-      if (stored) {
-        log('load from storage:', stored)
-        utilFn.$patch(readFn(stored))
-      } else {
-        log('no previous store, persist')
-        persistItems(unwrap(_store()), true)
-      }
-      createComputed(on(
-        getDeps(),
-        state => persistItems(unwrap(state)),
-        { defer: true },
-      ))
+      let isInitalize = true
+      _store = usePersist(key, _store, {
+        listenEvent,
+        serializer,
+        storage,
+        writeData(storage, key, state, writeFn) {
+          const old = storage.getItem(key)
+          let serializedState: string
+          if (!paths || paths.length === 0) {
+            serializedState = writeFn(state)
+          } else {
+            const obj = {}
+            for (const path of paths) {
+              pathSet(obj, path as any, pathGet(state, path))
+            }
+            serializedState = writeFn(obj)
+          }
+          if (isInitalize || old !== serializedState) {
+            storage.setItem(key, serializedState)
+            log('persist state:', serializedState)
+            isInitalize && (isInitalize = false)
+          }
+        },
+      })
     }
 
     return Object.assign(
@@ -225,6 +210,7 @@ function setupObject<
       utilFn,
       createGetters(getters, _store, stateName),
       createActions(actions?.(_store, utilFn)),
+      { $id: stateName },
     )
   }
 }

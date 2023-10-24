@@ -65,12 +65,14 @@ export function useContextProvider<T, Props extends Record<string, unknown>, N e
         return props.children
       },
     }),
-    [`use${_name}Context`]: () => {
-      const _ctx = useContext(ctx)
-      if (DEV && !defaultValue && _ctx === undefined) {
-        throw new Error(`[${tag}]: provider is not set!`)
-      }
-      return _ctx!
-    },
+    [`use${_name}Context`]: DEV
+      ? () => {
+          const _ctx = useContext(ctx)
+          if (!defaultValue && _ctx === undefined) {
+            throw new Error(`[${tag}]: provider is not set!`)
+          }
+          return _ctx
+        }
+      : () => useContext(ctx)!,
   } as ContextObject<N, T, Props>
 }

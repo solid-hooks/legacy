@@ -1,11 +1,31 @@
-import { $PROXY, createComputed, on } from 'solid-js'
+import { untrack } from 'solid-js'
 import { createEventListener } from '@solid-primitives/event-listener'
-import { reconcile } from 'solid-js/store'
-import type { Serializer, StorageLike } from '../state/types'
+import { reconcile, unwrap } from 'solid-js/store'
+import type { BaseOptions } from 'solid-js/types/reactive/signal'
+import type { AnyFunction } from '@subframe7536/type-utils'
 import type { SignalObject } from '../signal'
-import type { StoreObject } from '../store'
+import { $store, type StoreObject } from '../store'
 
-type AnyStorage = StorageLike | {
+/**
+ * serializer type for {@link $state}
+ */
+export type Serializer<State> = {
+  /**
+   * Serializes state into string before storing
+   * @default JSON.stringify
+   */
+  write: (value: State) => string
+
+  /**
+   * Deserializes string into state before hydrating
+   * @default JSON.parse
+   */
+  read: (value: string) => State
+}
+
+export type StorageLike = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>
+
+export type AnyStorage = StorageLike | {
   [K in keyof StorageLike]: (
     ...args: Parameters<StorageLike[K]>
   ) => Promise<ReturnType<StorageLike[K]>>
@@ -14,12 +34,12 @@ type AnyStorage = StorageLike | {
 /**
  * options of {@link usePersist}
  */
-export type PeresistOptions<T> = {
+export type PersistOptions<T, S extends AnyStorage> = {
   /**
    * sync or async storage
    * @default localStorage
    */
-  storage?: AnyStorage
+  storage?: S
   /**
    * data serializer
    * @default { read: JSON.parse, write: JSON.stringify }
@@ -30,6 +50,14 @@ export type PeresistOptions<T> = {
    * @default false
    */
   listenEvent?: boolean
+  /**
+   * custom write function
+   * @param storage storage
+   * @param key storage key
+   * @param value raw value
+   * @param writeFn write function
+   */
+  writeData?: (storage: S, key: string, value: T, writeFn: Serializer<T>['write']) => void
 }
 
 /**
@@ -39,10 +67,10 @@ export type PeresistOptions<T> = {
  * @param options persist options
  * @see https://github.com/subframe7536/solid-dollar#usepersist
  */
-export function usePersist<T>(
+export function usePersist<T, S extends AnyStorage>(
   key: string,
   signal: SignalObject<T>,
-  options?: PeresistOptions<T>,
+  options?: PersistOptions<T, S>,
 ): SignalObject<T>
 /**
  * auto persist value to storage(sync or async)
@@ -51,46 +79,68 @@ export function usePersist<T>(
  * @param options persist options
  * @see https://github.com/subframe7536/solid-dollar#usepersist
  */
-export function usePersist<T extends object>(
+export function usePersist<T extends object, S extends AnyStorage>(
+  key: string,
+  store: T,
+  options?: PersistOptions<T, S> & (T extends StoreObject<any> ? {} : BaseOptions),
+): StoreObject<T extends StoreObject<infer A> ? A : T>
+/**
+ * auto persist value to storage(sync or async)
+ * @param key storage key
+ * @param store original store
+ * @param options persist options
+ * @see https://github.com/subframe7536/solid-dollar#usepersist
+ */
+export function usePersist<T extends object, S extends AnyStorage>(
   key: string,
   store: StoreObject<T>,
-  options?: PeresistOptions<T>,
+  options?: PersistOptions<T, S>,
 ): StoreObject<T>
-export function usePersist<T extends object>(
+export function usePersist<T extends object, S extends AnyStorage>(
   key: string,
-  value: SignalObject<T> | StoreObject<T>,
-  options: PeresistOptions<T> = {},
+  value: T | SignalObject<T> | StoreObject<T>,
+  options: PersistOptions<T, S> & BaseOptions = {},
 ): SignalObject<T> | StoreObject<T> {
   const {
-    serializer = { read: JSON.parse, write: JSON.stringify },
+    serializer: { read, write } = {
+      read: JSON.parse,
+      write: JSON.stringify,
+    },
     storage = localStorage,
     listenEvent,
+    name,
+    writeData,
   } = options
-  const { read, write } = serializer
 
-  const result = () => value()
+  let isStore = false
+  let _val: StoreObject<T> | SignalObject<T>
+  if (typeof value !== 'function') {
+    _val = $store(value, { name })
+    isStore = true
+  } else {
+    _val = value
+  }
+  if (!isStore && (untrack(_val) as any).$PROXY) {
+    isStore = true
+  }
+  const setVal = _val.$set as AnyFunction
 
-  const setVal = (value() as any)[$PROXY]
-    ? (data: T) => (value as StoreObject<T>).$set(reconcile(data))
-    : (value as SignalObject<T>).$set
-
-  const init = storage.getItem(key)
   let unchanged: 1 | null = 1
+  const writeValue = (data = unwrap(_val())) =>
+    writeData ? writeData(storage as S, key, data, write) : storage.setItem(key, write(data))
+  const updateValue = isStore ? (data: T) => setVal(reconcile(data)) : setVal
 
-  const writeValue = (data = value()) => storage.setItem(key, write(data))
-
+  const handleInit = (data: string | null) =>
+    data === null || data === undefined ? writeValue() : updateValue(read(data))
+  const init = storage.getItem(key)
   init instanceof Promise
-    ? init.then(async data => unchanged && data
-      ? setVal(read(data))
-      : await writeValue(),
-    )
-    : init ? setVal(read(init)) : writeValue()
+    ? init.then(data => unchanged && handleInit(data))
+    : handleInit(init)
 
-  result.$set = (data: any) => {
-    const _ = setVal(data)
-    data === null
-      ? storage.removeItem(key)
-      : writeValue(data)
+  _val.$set = (...data) => {
+    const _ = setVal(...data)
+    const _data = isStore ? untrack(() => unwrap(_val())) : _
+    _data === null ? storage.removeItem(key) : writeValue(_data)
     unchanged && (unchanged = null)
     return _
   }
@@ -99,11 +149,11 @@ export function usePersist<T extends object>(
     window,
     'storage',
     ({ storageArea, key: eventKey, newValue }) => {
-      eventKey === key && storageArea === storage && setVal(
+      eventKey === key && storageArea === storage && updateValue(
         newValue ? read(newValue) : null,
       )
     },
   )
 
-  return result as any
+  return _val
 }

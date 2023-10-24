@@ -4,7 +4,6 @@ export type {
   PersistOptions,
   StateSetup,
   StateObject,
-  StorageLike,
   StateListener,
 } from './types'
-export { deepClone } from './utils'
+export { klona as deepClone } from 'klona'

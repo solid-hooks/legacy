@@ -1,10 +1,11 @@
 import type { Path, PathValue } from 'object-standard-path'
 import type { SetStoreFunction, Store } from 'solid-js/store'
-import type { AnyFunction, Prettify } from '@subframe7536/type-utils'
+import type { AnyFunction, RemoveNeverProps } from '@subframe7536/type-utils'
 import type { $TRACK } from 'solid-js'
 import type { Cleanupable, WatchCallback, WatchObject, WatchOptions } from '../watch'
 import type { StoreObject } from '../store'
 import type { MemoObject } from '../memo'
+import type { AnyStorage, Serializer } from '../hooks/persist'
 
 export type StateListener<State> = (state: State) => void
 
@@ -47,7 +48,9 @@ export type StateObject<
   State,
   Getter = GetterObject,
   Action = ActionObject,
-> = Getter & StateUtils<State> & (() => State) & Action
+> = Getter & StateUtils<State> & (() => State) & Action & {
+  $id: string
+}
 
 export type InitialState<State extends object> = State | (() => State | [Store<State>, SetStoreFunction<State>])
 
@@ -106,7 +109,7 @@ export type PersistOptions<State extends object, Paths extends Path<State>[] = [
   /**
    * localStorage like api
    */
-  storage?: StorageLike
+  storage?: AnyStorage
   /**
    * identifier in storage
    */
@@ -120,55 +123,41 @@ export type PersistOptions<State extends object, Paths extends Path<State>[] = [
    * @example ['test.ts','idList[0]']
    */
   paths?: Paths | undefined
+  /**
+   * whether to listen storage event
+   * @default true
+   */
+  listenEvent?: boolean
 }
-type PartialObject<
+export type PartialObject<
   T extends object,
   K extends Path<T>[],
   V = Record<string, any>,
-> = K['length'] extends 0 ? T : K['length'] extends 1 ? {
-  [P in Extract<K[0], string>]: PathValue<T, P>;
-} : K extends [infer A, ...infer B] ? B extends any[] ? V & {
-  [P in Extract<A, string>]: PathValue<T, Extract<A, string>>;
-} & PartialObject<T, B, V> : V & {
-  [P in Extract<A, string>]: PathValue<T, Extract<A, string>>;
-} : never
-type FlattenType<T> = T extends infer U ? ConvertType<{
-  [K in keyof U]: U[K];
-}> : never
+> = K['length'] extends 0
+  ? T
+  : K['length'] extends 1
+    ? { [P in K[0] & string]: PathValue<T, P> }
+    : K extends [infer A, ...infer B]
+      ? B extends any[]
+        ? V & {
+          [P in A & string]: PathValue<T, A & string>
+        } & PartialObject<T, B, V>
+        : V & {
+          [P in A & string]: PathValue<T, A & string>
+        }
+      : never
+export type FlattenType<T> = T extends infer U
+  ? ConvertType<{ [K in keyof U]: U[K] }>
+  : never
 type ConvertType<T> = {
-  [K in keyof T as K extends `${infer A}.${string}` ? A : K]: K extends `${string}.${infer B}` ? ConvertType<{
-    [P in B]: T[K];
-  }> : T[K];
-}
-export type StorageLike = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>
-
-/**
- * serializer type for {@link $state}
- */
-export interface Serializer<State> {
-  /**
-   * Serializes state into string before storing
-   * @default JSON.stringify
-   */
-  write: (value: State) => string
-
-  /**
-   * Deserializes string into state before hydrating
-   * @default JSON.parse
-   */
-  read: (value: string) => State
+  [K in keyof T as K extends `${infer A}.${string}` ? A : K]: K extends `${string}.${infer B}`
+    ? ConvertType<{ [P in B]: T[K] }>
+    : T[K];
 }
 
 export type StateFunction<T> = (stateName: string, log: AnyFunction<void>) => T
 
 export type AvailableState = StateObject<any> | object
-
-type RemoveNeverProps<T> = Prettify<
-  Pick<
-    T,
-    { [K in keyof T]: T[K] extends never ? never : K }[keyof T]
-  >
->
 
 export type ParseGetters<T> = T extends AnyFunction
   ? T extends StateObject<infer _, infer Getters, infer __>

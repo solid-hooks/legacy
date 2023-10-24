@@ -1,9 +1,6 @@
-import type { Accessor } from 'solid-js'
 import { batch, createMemo, untrack } from 'solid-js'
 import type { StoreObject } from '../store'
-import type { ActionObject, AvailableState, GetterObject, ParseActions, ParseGetters, StateGetter } from './types'
-
-export { klona as deepClone } from 'klona'
+import type { ActionObject, GetterObject, StateGetter } from './types'
 
 /**
  * @internal
