@@ -16,6 +16,9 @@ type ExtractMessage<T> = T extends Record<string, infer C>
   ? C extends AnyFunction ? any : C
   : never
 
+/**
+ * type of `import.meta.glob()`
+ */
 export type DynamicMessage = Record<string, Accessor<Promise<unknown>>>
 export type MessageType<Locale extends string> =
   | Record<Locale, Record<string, any>>
@@ -27,6 +30,9 @@ export type GenerateMessageFn<
 > = (locale: SignalObject<Locale>) => {
   currentMessage: Accessor<Message[keyof Message] | undefined>
   availableLocales: Locale[]
+  /**
+   * whether to enable suspense
+   */
   suspense?: boolean
 }
 
@@ -40,19 +46,23 @@ export type I18nOptions<
   DatetimeKey extends string = string,
 > = {
   /**
-   * locale messages
+   * function that load messages
+   *
+   * built-in: {@link useStaticMessage}, {@link useDynamicMessage}
    * @example
    * ```
-   * {
+   * useStaticMessage({
    *   en: {
    *     hello: 'hello {name}, {num}(1=one day|2-3,5=a few days|*=$ days) ago'
    *   }
-   * }
+   * })
    * ```
    * @example
-   * `parseKey()` **must be set**
    * ```
-   * import.meta.glob('./locales/*.json')
+   * useDynamicMessage(
+   *   import.meta.glob('./locales/*.json'),
+   *   path => path.slice(10, -5)
+   * )
    * ```
    */
   message: GenerateMessageFn<Locale, Message>

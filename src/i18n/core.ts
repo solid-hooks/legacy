@@ -2,15 +2,22 @@ import type { Accessor } from 'solid-js'
 import { DEV, Suspense, createComponent, createContext, useContext } from 'solid-js'
 import { makeEventListener } from '@solid-primitives/event-listener'
 import { $, type SignalObject } from '../signal'
-import type { DateTimeFormatItem, I18nObject, I18nObjectContext, I18nOptions, MessageType, NumberFormatItem } from './types'
+import type {
+  DateTimeFormatItem,
+  I18nObject,
+  I18nObjectContext,
+  I18nOptions,
+  MessageType,
+  NumberFormatItem,
+} from './types'
 import { translate } from './utils'
 
 /**
- * initalize i18n
+ * initalize i18n and return `I18nProvider` and `useI18n`
  * @param options i18n options
  * @see https://github.com/subframe7536/solid-dollar#i18n
  */
-export function $i18nContext<
+export function $i18n<
   Locale extends string = string,
   Message extends MessageType<Locale> = any,
   NumberKey extends string = string,
@@ -50,34 +57,8 @@ export function $i18nContext<
       : () => useContext(ctx)!,
   }
 }
-/**
- * initalize i18n
- * @param options i18n options
- * @see https://github.com/subframe7536/solid-dollar#i18n
- */
-export function $i18n<
-  Locale extends string = string,
-  Message extends MessageType<Locale> = any,
-  NumberKey extends string = string,
-  DatetimeKey extends string = string,
->(
-  options: I18nOptions<Locale, Message, NumberKey, DatetimeKey>,
-): Accessor<I18nObject<Locale, Message, NumberKey, DatetimeKey>> {
-  const ctx = createContext<{
-    data: I18nObject<Locale, Message, NumberKey, DatetimeKey> | undefined
-  }>({ data: undefined })
-  return () => {
-    const _ = useContext(ctx)
-    if (_.data) {
-      return _.data
-    }
-    const { data } = defineI18n(options)
-    _.data = data
-    return data
-  }
-}
 
-function defineI18n<
+export function defineI18n<
   Locale extends string = string,
   Message extends MessageType<Locale> = any,
   NumberKey extends string = string,

@@ -1,6 +1,37 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { $i18n, useStaticMessage } from '../src/i18n'
+import type { Accessor } from 'solid-js'
+import { createContext, useContext } from 'solid-js'
+import type { I18nObject, I18nOptions } from '../src/i18n'
+import { defineI18n, useStaticMessage } from '../src/i18n'
 import { useTick } from '../src/hooks'
+import type { MessageType } from '../src/i18n/types'
+
+/**
+ * initalize i18n
+ * @param options i18n options
+ * @see https://github.com/subframe7536/solid-dollar#i18n
+ */
+function $i18n<
+  Locale extends string = string,
+  Message extends MessageType<Locale> = any,
+  NumberKey extends string = string,
+  DatetimeKey extends string = string,
+>(
+  options: I18nOptions<Locale, Message, NumberKey, DatetimeKey>,
+): Accessor<I18nObject<Locale, Message, NumberKey, DatetimeKey>> {
+  const ctx = createContext<{
+    data: I18nObject<Locale, Message, NumberKey, DatetimeKey> | undefined
+  }>({ data: undefined })
+  return () => {
+    const _ = useContext(ctx)
+    if (_.data) {
+      return _.data
+    }
+    const { data } = defineI18n(options)
+    _.data = data
+    return data
+  }
+}
 
 describe('i18n', () => {
   const en = {

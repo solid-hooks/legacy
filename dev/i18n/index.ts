@@ -1,6 +1,6 @@
-import { $i18nContext, useDynamicMessage } from '../../src/i18n'
+import { $i18n, useDynamicMessage } from '../../src/i18n'
 
-export const { useI18n, I18nProvider } = $i18nContext({
+export const { useI18n, I18nProvider } = $i18n({
   // message: import.meta.glob('./locales/*.tr'),
   // parseKey: path => path.slice(10, -3),
   message: useDynamicMessage(
