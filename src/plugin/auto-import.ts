@@ -42,19 +42,20 @@ export const $autoImport: ImportFn = directiveOnly => directiveOnly ? [
       '$resource',
       '$store',
       '$trackStore',
+      '$patchStore',
       '$watch',
       '$watchOnce',
       '$watchInstant',
       '$watchRendered',
       '$selector',
+      '$patchArray',
+      '$objectURL',
+      '$reactive',
       '$$',
       '$effect',
-      '$effectInstant',
-      '$effectRendered',
-      '$deferred',
-      '$array',
-      '$objectURL',
-      '$reactive'
+      '$instantEffect',
+      '$renderEffect',
+      '$deferred'
     ]
   },
   {
@@ -70,9 +71,7 @@ export const $autoImport: ImportFn = directiveOnly => directiveOnly ? [
       'WatchObject',
       'SelectorObject',
       'SelectorObjectOptions',
-      'ArrayObject',
-      'ObjectURLObject',
-      'ReactiveObject'
+      'ObjectURLObject'
     ],
     'type': true
   },
@@ -80,7 +79,9 @@ export const $autoImport: ImportFn = directiveOnly => directiveOnly ? [
     'from': 'solid-dollar/i18n',
     'imports': [
       '$i18n',
-      'I18nProvider'
+      'defineI18n',
+      'useDynamicMessage',
+      'useStaticMessage'
     ]
   },
   {
@@ -89,7 +90,8 @@ export const $autoImport: ImportFn = directiveOnly => directiveOnly ? [
       'I18nOptions',
       'I18nObject',
       'NumberFormats',
-      'DateTimeFormats'
+      'DateTimeFormats',
+      'GenerateMessageFn'
     ],
     'type': true
   },
@@ -108,7 +110,6 @@ export const $autoImport: ImportFn = directiveOnly => directiveOnly ? [
       'PersistOptions',
       'StateSetup',
       'StateObject',
-      'StorageLike',
       'StateListener'
     ],
     'type': true
@@ -121,10 +122,10 @@ export const $autoImport: ImportFn = directiveOnly => directiveOnly ? [
       'useTick',
       'useApp',
       'useEmits',
-      'useDocumentListener',
-      'useWindowListener',
       'useEventListener',
       'useEventListenerMap',
+      'useDocumentListener',
+      'useWindowListener',
       'useDraggable',
       'clamp',
       'useScriptLoader',

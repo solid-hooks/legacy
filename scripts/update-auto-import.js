@@ -21,6 +21,8 @@ function getExports(filePath) {
           list.vars.push(exp.name.text)
         }
       })
+    } else if (ts.isExportSpecifier(node)) {
+      list.vars.push(node.name.text)
     }
   })
 

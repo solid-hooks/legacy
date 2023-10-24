@@ -1,8 +1,8 @@
 import {
   makeEventListener,
-  createEventListener as useEventListener,
-  createEventListenerMap as useEventListenerMap,
 } from '@solid-primitives/event-listener'
+
+// more alias export at ./index.ts
 
 /**
  * listen event on `window`, auto cleanup
@@ -17,8 +17,3 @@ export const useWindowListener = makeEventListener.bind(makeEventListener, windo
  * return cleanup function
  */
 export const useDocumentListener = makeEventListener.bind(makeEventListener, document)
-
-export {
-  useEventListener,
-  useEventListenerMap,
-}

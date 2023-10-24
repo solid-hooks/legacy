@@ -1,11 +1,11 @@
 import { For, observable, onMount } from 'solid-js'
-import { $, $array, $effect, $effectInstant, $effectRendered } from '../../src'
+import { $, $effect, $instantEffect, $patchArray, $renderEffect } from '../../src'
 import { useTick } from '../../src/hooks'
 
 export function TestSeq() {
   const str = $('before all')
-  const logList = $array<string[]>([])
-  const log = (str: string) => logList.$mutate((arr) => {
+  const logList = $<string[]>([])
+  const log = (str: string) => $patchArray(logList, (arr) => {
     arr.push(str)
   })
   log(str())
@@ -14,8 +14,8 @@ export function TestSeq() {
     str.$set('set when micro task')
   })
   $effect(() => log(`effect: ${str()}`))
-  $effectRendered(() => log(`rendered: ${str()}`))
-  $effectInstant(() => log(`instant: ${str()}`))
+  $renderEffect(() => log(`rendered: ${str()}`))
+  $instantEffect(() => log(`instant: ${str()}`))
   // same with $effect
   observable(str).subscribe({
     next(str) {

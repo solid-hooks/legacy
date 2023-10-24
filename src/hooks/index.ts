@@ -11,7 +11,11 @@ export { useApp } from './app'
 export { useEmits } from './emits'
 export type { EmitProps, EmitsObject } from './emits'
 
-export { useDocumentListener, useWindowListener, useEventListener, useEventListenerMap } from './event-listener'
+export {
+  createEventListener as useEventListener,
+  createEventListenerMap as useEventListenerMap,
+} from '@solid-primitives/event-listener'
+export { useDocumentListener, useWindowListener } from './event-listener'
 
 export { useDraggable, clamp } from './draggable'
 export type { DragOptions, DraggableElement } from './draggable'
