@@ -10,7 +10,7 @@ export function useStaticMessage<
   const map = new Map<string, any>(Object.entries(message))
   const availableLocales = Object.keys(message) as Locale[]
   return (locale) => {
-    const currentMessage = createMemo(() => map.get(locale()))
+    const currentMessage = createMemo(() => map.get(locale()), undefined, { name: '$i18n-message' })
     return { availableLocales, currentMessage }
   }
 }

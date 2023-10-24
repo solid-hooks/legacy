@@ -1,4 +1,3 @@
-import type { Accessor } from 'solid-js'
 import { DEV, Suspense, createComponent, createContext, useContext } from 'solid-js'
 import { makeEventListener } from '@solid-primitives/event-listener'
 import { $, type SignalObject } from '../signal'
@@ -28,7 +27,7 @@ export function $i18n<
   const ctx = createContext<I18nObject<Locale, Message, NumberKey, DatetimeKey>>()
   return {
     I18nProvider: (props) => {
-      const { data, suspense } = defineI18n(options)
+      const { suspense, ...data } = defineI18n(options)
       function createPropvider() {
         return createComponent(ctx.Provider, {
           value: data,
@@ -64,16 +63,14 @@ export function defineI18n<
   NumberKey extends string = string,
   DatetimeKey extends string = string,
 >(
-  {
+  options: I18nOptions<Locale, Message, NumberKey, DatetimeKey>,
+): I18nObject<Locale, Message, NumberKey, DatetimeKey> & { suspense?: boolean } {
+  const {
     message,
     defaultLocale = navigator?.language || 'en' as any,
     datetimeFormats,
     numberFormats,
-  }: I18nOptions<Locale, Message, NumberKey, DatetimeKey>,
-): {
-    data: I18nObject<Locale, Message, NumberKey, DatetimeKey>
-    suspense?: boolean
-  } {
+  } = options
   const loc = $(defaultLocale, { name: '$i18n-locale' })
   const {
     currentMessage,
@@ -113,31 +110,29 @@ export function defineI18n<
 
   return {
     suspense,
-    data: {
-      $t: (path, variables?) => translate(
-        currentMessage(),
-        path as any,
-        variables as Record<string, any>,
-      ),
-      $scopeT: scope => (path, variables?) => translate(
-        currentMessage(),
+    $t: (path, variables?) => translate(
+      currentMessage(),
+      path as any,
+      variables as Record<string, any>,
+    ),
+    $scopeT: scope => (path, variables?) => translate(
+      currentMessage(),
         `${scope}.${path}` as any,
         variables as Record<string, any>,
-      ),
-      $n: (num, type, l) => {
-        const _ = numberFormatMap.get(l || loc())?.[type]
-        return typeof _ === 'function'
-          ? _(num)
-          : _?.format(num) || num.toLocaleString(loc())
-      },
-      $d: (date, type, l) => {
-        const _ = datetimeFormatMap.get(l || loc())?.[type]
-        return typeof _ === 'function'
-          ? _(date)
-          : _?.format(date) || date.toLocaleString(loc())
-      },
-      locale: loc as SignalObject<any>,
-      availableLocales,
+    ),
+    $n: (num, type, l) => {
+      const _ = numberFormatMap.get(l || loc())?.[type]
+      return typeof _ === 'function'
+        ? _(num)
+        : _?.format(num) || num.toLocaleString(loc())
     },
+    $d: (date, type, l) => {
+      const _ = datetimeFormatMap.get(l || loc())?.[type]
+      return typeof _ === 'function'
+        ? _(date)
+        : _?.format(date) || date.toLocaleString(loc())
+    },
+    locale: loc as SignalObject<any>,
+    availableLocales,
   }
 }
