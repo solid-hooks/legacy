@@ -1,6 +1,6 @@
 import type { Path } from 'object-standard-path'
 import { pathGet } from 'object-standard-path'
-import type { I18nObject, MessageType, StringFallback } from './types'
+import type { MessageType, StringFallback } from './types'
 
 // '2-3,5' => [2, 3, 5]
 function rangeStringToNumbers(rangeString: string): number[] {
@@ -101,15 +101,4 @@ export function parseMessage<
     messageMap.set(k, value)
   }
   return { messageMap, availiableLocales }
-}
-
-export function scopeTranslateWrapper(
-  i18n: I18nObject<any, any, any, any>,
-  scope: string,
-): I18nObject {
-  const { $t, ...others } = i18n
-  return {
-    $t: (key, variables?) => $t(`${scope}.${key}` as any, variables as Record<string, any>),
-    ...others,
-  }
 }

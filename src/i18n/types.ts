@@ -1,5 +1,5 @@
 import type { Path, PathValue } from 'object-standard-path'
-import type { Prettify, StringKeys } from '@subframe7536/type-utils'
+import type { AnyFunction, Prettify, StringKeys } from '@subframe7536/type-utils'
 import type { SignalObject } from '../signal'
 
 export type StringFallback<T, F = string> = T extends never ? F : T extends '' ? F : T
@@ -11,10 +11,13 @@ type ExtractVariable<S extends string, T extends string | number> =
     : {}
 
 type ParseMessage<S extends string> = Prettify<ExtractVariable<S, string>>
+type ExtractMessage<T> = T extends Record<string, infer C>
+  ? C extends AnyFunction ? any : C
+  : never
 
 export type MessageType<Locale extends string> =
   | Record<Locale, Record<string, any>>
-  | Record<string, () => Promise<{ default: any }>>
+  | Record<string, () => Promise<{ default: unknown }>>
 
 /**
  * options for {@link $i18n}
@@ -92,6 +95,16 @@ export type I18nOptions<
   datetimeFormats?: DateTimeFormats<Locale, DatetimeKey>
 }
 
+export type TranslateFn<
+  Locale extends string,
+  Message extends MessageType<Locale>,
+> = <P extends string = Path<Message[Locale]>>(
+  path: StringFallback<P>,
+  ...args: keyof ParseMessage<PathValue<Message[Locale], P>> extends never
+    ? [variables?: Record<string, string | number>]
+    : [variables: ParseMessage<PathValue<Message[Locale], P>>]
+) => string
+
 /**
  * type of {@link $i18n}
  */
@@ -106,14 +119,19 @@ export type I18nObject<
    * @param path object path
    * @param variables message variables, match `{key}` in message
    */
-  $t: <
-    P extends string = Path<Message[Locale]>,
-  >(
-    path: StringFallback<P>,
-    ...args: keyof ParseMessage<PathValue<Message[Locale], P>> extends never
-      ? [variables?: Record<string, string | number>]
-      : [variables: ParseMessage<PathValue<Message[Locale], P>>]
-  ) => string
+  $t: TranslateFn<Locale, Message>
+  /**
+   * create scoped translater
+   * @param scope message scope
+   */
+  $scopeT: <Scope extends Path<ExtractMessage<Message>>>(
+    scope: Scope
+  ) => TranslateFn<
+    Locale,
+    Message extends Record<Locale, AnyFunction>
+      ? any
+      : Record<Locale, PathValue<ExtractMessage<Message>, Scope>>
+  >
   /**
    * localize number
    *
@@ -155,18 +173,7 @@ export type I18nObjectReturn<
   Message extends MessageType<Locale> = MessageType<Locale>,
   NumberKey extends string = string,
   DatetimeKey extends string = string,
-> = {
-  /**
-   * get I18nObject
-   */
-  (): I18nObject<Locale, Message, NumberKey, DatetimeKey>
-  /**
-   * get I18nObject with scope translator
-   */
-  <Scope extends Path<Message[Locale]>>(
-    scope: StringFallback<Scope>
-  ): I18nObject<Locale, ScopeMessage<Locale, Message, Scope>, NumberKey, DatetimeKey>
-}
+> = () => I18nObject<Locale, Message, NumberKey, DatetimeKey>
 
 // reference from https://github.com/intlify/vue-i18n-next/blob/master/packages/core-base/src/types/intl.ts
 
@@ -221,3 +228,6 @@ export type NumberFormatOptions =
 export type NumberFormat<T extends string> = Record<T, NumberFormatOptions | ((num: number | bigint) => string)>
 
 export type NumberFormats<Locale extends string = string, Key extends string = string> = Record<Locale, NumberFormat<Key>>
+
+export type DateTimeFormatItem = Intl.DateTimeFormat | ((date: Date) => string)
+export type NumberFormatItem = Intl.NumberFormat | ((num: number | bigint) => string)

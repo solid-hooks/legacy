@@ -42,8 +42,8 @@ describe('i18n', () => {
       },
     },
   })
-  const { availiableLocales, locale, $t, $d, $n } = useI18n()
-  const { $t: $scopeTranslate } = useI18n('nest')
+  const { availiableLocales, locale, $t, $d, $n, $scopeT } = useI18n()
+  const $scopeTranslate = $scopeT('nest')
   beforeEach(() => {
     locale.$set('en')
   })
