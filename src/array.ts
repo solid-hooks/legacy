@@ -1,40 +1,9 @@
-import type { AnyFunction } from '@subframe7536/type-utils'
-import { createSignal } from 'solid-js'
-import type { Setter, SignalOptions } from 'solid-js'
+import type { SignalObject } from './signal'
 
-/**
- * type of {@link $array}
- */
-export type ArrayObject<T> = {
-  (): T
-  /**
-   * setter function
-   */
-  $set: Setter<T>
-  /**
-   * update by mutating it in-place
-   */
-  $mutate: (mutator: (prev: T) => void) => T
-}
-
-/**
- * object wrapper for array signal
- * @param value initial value
- * @param options signal options
- * @see https://github.com/subframe7536/solid-dollar#array
- */
-export function $array<T extends any[]>(
-  value: T,
-  options: SignalOptions<T> = {},
-): ArrayObject<T> {
-  const [arr, setArr] = createSignal(value, options)
-  // @ts-expect-error assign
-  arr.$set = setArr
-  // @ts-expect-error assign
-  arr.$mutate = (fn: AnyFunction) => setArr((prev) => {
-    const _ = [...prev]
+export function $patchArray<T extends any[]>(arr: SignalObject<T>, fn: (data: T) => void) {
+  return arr.$set((data) => {
+    const _ = [...data] as T
     fn(_)
     return _
   })
-  return arr as ArrayObject<T>
 }
