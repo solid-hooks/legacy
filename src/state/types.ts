@@ -173,7 +173,7 @@ export type ParseActions<T> = T extends AnyFunction
     : never
   : T extends object
     ? RemoveNeverProps<{
-      [K in keyof T]: T[K] extends { [$TRACK]: any } ? never : T[K]
+      [K in keyof T]: T[K] extends AnyFunction ? keyof T[K] extends never ? T[K] : never : never
     }>
     : never
 

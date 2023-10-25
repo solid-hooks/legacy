@@ -50,6 +50,34 @@ const test = $('test')
 const memoByValue = $memo(`value: ${test()}`)
 ```
 
+### `$store`
+
+object wrapper for `createStore`
+
+```ts
+import { $store } from 'solid-dollar'
+
+const store = $store({ test: { deep: 1 } })
+
+store() // { test: { deep: 1 } }
+store.$set('test', 'deep', 2) // set value
+```
+
+#### `$trackStore`
+
+Accessor wrapper for [`trackStore`](https://github.com/solidjs-community/solid-primitives/tree/main/packages/deep#trackstore)
+
+#### `$patchStore`
+
+patch update store
+
+```ts
+import { $store, $patchStore } from 'solid-dollar'
+
+const store = $store({ data: { deep:1 } })
+$patchStore(store, data => data.deep = 2)
+```
+
 ### `$resource`
 
 object wrapper for `createResource`
@@ -124,23 +152,6 @@ run effect after rendered, be able to access DOM, alias for `createRenderEffect`
 
 run effect instantly, alias for `createComputed`
 
-### `$store`
-
-object wrapper for `createStore`
-
-```ts
-import { $store } from 'solid-dollar'
-
-const store = $store({ test: { deep: 1 } })
-
-store() // { test: { deep: 1 } }
-store.$set('test', 'deep', 2) // set value
-```
-
-#### `$trackStore`
-
-Accessor wrapper for [`trackStore`](https://github.com/solidjs-community/solid-primitives/tree/main/packages/deep#trackstore)
-
 ### `$deferred`
 
 defer update notification until browser idle, alias for `createDeferred`
@@ -167,8 +178,6 @@ return (
 )
 ```
 
-
-
 ### `$objectURL`
 
 convert binary to object url
@@ -181,19 +190,18 @@ const url = $objectURL(new MediaSource())
 const url = $objectURL(new Uint8Array(), { type: 'image/png' })
 ```
 
-### `$array`
+### `$patchArray`
 
-object wrapper for array signal
+patch update array signal
 
 ```ts
-import { $array } from 'solid-dollar'
+import { $, $patchArray } from 'solid-dollar'
 
-const arr = $array<number[]>([1])
+const arr = $<number[]>([1])
 
 arr() // [1]
-arr.$set([2]) // set
-arr.$mutate(a => a.push(3)) // update by mutating it in-place
-arr() // [2, 3]
+$patchArray(arr, a => a.push(3)) // update by mutating it in-place
+arr() // [1, 3]
 ```
 
 ### `$reactive`
@@ -294,6 +302,25 @@ state.$subscribe(
 state.$reset()
 ```
 
+or just a global-level context & provider
+
+```ts
+import { $, $instantEffect, $memo } from 'solid-dollar'
+import { $state } from 'solid-dollar/state'
+
+export const useCustomState = $state('custom', (name, log) => {
+  const plain = $(1)
+  $instantEffect(() => {
+    log('$state with custom function:', { name, newValue: plain() })
+  })
+  const plus2 = $memo(plain() + 2) // recognized as 'getter' on type
+  function add() { // recognized as 'action' on type
+    plain.$set(p => p + 1)
+  }
+  return { plain, plus2, add }
+})
+```
+
 ---
 
 ## `solid-dollar/i18n`
@@ -340,13 +367,13 @@ $t('plural', { var: 5 }) // at a few days ago
 
 ```tsx
 import { For } from 'solid-js'
-import { $i18n, I18nProvider } from 'solid-dollar/i18n'
+import { $i18n, useStaticMessage } from 'solid-dollar/i18n'
 
 // use `as const` to make parameters typesafe
 const zh = { t: '1', deep: { t: '{name}' }, plural: '{day}' } as const
 const en = { t: '2', deep: { t: '{name}' }, plural: '{day}(0=zero|1=one)' } as const
-export const useI18n = $i18n({
-  message: { 'en': en, 'zh-CN': zh },
+export const { useI18n, I18nProvider } = $i18n({
+  message: useStaticMessage({ 'en': en, 'zh-CN': zh }),
   defaultLocale: 'en',
   datetimeFormats: {
     'en': {
@@ -370,10 +397,11 @@ export const useI18n = $i18n({
   },
 })
 // usage
-const { $t, $d, $n, availiableLocales, locale } = useI18n(/* optional typesafe scope */)
+const { $t, $scopeT, $d, $n, availiableLocales, locale } = useI18n(/* optional typesafe scope */)
+const scopeT = $scopeT('deep')
 
 return (
-  <I18nProvider>{/* optional */}
+  <I18nProvider>
     <select onChange={e => locale.$set(e.target.value)}>
       <For each={availiableLocales}>
         {l => <option selected={l === locale()}>{l}</option>}
@@ -394,9 +422,13 @@ return (
 
 load on demand:
 ```ts
+import { $i18n, useDynamicMessage } from 'solid-dollar/i18n'
+
 export const useI18n = $i18n({
-  message: import.meta.glob('./locales/*.yml'),
-  parseKey: path => path.slice(10, -5),
+  message: useDynamicMessage(
+    import.meta.glob('./locales/*.yml'),
+    parseKey: path => path.slice(10, -4)
+  ),
   // other options...
 })
 ```

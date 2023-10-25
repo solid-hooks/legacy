@@ -1,4 +1,3 @@
-import { getOwner } from 'solid-js'
 import { $state } from '../src/state'
 import { $, $instantEffect, $memo } from '../src'
 
@@ -40,5 +39,8 @@ export const useCustomState = $state('custom', (name, log) => {
   const plus2 = $memo(plain() + 2)
   // const owner = getOwner()
   // console.log(owner)
-  return { plain, plus2 }
+  function add() {
+    plain.$set(p => p + 1)
+  }
+  return { plain, plus2, add }
 })

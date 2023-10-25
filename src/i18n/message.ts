@@ -1,6 +1,10 @@
 import { createMemo, createResource } from 'solid-js'
 import type { DynamicMessage, GenerateMessageFn } from './types'
 
+/**
+ * load static message
+ * @param message static message
+ */
 export function useStaticMessage<
   Locale extends string,
   Message extends Record<Locale, Record<string, any>>,
@@ -14,6 +18,12 @@ export function useStaticMessage<
     return { availableLocales, currentMessage }
   }
 }
+
+/**
+ * load from dynamic message
+ * @param imports `import.meta.glob('...')`
+ * @param parseKey parse key string
+ */
 export function useDynamicMessage<
   Locale extends string,
 >(

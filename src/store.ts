@@ -55,15 +55,16 @@ export function $trackStore<T extends object>(store: Store<T> | StoreObject<T>) 
 /**
  * patch store
  * @param store StoreObject to be patched
- * @param data patch data
+ * @param patcher patch data
+ * @see https://github.com/subframe7536/solid-dollar#patchstore
  */
 export function $patchStore<T extends object>(
   store: StoreObject<T>,
-  data: DeepPartial<T> | ((data: T) => void),
+  patcher: DeepPartial<T> | ((data: T) => void),
 ) {
   return store.$set(
-    typeof data === 'function'
-      ? produce(data as AnyFunction)
-      : reconcile(Object.assign(unwrap(store), data) as T, { merge: true }),
+    typeof patcher === 'function'
+      ? produce(patcher as AnyFunction)
+      : reconcile(Object.assign(unwrap(store), patcher) as T, { merge: true }),
   )
 }

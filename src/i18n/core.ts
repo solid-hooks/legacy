@@ -57,6 +57,9 @@ export function $i18n<
   }
 }
 
+/**
+ * define core i18n
+ */
 export function defineI18n<
   Locale extends string = string,
   Message extends MessageType<Locale> = any,
