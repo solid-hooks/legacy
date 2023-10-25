@@ -106,7 +106,7 @@
   ],
   "browser": {},
   "scripts": {
-    "dev": "vite serve dev --open",
+    "dev": "vite serve dev",
     "build": "node scripts/update-auto-import.js && tsup",
     "test": "vitest --run",
     "release": "pnpm test && pnpm lint && pnpm build && bumpp --all && npm publish",

@@ -3,17 +3,44 @@ import { createRoot } from 'solid-js'
 import { usePersist, useTick } from '../src/hooks'
 import { $, $store } from '../src'
 
-describe('useStorage', () => {
+describe('usePersist', () => {
   afterEach(() => {
     localStorage.clear()
   })
 
-  it('object', async () => {
-    const KEY = 'custom-key-object'
+  it('$', () => {
+    const KEY = 'custom-key-store'
+    expect(localStorage.getItem(KEY)).toStrictEqual(null)
+    const store = usePersist(KEY, $(123))
+
+    expect(localStorage.getItem(KEY)).toStrictEqual('123')
+    expect(store()).toBe(123)
+
+    store.$set(321)
+    expect(localStorage.getItem(KEY)).toStrictEqual('321')
+    expect(store()).toBe(321)
+  })
+
+  it('$store', () => {
+    const KEY = 'custom-key-store'
     expect(localStorage.getItem(KEY)).toStrictEqual(null)
     const store = usePersist(KEY, $store({ name: 'a', data: 123 }))
 
-    await useTick()
+    expect(localStorage.getItem(KEY)).toStrictEqual('{"name":"a","data":123}')
+    expect(store()).toStrictEqual({ name: 'a', data: 123 })
+
+    store.$set({ ...store(), name: 'b' })
+    expect(localStorage.getItem(KEY)).toStrictEqual('{"name":"b","data":123}')
+
+    store.$set({ ...store(), data: 321 })
+    expect(localStorage.getItem(KEY)).toStrictEqual('{"name":"b","data":321}')
+  })
+
+  it('object', () => {
+    const KEY = 'custom-key-object'
+    expect(localStorage.getItem(KEY)).toStrictEqual(null)
+    const store = usePersist(KEY, { name: 'a', data: 123 })
+
     expect(localStorage.getItem(KEY)).toStrictEqual('{"name":"a","data":123}')
     expect(store()).toStrictEqual({ name: 'a', data: 123 })
 

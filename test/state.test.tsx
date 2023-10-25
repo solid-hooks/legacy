@@ -40,7 +40,7 @@ describe('test state', () => {
     const actions = useState<'action'>()
 
     await useTick()
-    createRoot(() => state.$subscribe(callback))
+    const { pause, resume } = createRoot(() => state.$subscribe(callback))
     createRoot(() => state.$subscribe(state => state.deep.test, deepCallback, { defer: false }))
     expect(state().deep.test).toBe(1)
     expect(state.doubleValue()).toBe(2)
@@ -66,8 +66,10 @@ describe('test state', () => {
     expect(state.doubleValue()).toBe(404)
     expect(deepCallback).toHaveBeenCalledWith(202, 2)
 
+    pause()
     state.$patch({ foo: 'baz' })
     expect(state().foo).toBe('baz')
+    resume()
 
     state.$reset()
     expect(state().deep.test).toBe(1)
@@ -75,7 +77,7 @@ describe('test state', () => {
     expect(state.doubleValue()).toBe(2)
 
     await useTick()
-    expect(callback).toHaveBeenCalledTimes(4)
+    expect(callback).toHaveBeenCalledTimes(3)
   })
   it('should successfully use nest $state()', async () => {
     const initialState = { count: 0 }

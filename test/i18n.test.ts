@@ -27,7 +27,7 @@ function $i18n<
     if (_.data) {
       return _.data
     }
-    const { data } = defineI18n(options)
+    const data = defineI18n(options)
     _.data = data
     return data
   }
