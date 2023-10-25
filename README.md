@@ -363,7 +363,7 @@ $t('plural', { var: 4 }) // at 4 days ago
 $t('plural', { var: 5 }) // at a few days ago
 ```
 
-#### example
+#### static message
 
 ```tsx
 import { For } from 'solid-js'
@@ -420,18 +420,30 @@ return (
 )
 ```
 
-load on demand:
-```ts
+#### dynamic message
+
+using `import.meta.glob(...)` to dynamically load message
+
+```tsx
 import { $i18n, useDynamicMessage } from 'solid-dollar/i18n'
 
-export const useI18n = $i18n({
+export const { useI18n, I18nProvider } = $i18n({
   message: useDynamicMessage(
     import.meta.glob('./locales/*.yml'),
     parseKey: path => path.slice(10, -4)
   ),
   // other options...
 })
+
+return (
+  <I18nProvider useSuspense={<div>loading...</div>}>
+    {/*...*/}
+  </I18nProvider>
+)
 ```
+
+#### vite plugin
+
 to convert yml, setup built-in vite plugin
 
 vite.config.ts

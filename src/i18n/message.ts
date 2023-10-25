@@ -4,6 +4,7 @@ import type { DynamicMessage, GenerateMessageFn } from './types'
 /**
  * load static message
  * @param message static message
+ * @see https://github.com/subframe7536/solid-dollar#static-message
  */
 export function useStaticMessage<
   Locale extends string,
@@ -23,6 +24,7 @@ export function useStaticMessage<
  * load from dynamic message
  * @param imports `import.meta.glob('...')`
  * @param parseKey parse key string
+ * @see https://github.com/subframe7536/solid-dollar#dynamic-message
  */
 export function useDynamicMessage<
   Locale extends string,

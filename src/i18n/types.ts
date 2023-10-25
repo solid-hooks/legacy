@@ -196,7 +196,8 @@ export type I18nObjectContext<
      *
      * if is `JSX.Element`, set as fallback element
      *
-     * effect when options.message returns `loading`
+     * effect when options.message's return contains `{suspense: true}`
+     * (using {@link useDynamicMessage})
      */
     useSuspense?: JSXElement | boolean
   }>
