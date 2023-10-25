@@ -1,7 +1,6 @@
 import type { Path, PathValue } from 'object-standard-path'
 import type { SetStoreFunction, Store } from 'solid-js/store'
 import type { AnyFunction, RemoveNeverProps } from '@subframe7536/type-utils'
-import type { $TRACK } from 'solid-js'
 import type { Cleanupable, WatchCallback, WatchObject, WatchOptions } from '../watch'
 import type { StoreObject } from '../store'
 import type { MemoObject } from '../memo'
