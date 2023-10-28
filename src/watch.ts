@@ -1,5 +1,14 @@
 import type { Accessor, AccessorArray, OnOptions } from 'solid-js'
-import { batch, createComputed, createEffect, createReaction, createRenderEffect, createSignal, on, onCleanup } from 'solid-js'
+import {
+  batch,
+  createComputed,
+  createEffect,
+  createReaction,
+  createRenderEffect,
+  createSignal,
+  on,
+  onCleanup,
+} from 'solid-js'
 import type { Prettify } from '@subframe7536/type-utils'
 import type { EffectOptions } from 'solid-js/types/reactive/signal'
 import type { SignalObject } from './signal'

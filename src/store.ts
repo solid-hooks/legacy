@@ -1,4 +1,3 @@
-import { trackStore } from '@solid-primitives/deep'
 import type { AnyFunction, DeepPartial } from '@subframe7536/type-utils'
 import type { SetStoreFunction, Store } from 'solid-js/store'
 import { createStore, produce, reconcile, unwrap } from 'solid-js/store'
@@ -45,13 +44,6 @@ export function $store<T extends object>(
   return result as any
 }
 
-/**
- * accessor wrapper for {@link trackStore}
- * @param store Store or {@link StoreObject}
- */
-export function $trackStore<T extends object>(store: Store<T> | StoreObject<T>) {
-  return () => trackStore(typeof store === 'function' ? store() : store)
-}
 /**
  * patch store
  * @param store StoreObject to be patched

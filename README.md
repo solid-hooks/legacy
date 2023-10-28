@@ -63,10 +63,6 @@ store() // { test: { deep: 1 } }
 store.$set('test', 'deep', 2) // set value
 ```
 
-#### `$trackStore`
-
-Accessor wrapper for [`trackStore`](https://github.com/solidjs-community/solid-primitives/tree/main/packages/deep#trackstore)
-
 #### `$patchStore`
 
 patch update store

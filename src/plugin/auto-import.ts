@@ -41,7 +41,6 @@ export const $autoImport: ImportFn = directiveOnly => directiveOnly ? [
       '$memo',
       '$resource',
       '$store',
-      '$trackStore',
       '$patchStore',
       '$watch',
       '$watchOnce',

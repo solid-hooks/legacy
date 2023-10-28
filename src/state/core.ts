@@ -13,7 +13,7 @@ import {
 import { reconcile, unwrap } from 'solid-js/store'
 import { klona as deepClone } from 'klona'
 import type { StoreObject } from '../store'
-import { $patchStore, $store, $trackStore } from '../store'
+import { $patchStore, $store } from '../store'
 import { $watch } from '../watch'
 import { usePersist } from '../hooks'
 import type {
@@ -148,11 +148,6 @@ function setupObject<
       { name: stateName },
     ) as StoreObject<State>
 
-    let dep: () => State
-    const getDeps = () => {
-      !dep && (dep = $trackStore(_store()))
-      return dep
-    }
     const utilFn: StateUtils<State> = {
       $patch: state => $patchStore(_store, state),
       $reset: () => {
@@ -162,18 +157,10 @@ function setupObject<
         }
         _store.$set(reconcile(initialState, { merge: true }))
       },
-      $subscribe: (...args: any[]) => $watch(
-        ...typeof args[1] === 'function'
-          ? [
-              () => args[0](_store()),
-              (state: any, oldState: any) => batch(() => args[1](unwrap(state), unwrap(oldState))),
-              args[2],
-            ] as const
-          : [
-              getDeps(),
-              (state: any) => batch(() => args[0](unwrap(state))),
-              args[1],
-            ] as const,
+      $subscribe: (deps, callback, options) => $watch(
+        () => deps(_store()),
+        (value, oldValue) => batch(() => callback(value, oldValue)),
+        options,
       ),
     }
     log('initial state:', unwrap(_store()))

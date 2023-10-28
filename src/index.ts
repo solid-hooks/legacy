@@ -7,7 +7,7 @@ export type { MemoObject } from './memo'
 export { $resource } from './resource'
 export type { ResourceObject, InitializedResourceObject } from './resource'
 
-export { $store, $trackStore, $patchStore } from './store'
+export { $store, $patchStore } from './store'
 export type { StoreObject } from './store'
 
 export { $watch, $watchOnce, $watchInstant, $watchRendered } from './watch'

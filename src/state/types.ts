@@ -19,25 +19,17 @@ export type StateUtils<State> = {
    * reset state
    */
   $reset: () => void
-  $subscribe: {
-    /**
-     * subscribe **full** object change, defer by default, return {@link WatchObject}
-     * @param callback watch callback
-     * @param options watch options
-     */
-    (callback: (value: State) => Cleanupable, options?: WatchOptions<State>): WatchObject
-    /**
-     * subscribe **partial** object change, defer by default, return {@link WatchObject}
-     * @param deps watch deps
-     * @param callback watch callback
-     * @param options watch options
-     */
-    <S>(
-      deps: (value: State) => S,
-      callback: WatchCallback<S>,
-      options?: WatchOptions<S>
-    ): WatchObject
-  }
+  /**
+   * subscribe **partial** object change, defer by default, return {@link WatchObject}
+   * @param deps watch deps path
+   * @param callback watch callback
+   * @param options watch options
+   */
+  $subscribe: <Deps>(
+    deps: (state: State) => Deps,
+    callback: WatchCallback<Deps>,
+    options?: WatchOptions<Deps>
+  ) => WatchObject
 }
 
 /**

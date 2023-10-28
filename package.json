@@ -119,7 +119,6 @@
     "solid-js": "^1.7 || ^1.8"
   },
   "dependencies": {
-    "@solid-primitives/deep": "^0.2.4",
     "@solid-primitives/event-listener": "^2.3.0",
     "@solid-primitives/utils": "^6.2.1",
     "@subframe7536/type-utils": "^0.1.3",
