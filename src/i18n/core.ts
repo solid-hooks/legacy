@@ -57,6 +57,13 @@ export function $i18n<
   }
 }
 
+type Suspenseable = {
+  /**
+   * whether to use <Suspense>
+   */
+  suspense?: boolean
+}
+
 /**
  * define core i18n
  */
@@ -67,7 +74,7 @@ export function defineI18n<
   DatetimeKey extends string = string,
 >(
   options: I18nOptions<Locale, Message, NumberKey, DatetimeKey>,
-): I18nObject<Locale, Message, NumberKey, DatetimeKey> & { suspense?: boolean } {
+): I18nObject<Locale, Message, NumberKey, DatetimeKey> & Suspenseable {
   const {
     message,
     defaultLocale = navigator?.language || 'en' as any,
@@ -124,16 +131,16 @@ export function defineI18n<
         variables as Record<string, any>,
     ),
     $n: (num, type, l) => {
-      const _ = numberFormatMap.get(l || loc())?.[type]
-      return typeof _ === 'function'
-        ? _(num)
-        : _?.format(num) || num.toLocaleString(loc())
+      const intl = numberFormatMap.get(l || loc())?.[type]
+      return typeof intl === 'function'
+        ? intl(num)
+        : intl?.format(num) || num.toLocaleString(loc())
     },
     $d: (date, type, l) => {
-      const _ = datetimeFormatMap.get(l || loc())?.[type]
-      return typeof _ === 'function'
-        ? _(date)
-        : _?.format(date) || date.toLocaleString(loc())
+      const intl = datetimeFormatMap.get(l || loc())?.[type]
+      return typeof intl === 'function'
+        ? intl(date)
+        : intl?.format(date) || date.toLocaleString(loc())
     },
     locale: loc as SignalObject<any>,
     availableLocales,

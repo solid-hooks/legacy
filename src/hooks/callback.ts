@@ -13,6 +13,6 @@ export function useCallback<T extends AnyFunction>(
   owner: Owner | null = getOwner(),
 ): T {
   return owner
-    ? (((...args) => runWithOwner(owner, () => callback(...args))) as T)
+    ? ((...args) => runWithOwner(owner, () => callback(...args))) as T
     : callback
 }

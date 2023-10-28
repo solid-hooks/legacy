@@ -25,7 +25,7 @@ import type {
   StateSetup,
   StateUtils,
 } from './types'
-import { createActions, createGetters } from './utils'
+import { createActions, createGetters, getLogger } from './utils'
 
 type GlobalStateContext = {
   owner: Owner | null
@@ -51,7 +51,7 @@ export function $state<
   _log?: boolean,
 ): StateReturn<StateObject<State, Getter, Action>>
 /**
- * initialize global state with functions, just like global {@link createContext}
+ * initialize global state with function
  * @param name state name
  * @param setup state setup function
  * @param _log whether to enable log when dev, default is `false`
@@ -74,7 +74,6 @@ export function $state<
   _log?: boolean,
 ): StateReturn<State | StateObject<State, Getter, Action>> {
   const stateName = `$state-${name}`
-  const log = (...args: any[]) => DEV && _log && console.log(`[${stateName}]`, ...args)
   let build = typeof setup === 'function' ? setup : setupObject(setup)
 
   return () => {
@@ -83,23 +82,61 @@ export function $state<
     if (_map.has(name)) {
       return _map.get(name)
     }
-    function attach(result: State | StateObject<State, Getter, Action>, msg: string) {
+    function attach(result: State | StateObject<State, Getter, Action>) {
       _map.set(name, result)
-      log(msg)
       // @ts-expect-error for GC
       build = null
       return result
     }
     return ctx.owner
-      ? runWithOwner(ctx.owner, () => attach(
-        build(stateName, log),
-        DEV ? 'mount to <StateProvider />' : '',
-      ))
-      : attach(
-        createRoot(() => build(stateName, log)),
-        DEV ? '<StateProvider /> is not set, fallback to use createRoot' : '',
-      )
+      ? runWithOwner(ctx.owner, () => attach(build(stateName, getLogger(_log, stateName))))
+      : attach(createRoot(() => build(stateName, getLogger(_log, stateName))))
   }
+}
+/**
+ * initialize global state with setup object, no need for provider
+ * @param name state name
+ * @param setup state setup object
+ * @param _log whether to enable log when dev, default is `false`
+ * @see https://github.com/subframe7536/solid-dollar#state
+ */
+export function defineState<
+  State extends object = Record<string, any>,
+  Getter extends GetterObject = {},
+  Action extends ActionObject = {},
+  Paths extends Path<State>[] = [],
+>(
+  name: string,
+  setup: StateSetup<State, Getter, Action, Paths>,
+  _log?: boolean,
+): StateReturn<StateObject<State, Getter, Action>>
+/**
+ * initialize global state with function, no need for provider
+ * @param name state name
+ * @param setup state setup function
+ * @param _log whether to enable log when dev, default is `false`
+ */
+export function defineState<
+  State extends object = Record<string, any>,
+>(
+  name: string,
+  setup: StateFunction<State>,
+  _log?: boolean,
+): StateReturn<State>
+export function defineState<
+  State extends object = Record<string, any>,
+  Getter extends GetterObject = {},
+  Action extends GetterObject = {},
+  Paths extends Path<State>[] = [],
+>(
+  name: string,
+  setup: StateSetup<State, Getter, Action, Paths> | StateFunction<State>,
+  _log?: boolean,
+): StateReturn<State | StateObject<State, Getter, Action>> {
+  const stateName = `$state-${name}`
+  const build = typeof setup === 'function' ? setup : setupObject(setup)
+  const result = build(stateName, getLogger(_log, stateName))
+  return () => result as any
 }
 
 /**
@@ -120,7 +157,6 @@ export function GlobalStateProvider(props: FlowProps) {
     },
   })
 }
-
 function setupObject<
   State extends object = Record<string, any>,
   Getter extends GetterObject = {},

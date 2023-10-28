@@ -1,4 +1,4 @@
-import { batch, createMemo, untrack } from 'solid-js'
+import { DEV, batch, createMemo, untrack } from 'solid-js'
 import type { StoreObject } from '../store'
 import type { ActionObject, GetterObject, StateGetter } from './types'
 
@@ -36,4 +36,7 @@ export function createActions<T extends ActionObject>(functions?: T): T {
     actions[name] = (...args) => batch(() => untrack(() => fn(...args)))
   }
   return actions as T
+}
+export function getLogger(_log: boolean | undefined, stateName: string) {
+  return (...args: any[]) => DEV && _log && console.log(`[${stateName}]`, ...args)
 }

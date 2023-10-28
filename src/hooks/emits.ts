@@ -2,9 +2,7 @@ import type { ParseFunction, ParseParameters, StringKeys } from '@subframe7536/t
 import { type SignalOptions, createEffect, on } from 'solid-js'
 import { $, type SignalObject } from '../signal'
 
-type FilterKeys<T> = keyof T extends `$${infer EventName}`
-  ? EventName
-  : never
+type FilterKeys<T> = keyof T extends `$${infer EventName}` ? EventName : never
 type ParseKey<T extends Record<string, any>> = {
   [K in keyof T as `$${K & string}`]: T[K]
 }

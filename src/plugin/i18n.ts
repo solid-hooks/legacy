@@ -51,7 +51,7 @@ monopoly: true
   }
 }
 
-export function I18nPlugin(options: I18nPluginOptions): Plugin {
+export function $i18nPlugin(options: I18nPluginOptions): Plugin {
   const { include, exclude, generateConfigYml, transformMessage } = options
 
   if (generateConfigYml) {

@@ -1,4 +1,4 @@
-export { $state, GlobalStateProvider } from './core'
+export { $state, GlobalStateProvider, defineState } from './core'
 export type {
   InitialState,
   PersistOptions,
