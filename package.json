@@ -1,7 +1,7 @@
 {
   "name": "solid-dollar",
   "type": "module",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "private": false,
   "description": "object style hooks / i18n / global state management for solid.js",
   "author": "subframe7536",

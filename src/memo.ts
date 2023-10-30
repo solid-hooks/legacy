@@ -6,11 +6,11 @@ import type { AnyFunction } from '@subframe7536/type-utils'
  * type of {@link $memo}
  */
 export type MemoObject<T> = {
-  (): T extends (...args: any) => infer R ? R : T
+  (): T
   /**
    * type only marker
    */
-  [$TRACK]: '$memo'
+  [$TRACK]: 'type-only-marker'
 }
 
 /**

@@ -1,7 +1,7 @@
 import type { Path, PathValue } from 'object-standard-path'
 import type { SetStoreFunction, Store } from 'solid-js/store'
 import type { AnyFunction, RemoveNeverProps } from '@subframe7536/type-utils'
-import type { Accessor, OnOptions } from 'solid-js'
+import type { Accessor } from 'solid-js'
 import type { WatchCallback, WatchObject, WatchOptions } from '../watch'
 import type { StoreObject } from '../store'
 import type { MemoObject } from '../memo'

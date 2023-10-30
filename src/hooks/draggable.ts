@@ -1,6 +1,6 @@
 import { type EventListenerOptions, makeEventListener } from '@solid-primitives/event-listener'
 import type { Accessor } from 'solid-js'
-import { createMemo, createSignal, onMount } from 'solid-js'
+import { createSignal, onMount } from 'solid-js'
 import { type MaybeAccessor, access } from '@solid-primitives/utils'
 import { $memo, type MemoObject } from '../memo'
 
