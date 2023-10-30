@@ -11,7 +11,7 @@ export { $store, $patchStore } from './store'
 export type { StoreObject } from './store'
 
 export { $watch, $watchOnce, $watchInstant, $watchRendered } from './watch'
-export type { WatchCallback, WatchOptions, WatchObject } from './watch'
+export type { WatchCallback, WatchObject, WatchOptions, WatchOnceCallback } from './watch'
 
 export { $selector } from './selector'
 export type { SelectorObject, SelectorObjectOptions } from './selector'

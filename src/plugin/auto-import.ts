@@ -66,8 +66,9 @@ export const $autoImport: ImportFn = directiveOnly => directiveOnly ? [
       'InitializedResourceObject',
       'StoreObject',
       'WatchCallback',
-      'WatchOptions',
       'WatchObject',
+      'WatchOptions',
+      'WatchOnceCallback',
       'SelectorObject',
       'SelectorObjectOptions',
       'ObjectURLObject'

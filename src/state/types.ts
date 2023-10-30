@@ -1,6 +1,7 @@
 import type { Path, PathValue } from 'object-standard-path'
 import type { SetStoreFunction, Store } from 'solid-js/store'
 import type { AnyFunction, RemoveNeverProps } from '@subframe7536/type-utils'
+import type { Accessor, OnOptions } from 'solid-js'
 import type { WatchCallback, WatchObject, WatchOptions } from '../watch'
 import type { StoreObject } from '../store'
 import type { MemoObject } from '../memo'
@@ -18,7 +19,7 @@ export type StateUtils<State> = {
   /**
    * reset state
    */
-  $reset: () => void
+  $reset: VoidFunction
   /**
    * subscribe **partial** object change, defer by default, return {@link WatchObject}
    * @param deps watch deps path
@@ -39,11 +40,11 @@ export type StateObject<
   State,
   Getter = GetterObject,
   Action = ActionObject,
-> = Getter & StateUtils<State> & (() => State) & Action & {
+> = Getter & StateUtils<State> & Accessor<State> & Action & {
   $id: string
 }
 
-export type InitialState<State extends object> = State | (() => State | [Store<State>, SetStoreFunction<State>])
+export type InitialState<State extends object> = State | Accessor<State> | [Store<State>, SetStoreFunction<State>]
 
 export type StateSetup<
   State extends object,
@@ -110,7 +111,7 @@ export type PersistOptions<State extends object, Paths extends Path<State>[] = [
    */
   serializer?: Serializer<FlattenType<PartialObject<State, Paths>>>
   /**
-   * object paths to persist, using {@link https://github.com/react-earth/object-standard-path object-standard-path}
+   * object paths to persist
    * @example ['test.ts','idList[0]']
    */
   paths?: Paths | undefined

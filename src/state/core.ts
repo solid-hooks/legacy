@@ -94,7 +94,7 @@ export function $state<
   }
 }
 /**
- * initialize global state with setup object, no need for provider
+ * initialize global state with setup object without context
  * @param name state name
  * @param setup state setup object
  * @param _log whether to enable log when dev, default is `false`
@@ -111,7 +111,7 @@ export function defineState<
   _log?: boolean,
 ): StateReturn<StateObject<State, Getter, Action>>
 /**
- * initialize global state with function, no need for provider
+ * initialize global state with function without context
  * @param name state name
  * @param setup state setup function
  * @param _log whether to enable log when dev, default is `false`
@@ -195,7 +195,7 @@ function setupObject<
       },
       $subscribe: (deps, callback, options) => $watch(
         () => deps(_store()),
-        (value, oldValue) => batch(() => callback(value, oldValue)),
+        (value, oldValue, times) => batch(() => callback(value, oldValue, times)),
         options,
       ),
     }
