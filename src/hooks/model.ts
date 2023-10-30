@@ -1,3 +1,4 @@
+import type { Accessor } from 'solid-js'
 import { createRenderEffect } from 'solid-js'
 import { makeEventListener } from '@solid-primitives/event-listener'
 import type { SignalObject } from '../signal'
@@ -14,7 +15,7 @@ export interface ModelDirective {
  */
 export function model(
   el: HTMLInputElement | HTMLSelectElement,
-  data: () => SignalObject<any>,
+  data: Accessor<SignalObject<any>>,
 ) {
   const value = data()
   let eventName = 'input'

@@ -2,6 +2,7 @@ import { type EventListenerOptions, makeEventListener } from '@solid-primitives/
 import type { Accessor } from 'solid-js'
 import { createMemo, createSignal, onMount } from 'solid-js'
 import { type MaybeAccessor, access } from '@solid-primitives/utils'
+import { $memo, type MemoObject } from '../memo'
 
 type Position = {
   x: number
@@ -75,15 +76,15 @@ type DragResult = {
   /**
    * whether is dragging
    */
-  isDragging: Accessor<boolean>
+  isDragging: MemoObject<boolean>
   /**
    * whether is draggable
    */
-  isDraggable: Accessor<boolean>
+  isDraggable: MemoObject<boolean>
   /**
    * css style
    */
-  style: Accessor<{ left: `${number}px`; top: `${number}px` }>
+  style: MemoObject<{ left: `${number}px`; top: `${number}px` }>
   /**
    * disable drag
    */
@@ -128,7 +129,7 @@ export function useDraggable(
   const [position, setPosition] = createSignal<Position>({ ...initialPosition })
   const [startPosition, setStartPosition] = createSignal<Position>()
 
-  const style = createMemo(() => {
+  const style = $memo(() => {
     const x = `${position().x}px` as const
     const y = `${position().y}px` as const
     if (addStyle) {
@@ -138,62 +139,70 @@ export function useDraggable(
         _el.style.top = y
       }
     }
-    return {
-      left: x,
-      top: y,
-    }
+    return { left: x, top: y }
   })
-
-  const bindStart = (event: PointerEvent): void => {
-    if ((ignoreMultiPointer && event.isPrimary)
-      || startPosition()
-      || (leftClick && event.button !== 0)) {
-      return
-    }
-    const _el = access(el)!
-    const rect = _el.getBoundingClientRect()
-    const pos: Position = {
-      x: event.clientX - rect.left,
-      y: event.clientY - rect.top,
-    }
-    if (onStart?.(pos, event) === false) {
-      return
-    }
-    _el.setPointerCapture(event.pointerId)
-    setStartPosition(pos)
-  }
-  const bindMove = (event: PointerEvent): void => {
-    if (!startPosition()) {
-      return
-    }
-    let { x, y } = position()
-
-    if (canMoveX) {
-      x = event.clientX - startPosition()!.x
-    }
-    if (canMoveY) {
-      y = event.clientY - startPosition()!.y
-    }
-
-    const newPos = setPosition({ x, y })
-    onMove?.(newPos, event)
-  }
-  const bindEnd = (event: PointerEvent): void => {
-    if (!startPosition()) {
-      return
-    }
-    access(el)!.releasePointerCapture(event.pointerId)
-    setStartPosition()
-    onEnd?.(position(), event)
-  }
 
   let cleanup: VoidFunction | undefined
   const [track, trigger] = createSignal(undefined, { equals: false })
 
   function bindEvents() {
-    const cleanupStart = makeEventListener(access(handleEl)!, 'pointerdown', bindStart, listenerOptions)
-    const cleanupMove = makeEventListener(window, 'pointermove', bindMove, listenerOptions)
-    const cleanupEnd = makeEventListener(window, 'pointerup', bindEnd, listenerOptions)
+    const cleanupStart = makeEventListener(
+      access(handleEl)!,
+      'pointerdown',
+      (event) => {
+        if ((ignoreMultiPointer && event.isPrimary)
+          || startPosition()
+          || (leftClick && event.button !== 0)) {
+          return
+        }
+        const _el = access(el)!
+        const rect = _el.getBoundingClientRect()
+        const pos: Position = {
+          x: event.clientX - rect.left,
+          y: event.clientY - rect.top,
+        }
+        if (onStart?.(pos, event) === false) {
+          return
+        }
+        _el.setPointerCapture(event.pointerId)
+        setStartPosition(pos)
+      },
+      listenerOptions,
+    )
+    const cleanupMove = makeEventListener(
+      window,
+      'pointermove',
+      (event) => {
+        if (!startPosition()) {
+          return
+        }
+        let { x, y } = position()
+
+        if (canMoveX) {
+          x = event.clientX - startPosition()!.x
+        }
+        if (canMoveY) {
+          y = event.clientY - startPosition()!.y
+        }
+
+        const newPos = setPosition({ x, y })
+        onMove?.(newPos, event)
+      },
+      listenerOptions,
+    )
+    const cleanupEnd = makeEventListener(
+      window,
+      'pointerup',
+      (event) => {
+        if (!startPosition()) {
+          return
+        }
+        access(el)!.releasePointerCapture(event.pointerId)
+        setStartPosition()
+        onEnd?.(position(), event)
+      },
+      listenerOptions,
+    )
     cleanup = () => {
       cleanupStart()
       cleanupMove()
@@ -208,8 +217,8 @@ export function useDraggable(
 
   return {
     position,
-    isDragging: createMemo(() => startPosition() === undefined),
-    isDraggable: createMemo(() => {
+    isDragging: $memo(() => startPosition() === undefined),
+    isDraggable: $memo(() => {
       track()
       return cleanup !== undefined
     }),

@@ -65,7 +65,7 @@ type Suspenseable = {
 }
 
 /**
- * define core i18n
+ * define i18n without context
  */
 export function defineI18n<
   Locale extends string = string,

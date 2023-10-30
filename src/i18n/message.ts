@@ -1,3 +1,4 @@
+import type { Accessor } from 'solid-js'
 import { createMemo, createResource } from 'solid-js'
 import type { DynamicMessage, GenerateMessageFn } from './types'
 
@@ -32,12 +33,12 @@ export function useDynamicMessage<
   imports: DynamicMessage,
   parseKey: (key: string) => string,
 ): GenerateMessageFn<Locale, DynamicMessage> {
-  const messageMap = new Map<string, () => Promise<{ default: any }>>()
+  const messageMap = new Map<string, Accessor<Promise<{ default: any }>>>()
   const availableLocales: Locale[] = []
   for (const [key, value] of Object.entries(imports)) {
     const k = parseKey(key) as Locale
     availableLocales.push(k)
-    messageMap.set(k, value as () => Promise<{ default: any }>)
+    messageMap.set(k, value as Accessor<Promise<{ default: any }>>)
   }
   return (locale) => {
     const [currentMessage] = createResource(locale, async (l) => {

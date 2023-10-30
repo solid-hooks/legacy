@@ -36,7 +36,7 @@ export function $objectURL(
 ): ObjectURLObject
 export function $objectURL(
   value: any,
-  { endings, type, ...options }: SignalOptions<string> & BlobPropertyBag = {},
+  { endings, type, ...rest }: SignalOptions<string> & BlobPropertyBag = {},
 ): ObjectURLObject {
   function generate(data: ObjectTypes) {
     return URL.createObjectURL(
@@ -46,7 +46,7 @@ export function $objectURL(
     )
   }
 
-  const [url, setURL] = createSignal(generate(value), options)
+  const [url, setURL] = createSignal(generate(value), rest)
 
   // @ts-expect-error assign
   url.$set = (data: ObjectTypes) => {

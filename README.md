@@ -47,7 +47,7 @@ object wrapper for `createMemo`
 import { $, $memo } from 'solid-dollar'
 
 const test = $('test')
-const memoByValue = $memo(`value: ${test()}`)
+const memo = $memo(() => `value: ${test()}`)
 ```
 
 ### `$store`
@@ -107,11 +107,14 @@ pausable and filterable `createEffect(on())`, defer by default
 
 ```ts
 import { $watch } from 'solid-dollar'
+import { throttle } from '@solid-primitives/scheduled'
 
 const str = $('old')
-const callback = console.log
 function filter(newValue: string, times: number) {
   return newValue !== 'new'
+}
+function callback<T>(value: T, oldValue: T, callTimes: number) {
+  console.log(value, oldValue, callTimes)
 }
 const {
   isWatching,
@@ -119,7 +122,7 @@ const {
   resume,
   runWithoutEffect,
 } = $watch(str, callback, {
-  // function for trigger callback, like `debounce()` or `throttle()` in `@solid-primitives/scheduled`
+  // function for trigger callback
   triggerFn: fn => throttle(fn, 500),
   // function for filter value
   filterFn: filter,

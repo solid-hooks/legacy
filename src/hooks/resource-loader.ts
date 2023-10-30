@@ -18,9 +18,9 @@ function loader(
       document.head.appendChild(element)
     }
   })
-  const cleanup = tryOnCleanup(() => {
+  const cleanup = () => {
     document.head.contains(element) && document.head.removeChild(element)
-  })
+  }
   return { element, cleanup }
 }
 

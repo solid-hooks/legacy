@@ -1,5 +1,5 @@
 import { DEV, createComponent, createContext, useContext } from 'solid-js'
-import type { FlowProps, JSXElement } from 'solid-js'
+import type { Accessor, FlowProps, JSXElement } from 'solid-js'
 
 type Capitalize<S extends string> = S extends `${infer F}${infer R}` ? `${Uppercase<F>}${R}` : S
 
@@ -24,7 +24,7 @@ export type ContextObject<
  */
 export function useContextProvider<T, N extends string>(
   name: N,
-  fn: () => T,
+  fn: Accessor<T>,
 ): ContextObject<N, T>
 /**
  * object style {@link https://github.com/solidjs-community/solid-primitives/tree/main/packages/context#createcontextprovider createContextProvider}

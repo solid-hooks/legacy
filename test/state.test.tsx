@@ -44,9 +44,9 @@ describe('test state', () => {
     createRoot(() => state.$subscribe(state => state.deep.test, deepCallback, { defer: false }))
     expect(state().deep.test).toBe(1)
     expect(state.doubleValue()).toBe(2)
-    expect(deepCallback).toHaveBeenCalledWith(1, undefined)
+    expect(deepCallback).toHaveBeenCalledWith(1, undefined, 1)
 
-    const value = createRoot(() => $memo(state.getLarger(1e8)))
+    const value = createRoot(() => $memo(() => state.getLarger(1e8)))
 
     for (let i = 0; i < 10; i++) {
       console.time(`$memo-${i}`)
@@ -59,12 +59,12 @@ describe('test state', () => {
     actions.doubleDeep()
     expect(state().deep.test).toBe(2)
     expect(state.doubleValue()).toBe(4)
-    expect(deepCallback).toHaveBeenCalledWith(2, 1)
+    expect(deepCallback).toHaveBeenCalledWith(2, 1, 2)
 
     actions.plus(200)
     expect(state().deep.test).toBe(202)
     expect(state.doubleValue()).toBe(404)
-    expect(deepCallback).toHaveBeenCalledWith(202, 2)
+    expect(deepCallback).toHaveBeenCalledWith(202, 2, 3)
 
     pause()
     state.$patch({ foo: 'baz' })

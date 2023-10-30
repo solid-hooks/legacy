@@ -15,8 +15,8 @@ export function $reactive<T extends object, P extends Path<T>>(
   path: P,
   options: SignalOptions<PathValue<T, P>> = {},
 ): SignalObject<PathValue<T, P>> {
-  const { equals } = options
-  const [track, trigger] = createSignal(undefined, { ...options, equals: false })
+  const { equals, ...rest } = options
+  const [track, trigger] = createSignal(undefined, { ...rest, equals: false })
   const get = () => pathGet(data, path)
 
   const result = () => {

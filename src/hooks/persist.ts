@@ -128,7 +128,7 @@ export function usePersist<T extends object, S extends AnyStorage>(
   let unchanged: 1 | null = 1
   const writeValue = (data = unwrap(_val())) =>
     writeData ? writeData(storage as S, key, data, write) : storage.setItem(key, write(data))
-  const updateValue = isStore ? (data: T) => setVal(reconcile(data)) : setVal
+  const updateValue = isStore ? (data: T) => setVal(reconcile(data, { merge: true })) : setVal
 
   const handleInit = (data: string | null) =>
     data === null || data === undefined ? writeValue() : updateValue(read(data))
@@ -138,11 +138,11 @@ export function usePersist<T extends object, S extends AnyStorage>(
     : handleInit(init)
 
   _val.$set = (...data) => {
-    const _ = setVal(...data)
-    const _data = isStore ? untrack(() => unwrap(_val())) : _
-    _data === null ? storage.removeItem(key) : writeValue(_data)
+    const result = setVal(...data)
+    const currentValue = isStore ? untrack(() => unwrap(_val())) : result
+    currentValue === null ? storage.removeItem(key) : writeValue(currentValue)
     unchanged && (unchanged = null)
-    return _
+    return result
   }
 
   listenEvent && createEventListener(
