@@ -449,11 +449,11 @@ vite.config.ts
 ```ts
 import { defineConfig } from 'vite'
 import { parse } from 'yaml'
-import { I18nPlugin } from 'solid-dollar/plugin'
+import { $i18nPlugin } from 'solid-dollar/plugin'
 
 export default defineConfig({
   plugins: [
-    I18nPlugin({
+    $i18nPlugin({
       include: './src/i18n/locales/*.yml',
       transformMessage: content => parse(content),
       // generate yml for https://github.com/lokalise/i18n-ally/wiki/Custom-Framework

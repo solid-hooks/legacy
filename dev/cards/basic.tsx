@@ -1,4 +1,4 @@
-import { $, $reactive, $watch } from '../../src'
+import { $, $memo, $reactive, $watch } from '../../src'
 import type { EmitProps } from '../../src/hooks'
 import { useContextProvider, useEmits } from '../../src/hooks'
 
@@ -20,9 +20,10 @@ function Child(props: EmitProps<Emits, { num: number }>) {
     emit('optional', { test: 1 })
   }
   console.log('$ctx:', useTestContext())
+  const childValue = $memo(() => props.num)
   return (
     <div>
-      child: {props.num}
+      child: {childValue()}
       <button onClick={handleClick}>+</button>
     </div>
   )

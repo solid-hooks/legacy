@@ -1,5 +1,5 @@
 import { For, observable, onMount } from 'solid-js'
-import { $, $effect, $instantEffect, $patchArray, $renderEffect } from '../../src'
+import { $, $effect, $effectInstant, $effectRendered, $patchArray } from '../../src'
 import { useTick } from '../../src/hooks'
 
 export function TestSeq() {
@@ -14,8 +14,8 @@ export function TestSeq() {
     str.$set('set when micro task')
   })
   $effect(() => log(`effect: ${str()}`))
-  $renderEffect(() => log(`rendered: ${str()}`))
-  $instantEffect(() => log(`instant: ${str()}`))
+  $effectRendered(() => log(`rendered: ${str()}`))
+  $effectInstant(() => log(`instant: ${str()}`))
   // same with $effect
   observable(str).subscribe({
     next(str) {

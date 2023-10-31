@@ -12,6 +12,11 @@ export type { StoreObject } from './store'
 
 export { $watch, $watchOnce, $watchInstant, $watchRendered } from './watch'
 export type { WatchCallback, WatchObject, WatchOptions, WatchOnceCallback } from './watch'
+export {
+  createEffect as $effect,
+  createComputed as $effectInstant,
+  createRenderEffect as $effectRendered,
+} from 'solid-js'
 
 export { $selector } from './selector'
 export type { SelectorObject, SelectorObjectOptions } from './selector'
@@ -25,8 +30,5 @@ export { $reactive } from './reactive'
 
 export {
   untrack as $$,
-  createEffect as $effect,
-  createComputed as $instantEffect,
-  createRenderEffect as $renderEffect,
   createDeferred as $deferred,
 } from 'solid-js'

@@ -169,6 +169,11 @@ export type ParseActions<T> = T extends AnyFunction
     }>
     : never
 
+/**
+ * return type of {@link $state} and {@link defineState}
+ *
+ * if `Option` is set, return object is type-only
+ */
 export type StateReturn<T> = <
   Option extends 'getter' | 'action' | 'default' = 'default',
 >() => Option extends 'getter'

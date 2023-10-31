@@ -10,7 +10,7 @@ export type MemoObject<T> = {
   /**
    * type only marker
    */
-  [$TRACK]: 'type-only-marker'
+  [$TRACK]: 'type only marker for $memo'
 }
 
 /**
