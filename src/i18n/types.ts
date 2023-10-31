@@ -106,6 +106,10 @@ export type I18nOptions<
    * }
    */
   datetimeFormats?: DateTimeFormats<Locale, DatetimeKey>
+  /**
+   * whether to listen `window.languagechange` event
+   */
+  listenEvent?: boolean
 }
 
 export type TranslateFn<

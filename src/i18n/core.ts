@@ -80,6 +80,7 @@ export function defineI18n<
     defaultLocale = navigator?.language || 'en' as any,
     datetimeFormats,
     numberFormats,
+    listenEvent,
   } = options
   const loc = $(defaultLocale, { name: '$i18n-locale' })
   const {
@@ -113,9 +114,8 @@ export function defineI18n<
     numberFormatMap.set(l, obj)
   }
 
-  makeEventListener(window, 'languagechange', () => {
-    const l = navigator?.language
-    l && loc.$set(l as any)
+  listenEvent && makeEventListener(window, 'languagechange', () => {
+    loc.$set(navigator.language as any)
   })
 
   return {
