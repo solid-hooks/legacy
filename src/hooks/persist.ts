@@ -126,12 +126,18 @@ export function usePersist<T extends object, S extends AnyStorage>(
   const setVal = _val.$set as AnyFunction
 
   let unchanged: 1 | null = 1
-  const writeValue = (data = unwrap(_val())) =>
-    writeData ? writeData(storage as S, key, data, write) : storage.setItem(key, write(data))
-  const updateValue = isStore ? (data: T) => setVal(reconcile(data, { merge: true })) : setVal
+
+  const writeValue = writeData
+    ? (data = unwrap(_val())) => writeData(storage as S, key, data, write)
+    : (data = unwrap(_val())) => storage.setItem(key, write(data))
+
+  const updateValue = isStore
+    ? (data: T) => setVal(reconcile(data, { merge: true }))
+    : setVal
 
   const handleInit = (data: string | null) =>
     data === null || data === undefined ? writeValue() : updateValue(read(data))
+
   const init = storage.getItem(key)
   init instanceof Promise
     ? init.then(data => unchanged && handleInit(data))

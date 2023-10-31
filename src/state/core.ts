@@ -134,8 +134,10 @@ export function defineState<
   _log?: boolean,
 ): StateReturn<State | StateObject<State, Getter, Action>> {
   const stateName = `$state-${name}`
-  const build = typeof setup === 'function' ? setup : setupObject(setup)
-  const result = build(stateName, getLogger(_log, stateName))
+  const result = (typeof setup === 'function' ? setup : setupObject(setup))(
+    stateName,
+    getLogger(_log, stateName),
+  )
   return () => result as any
 }
 
@@ -179,15 +181,16 @@ function setupObject<
   return (stateName, log) => {
     const key = persist?.key || stateName
     const initialState = typeof init === 'function' ? init() : init
+    const isArray = Array.isArray(initialState)
     let _store = $store(
-      Array.isArray(initialState) ? initialState : deepClone(initialState),
+      isArray ? initialState : deepClone(initialState),
       { name: stateName },
     ) as StoreObject<State>
 
     const utilFn: StateUtils<State> = {
       $patch: state => $patchStore(_store, state),
       $reset: () => {
-        if (Array.isArray(initialState)) {
+        if (isArray) {
           DEV && log('can not reset')
           return
         }
@@ -199,7 +202,7 @@ function setupObject<
         options,
       ),
     }
-    log('initial state:', unwrap(_store()))
+    DEV && log('initial state:', unwrap(_store()))
 
     if (persist?.enable) {
       let isInitalize = true
@@ -221,7 +224,7 @@ function setupObject<
           }
           if (isInitalize || old !== serializedState) {
             storage.setItem(key, serializedState)
-            log('persist state:', serializedState)
+            DEV && log('persist state:', serializedState)
             isInitalize && (isInitalize = false)
           }
         },

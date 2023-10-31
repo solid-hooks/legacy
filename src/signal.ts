@@ -15,7 +15,6 @@ export type SignalObject<T> = {
 export function isSignal<T>(val: unknown): val is Signal<T> {
   return (
     Array.isArray(val)
-    && val.length === 2
     && typeof val[0] === 'function'
     && typeof val[1] === 'function'
   )

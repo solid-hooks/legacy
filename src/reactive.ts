@@ -1,6 +1,7 @@
 import { type Path, type PathValue, pathGet, pathSet } from 'object-standard-path'
 import type { SignalOptions } from 'solid-js'
 import { createSignal } from 'solid-js'
+import type { AnyFunction } from '@subframe7536/type-utils'
 import type { SignalObject } from './signal'
 
 /**
@@ -23,19 +24,22 @@ export function $reactive<T extends object, P extends Path<T>>(
     track()
     return get()
   }
+
+  const _equals = typeof equals === 'function'
+    ? (result: any) => equals(get(), result)
+    : equals === undefined
+      ? (result: any) => get() === result
+      : () => equals
   // @ts-expect-error assign
   result.$set = (arg?) => {
-    const _ = typeof arg === 'function' ? (arg as any)(get()) : arg
-    const _equals = typeof equals === 'function'
-      ? equals(get(), _)
-      : equals === undefined
-        ? get() === _
-        : equals
-    if (!_equals) {
-      pathSet(data, path, _)
+    const result = typeof arg === 'function'
+      ? (arg as AnyFunction)(get())
+      : arg
+    if (!_equals(result)) {
+      pathSet(data, path, result)
       trigger()
     }
-    return _
+    return result
   }
   return result as any
 }

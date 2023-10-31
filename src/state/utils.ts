@@ -1,10 +1,7 @@
-import { DEV, batch, createMemo, untrack } from 'solid-js'
+import { batch, createMemo, untrack } from 'solid-js'
 import type { StoreObject } from '../store'
 import type { ActionObject, GetterObject, StateGetter } from './types'
 
-/**
- * @internal
- */
 export function createGetters<
   State extends object = Record<string, any>,
   Getter extends GetterObject = {},
@@ -23,9 +20,6 @@ export function createGetters<
   return _getters
 }
 
-/**
- * @internal
- */
 export function createActions<T extends ActionObject>(functions?: T): T {
   if (!functions) {
     return {} as T
@@ -37,6 +31,7 @@ export function createActions<T extends ActionObject>(functions?: T): T {
   }
   return actions as T
 }
+
 export function getLogger(_log: boolean | undefined, stateName: string) {
-  return (...args: any[]) => DEV && _log && console.log(`[${stateName}]`, ...args)
+  return (...args: any[]) => _log && console.log(`[${stateName}]`, ...args)
 }
