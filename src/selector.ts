@@ -1,5 +1,5 @@
 import { createSelector } from 'solid-js'
-import type { EqualityCheckerFunction, Setter, SignalOptions } from 'solid-js/types/reactive/signal'
+import type { EqualityCheckerFunction, SignalOptions } from 'solid-js/types/reactive/signal'
 import type { AnyFunction } from '@subframe7536/type-utils'
 import type { SignalObject } from './signal'
 import { $ } from './signal'
