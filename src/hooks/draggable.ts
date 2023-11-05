@@ -1,8 +1,8 @@
 import { type EventListenerOptions, makeEventListener } from '@solid-primitives/event-listener'
 import type { Accessor } from 'solid-js'
-import { createSignal, onMount } from 'solid-js'
+import { createMemo, createSignal, onMount } from 'solid-js'
 import { type MaybeAccessor, access } from '@solid-primitives/utils'
-import { $memo, type MemoObject } from '../memo'
+import type { MemoObject } from '../memo'
 
 type Position = {
   x: number
@@ -129,19 +129,6 @@ export function useDraggable(
   const [position, setPosition] = createSignal<Position>({ ...initialPosition })
   const [startPosition, setStartPosition] = createSignal<Position>()
 
-  const style = $memo(() => {
-    const x = `${position().x}px` as const
-    const y = `${position().y}px` as const
-    if (addStyle) {
-      const _el = access(el)
-      if (_el) {
-        _el.style.left = x
-        _el.style.top = y
-      }
-    }
-    return { left: x, top: y }
-  })
-
   let cleanup: VoidFunction | undefined
   const [track, trigger] = createSignal(undefined, { equals: false })
 
@@ -217,12 +204,23 @@ export function useDraggable(
 
   return {
     position,
-    isDragging: $memo(() => startPosition() === undefined),
-    isDraggable: $memo(() => {
+    isDragging: createMemo(() => startPosition() === undefined) as MemoObject<boolean>,
+    isDraggable: createMemo(() => {
       track()
       return cleanup !== undefined
-    }),
-    style,
+    }) as MemoObject<boolean>,
+    style: createMemo(() => {
+      const x = `${position().x}px`
+      const y = `${position().y}px`
+      if (addStyle) {
+        const _el = access(el)
+        if (_el) {
+          _el.style.left = x
+          _el.style.top = y
+        }
+      }
+      return { left: x, top: y }
+    }) as MemoObject<any>,
     enable: bindEvents,
     disable: () => {
       cleanup?.()

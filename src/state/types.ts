@@ -9,6 +9,12 @@ import type { AnyStorage, Serializer } from '../hooks/persist'
 
 export type StateListener<State> = (state: State) => void
 
+/**
+ * create effect dep
+ * @param state reactive state
+ */
+type DepAccessor<State, Deps> = (state: State) => Deps
+
 export type StateUtils<State> = {
   /**
    * update state
@@ -22,12 +28,12 @@ export type StateUtils<State> = {
   $reset: VoidFunction
   /**
    * subscribe **partial** object change, defer by default, return {@link WatchObject}
-   * @param deps watch deps path
+   * @param deps watch deps
    * @param callback watch callback
    * @param options watch options
    */
   $subscribe: <Deps>(
-    deps: (state: State) => Deps,
+    deps: DepAccessor<State, Deps>,
     callback: WatchCallback<Deps>,
     options?: WatchOptions<Deps>
   ) => WatchObject
