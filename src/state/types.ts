@@ -123,7 +123,6 @@ export type PersistOptions<State extends object, Paths extends Path<State>[] = [
   paths?: Paths | undefined
   /**
    * whether to listen storage event
-   * @default true
    */
   listenEvent?: boolean
 }

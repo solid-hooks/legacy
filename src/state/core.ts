@@ -175,7 +175,7 @@ function setupObject<
     },
     storage = localStorage,
     paths,
-    listenEvent = true,
+    listenEvent,
   } = persist || {}
 
   return (stateName, log) => {
@@ -202,6 +202,7 @@ function setupObject<
         options,
       ),
     }
+
     DEV && log('initial state:', unwrap(_store()))
 
     if (persist?.enable) {
@@ -210,7 +211,7 @@ function setupObject<
         listenEvent,
         serializer,
         storage,
-        writeData(storage, key, state, writeFn) {
+        writeStorage(storage, key, state, writeFn) {
           const old = storage.getItem(key)
           let serializedState: string
           if (!paths || paths.length === 0) {
