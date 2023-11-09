@@ -57,7 +57,7 @@ export type PersistOptions<T, S extends AnyStorage> = {
    * @param value raw value
    * @param writeFn write function
    */
-  writeData?: (storage: S, key: string, value: T, writeFn: Serializer<T>['write']) => void
+  writeStorage?: (storage: S, key: string, value: T, writeFn: Serializer<T>['write']) => void
 }
 
 /**
@@ -109,7 +109,7 @@ export function usePersist<T extends object, S extends AnyStorage>(
     storage = localStorage,
     listenEvent,
     name,
-    writeData,
+    writeStorage,
   } = options
 
   let isStore = false
@@ -125,10 +125,10 @@ export function usePersist<T extends object, S extends AnyStorage>(
   }
   const setVal = _val.$set as AnyFunction
 
-  let unchanged: 1 | null = 1
+  let unchanged = 1
 
-  const writeValue = writeData
-    ? (data = unwrap(_val())) => writeData(storage as S, key, data, write)
+  const writeValue = writeStorage
+    ? (data = unwrap(_val())) => writeStorage(storage as S, key, data, write)
     : (data = unwrap(_val())) => storage.setItem(key, write(data))
 
   const updateValue = isStore
@@ -147,7 +147,7 @@ export function usePersist<T extends object, S extends AnyStorage>(
     const result = setVal(...data)
     const currentValue = isStore ? untrack(() => unwrap(_val())) : result
     currentValue === null ? storage.removeItem(key) : writeValue(currentValue)
-    unchanged && (unchanged = null)
+    unchanged && unchanged--
     return result
   }
 
