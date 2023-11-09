@@ -12,8 +12,8 @@ dependencies:
     specifier: ^6.2.1
     version: 6.2.1(solid-js@1.8.0)
   '@subframe7536/type-utils':
-    specifier: ^0.1.3
-    version: 0.1.3
+    specifier: ^0.1.4
+    version: 0.1.4
   klona:
     specifier: ^2.0.6
     version: 2.0.6
@@ -1165,8 +1165,8 @@ packages:
       - vitest
     dev: true
 
-  /@subframe7536/type-utils@0.1.3:
-    resolution: {integrity: sha512-8a8NjrtSUXh6UXA6TVgCBzjLXWlOD5y2Q43tVaf58Nhqq5HhAHUsFFvk6ONsMMoDbu5FKSPPXW7634CJhfsLNg==}
+  /@subframe7536/type-utils@0.1.4:
+    resolution: {integrity: sha512-mbO9WxhDzqQ2hxJalWEvcSxUi6M1HCDEcvzcZJqIdzb4rrSxuCGlpqh94r5jT683I1ux06XtUHk5nEQEGnqGvQ==}
     dev: false
 
   /@testing-library/dom@9.3.1:

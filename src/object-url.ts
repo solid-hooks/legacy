@@ -1,5 +1,5 @@
 import type { SignalOptions } from 'solid-js'
-import { createSignal } from 'solid-js'
+import { createSignal, onCleanup } from 'solid-js'
 
 type ObjectTypes = Blob | File | MediaSource | ArrayBuffer | string
 
@@ -53,6 +53,8 @@ export function $objectURL(
     URL.revokeObjectURL(url())
     setURL(generate(data))
   }
+
+  onCleanup(() => URL.revokeObjectURL(url()))
 
   return url as ObjectURLObject
 }
