@@ -108,7 +108,7 @@ function baseWatch<T>(
       return
     }
     const times = setCallTimes(time => ++time)
-    const cleanup = untrack(() => fn(value, oldValue, times))
+    const cleanup = fn(value, oldValue, times)
     cleanup && onCleanup(cleanup)
     oldValue = value
   }
