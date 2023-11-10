@@ -70,8 +70,9 @@ patch update store
 ```ts
 import { $store, $patchStore } from 'solid-dollar'
 
-const store = $store({ data: { deep:1 } })
-$patchStore(store, data => data.deep = 2)
+const store = $store({ data: { deep: 1 } })
+$patchStore(store, data => { data.deep = 2 })
+$patchStore(store, { data: { deep: 3 } })
 ```
 
 ### `$resource`
@@ -276,22 +277,16 @@ render(() => (
   </GlobalStateProvider>
 ))
 
-// use produce()
+// use $patchStore
 state.$patch((state) => {
-  state().test = 3
+  state.deep.data = 'patch'
 })
-// use reconcile()
 state.$patch({
   test: 2
 })
 
 // $watch
 const { pause, resume, isWatching } = state.$subscribe(
-  state => console.log(state),
-)
-
-// partial watch
-state.$subscribe(
   s => s.deep.data
   state => console.log(state),
   { defer: false },

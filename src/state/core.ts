@@ -173,7 +173,7 @@ function setupObject<
       write: JSON.stringify,
       read: JSON.parse,
     },
-    storage = localStorage,
+    storage,
     paths,
     listenEvent,
   } = persist || {}

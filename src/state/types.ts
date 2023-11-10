@@ -106,6 +106,7 @@ export type PersistOptions<State extends object, Paths extends Path<State>[] = [
   enable: boolean
   /**
    * localStorage like api
+   * @default localStorage
    */
   storage?: AnyStorage
   /**
@@ -114,6 +115,7 @@ export type PersistOptions<State extends object, Paths extends Path<State>[] = [
   key?: string
   /**
    * serializer for persist state
+   * @default { read: JSON.parse, write: JSON.stringify }
    */
   serializer?: Serializer<FlattenType<PartialObject<State, Paths>>>
   /**
@@ -135,13 +137,9 @@ export type PartialObject<
   : K['length'] extends 1
     ? { [P in K[0] & string]: PathValue<T, P> }
     : K extends [infer A, ...infer B]
-      ? B extends any[]
-        ? V & {
-          [P in A & string]: PathValue<T, A & string>
-        } & PartialObject<T, B, V>
-        : V & {
-          [P in A & string]: PathValue<T, A & string>
-        }
+      ? V & {
+        [P in A & string]: PathValue<T, A & string>
+      } & (B extends any[] ? PartialObject<T, B, V> : {})
       : never
 export type FlattenType<T> = T extends infer U
   ? ConvertType<{ [K in keyof U]: U[K] }>
