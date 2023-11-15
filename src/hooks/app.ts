@@ -37,7 +37,9 @@ function mergeProviders({ app, props = {}, providers }: MergeParams) {
     (application, { provider, opts = {} }) => () =>
       createComponent(provider, {
         ...opts,
-        get children() { return application() },
+        get children() {
+          return application()
+        },
       }),
     () => createComponent(app, props),
   )

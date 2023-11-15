@@ -11,16 +11,16 @@ type Emits = {
 const FOO = {
   bar: 1,
 }
-function Child(props: EmitProps<Emits, { num: number }>) {
-  const { emit, $emit } = useEmits<Emits>(props)
+function Child(prop: EmitProps<Emits, { num: number }>) {
+  const { emit, $emit } = useEmits<Emits>(prop)
   const v = $emit('var', 1)
   const handleClick = () => {
     v.$set(v() + 1)
-    emit('update', `emit from child: ${props.num}`, '[second param]')
+    emit('update', `emit from child: ${prop.num}`, '[second param]')
     emit('optional', { test: 1 })
   }
   console.log('$ctx:', useTestContext())
-  const childValue = $memo(() => props.num)
+  const childValue = $memo(() => prop.num)
   return (
     <div>
       child: {childValue()}

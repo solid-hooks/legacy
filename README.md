@@ -717,7 +717,7 @@ import { usePersist } from 'solid-dollar/hooks'
 // default to persist to `localeStorage`
 const val = usePersist('key', $(1))
 
-const itemState = usePersist('item', $store({ test:'loading' }), {
+const itemState = usePersist('item', { test:'loading' }, {
   storage: {/* async or sync storage */}
   serializer: {
     read: JSON.parse, // default

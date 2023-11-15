@@ -116,9 +116,7 @@ export function defineState<
  * @param setup state setup function
  * @param _log whether to enable log when dev, default is `false`
  */
-export function defineState<
-  State extends object = Record<string, any>,
->(
+export function defineState<State extends object = Record<string, any>>(
   name: string,
   setup: StateFunction<State>,
   _log?: boolean,
@@ -134,10 +132,8 @@ export function defineState<
   _log?: boolean,
 ): StateReturn<State | StateObject<State, Getter, Action>> {
   const stateName = `$state-${name}`
-  const result = (typeof setup === 'function' ? setup : setupObject(setup))(
-    stateName,
-    getLogger(_log, stateName),
-  )
+  const fn = typeof setup === 'function' ? setup : setupObject(setup)
+  const result = fn(stateName, getLogger(_log, stateName))
   return () => result as any
 }
 
@@ -235,9 +231,9 @@ function setupObject<
     return Object.assign(
       () => _store(),
       utilFn,
+      { $id: stateName },
       createGetters(getters, _store, stateName),
       createActions(actions?.(_store, utilFn)),
-      { $id: stateName },
     )
   }
 }

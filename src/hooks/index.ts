@@ -26,4 +26,4 @@ export type { ScriptOptions, StyleOption } from './resource-loader'
 export { useCallback } from './callback'
 
 export { usePersist } from './persist'
-export type { PersistOptions as PeresistOptions } from './persist'
+export type { PersistOptions } from './persist'
