@@ -132,7 +132,8 @@ export const $autoImport: ImportFn = directiveOnly => directiveOnly ? [
       'useScriptLoader',
       'useStyleLoader',
       'useCallback',
-      'usePersist'
+      'usePersist',
+      'useLocalStorage'
     ]
   },
   {
@@ -146,7 +147,9 @@ export const $autoImport: ImportFn = directiveOnly => directiveOnly ? [
       'DraggableElement',
       'ScriptOptions',
       'StyleOption',
-      'PeresistOptions'
+      'PersistOptions',
+      'Serializer',
+      'AnyStorage'
     ],
     'type': true
   }
