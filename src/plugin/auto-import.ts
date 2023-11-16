@@ -132,8 +132,7 @@ export const $autoImport: ImportFn = directiveOnly => directiveOnly ? [
       'useScriptLoader',
       'useStyleLoader',
       'useCallback',
-      'usePersist',
-      'useLocalStorage'
+      'usePersist'
     ]
   },
   {
