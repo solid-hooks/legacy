@@ -148,6 +148,9 @@ describe('test state', () => {
           setItem(key, value) {
             kv.set(key, value)
           },
+          removeItem(key) {
+            kv.delete(key)
+          },
         },
       },
     }, true)
@@ -213,6 +216,9 @@ describe('test state', () => {
           },
           setItem(key, value) {
             kv.set(key, value)
+          },
+          removeItem(key) {
+            kv.delete(key)
           },
         },
         paths: ['persist.count', 'nonePersist[0]'],
